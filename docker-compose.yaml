@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  superauto_db:
+    image: postgres
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgres
+    environment:
+      POSTGRES_USER: postgresdb
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: superauto_db
+  server:
+    depends_on:
+      - superauto_db
+    build: ./server
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./server:/apps
+      - server_node_modules:/apps/node_modules
+    ports:
+      - 8080:8080
+  client:
+    depends_on:
+      - server
+    build: ./client
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./client:/apps
+      - client_node_modules:/apps/node_modules
+    ports:
+      - 5173:5173
+volumes:
+  pgdata:
+  client_node_modules:
+  server_node_modules:
