@@ -1,8 +1,10 @@
 {
 	"dependencies": {
-		"cors": "^2.8.5"
+		"cors": "^2.8.5",
+		"react-router-dom": "^6.23.1"
 	},
 	"devDependencies": {
-		"@types/cors": "^2.8.17"
+		"@types/cors": "^2.8.17",
+		"@types/uuid": "^9.0.8"
 	}
 }
