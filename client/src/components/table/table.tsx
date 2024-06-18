@@ -1,30 +1,41 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { ITableColumn } from '../../types/table/table';
 import './style.scss';
 
-const Table = () => {
+interface ITableProps {
+  columnData: ITableColumn[];
+  data: { [key: string]: any }[];
+}
+
+const Table = (props: ITableProps) => {
   return (
     <div className='bg-white-100 table w-full overflow-hidden rounded-lg border border-gray-300'>
       <table className='w-full'>
         <thead className='border-b border-gray-300'>
           <tr className='p-3'>
-            <th>ID</th>
-            <th>vehicle No</th>
-            <th>Customer</th>
-            <th>Moblie</th>
+            {props?.columnData?.map((item) => (
+              <th key={item?.key}>{item?.name}</th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>23</td>
-            <td>kl40u4668</td>
-            <td>manshad</td>
-            <td>90903243534</td>
-          </tr>
-          <tr>
-            <td>23</td>
-            <td>kl40u4668</td>
-            <td>manshad</td>
-            <td>90903243534</td>
-          </tr>
+          {props?.data?.map((item: any, i: number) => {
+            return (
+              <tr key={i}>
+                {props?.columnData?.map((keyItem) => (
+                  <td key={keyItem.key}>
+                    {keyItem?.columnData ? (
+                      <span className='grid w-full place-items-center'>
+                        {keyItem?.columnData(item?.[keyItem.key])}
+                      </span>
+                    ) : (
+                      item?.[keyItem?.key]
+                    )}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
       <footer className='flex justify-between border-t border-gray-300 p-3 align-middle'>
