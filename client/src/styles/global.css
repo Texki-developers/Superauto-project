@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  scroll-behavior: smooth;
+  /* Import and use font family here */
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.animate-slide {
+  animation: slide 30s linear 0s infinite;
+}
+
+@keyframes slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translate(var(--company-scroll-x, 0));
+  }
+}
+
+p {
+  letter-spacing: 1px;
+  line-height: 1.8;
+}
+
+@layer components {
+  .pagination-box {
+    @apply grid h-[30px] w-[30px] place-items-center rounded bg-gray-200 text-[14px] ;
+  }
+  .common-heading {
+    @apply text-[1.2rem] font-bold;
+  }
+  .primary-heading {
+    @apply text-[1rem] font-bold text-primary-300;
+  }
+  .btn-common {
+    @apply flex justify-center gap-2 rounded-sm px-[1.2rem] py-[0.4rem] text-[0.85rem] transition-all duration-300 ease-in-out disabled:cursor-not-allowed disabled:opacity-50 md:text-[1rem];
+  }
+  .btn-ghost {
+    @apply border-2 border-transparent hover:border-slate-50 hover:bg-slate-50;
+  }
+  .btn-outlined {
+    @apply border-2 border-slate-400 hover:bg-slate-50;
+  }
+  .btn-solid {
+    @apply border-2 border-blue-500 bg-blue-500 text-white hover:border-blue-600 hover:bg-blue-600;
+  }
+  .common-space-x {
+    @apply max-w-[1400px] px-4 md:px-4;
+  }
+  .text-basic {
+    @apply text-[0.95rem] md:text-[1.05rem];
+  }
+  .section-heading {
+    @apply text-[1.7rem] font-semibold md:text-[3rem];
+  }
+  .section-heading-small {
+    @apply text-[1.4rem] font-semibold md:text-[2rem];
+  }
+  .card-heading {
+    @apply text-[1.1rem] md:text-[1.3rem];
+  }
+  .main-heading {
+    @apply text-[1rem] font-[700] md:text-[1.5rem] md:leading-[2rem];
+  }
+  .banner-subtitle {
+    @apply text-[1rem] font-[400] md:text-[1.8rem];
+  }
+  .btn-primary {
+    @apply btn-solid rounded-md border-primary-300 bg-primary-300 uppercase hover:border-primary-400 hover:bg-primary-400 md:rounded-lg;
+  }
+  .input-common {
+    @apply p-2 text-[0.95rem] outline-none md:text-[1rem];
+  }
+  .input-normal {
+    @apply h-[40px] rounded border border-[#cccccc] p-2 outline-none;
+  }
+  .input-cover {
+    @apply border-[1.5px];
+  }
+  .input-line {
+    @apply border-b-[1.5px] pb-1 pl-0;
+  }
+}
