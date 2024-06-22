@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
-import AddAndSearchItem from '../../components/addAndSearchItem/addAndSearchItem';
-import Header from '../../components/header/header';
-import AddVehicle from './addVehicle';
-import Table from '../../components/table/table';
+import AddAndSearchItem from '../../components/addAndSearchItem/AddAndSearchItem';
+import Header from '../../components/header/Header';
+import AddVehicle from './AddVehicle';
+import Table from '../../components/table/Table';
 import { ColumnData, dummyData } from './vehicle.data';
 import addProduct from '../../assets/icons/addCart.svg';
 import DeleteIcon from '../../assets/icons/delete.svg';

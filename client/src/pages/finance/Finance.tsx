@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import AddAndSearchItem from '../../components/addAndSearchItem/addAndSearchItem';
-import Header from '../../components/header/header';
+import AddAndSearchItem from '../../components/addAndSearchItem/AddAndSearchItem';
+import Header from '../../components/header/Header';
 import ModalWrapper from '../../components/modalWrapper';
-import AddFinance from './addFinance';
-import Table from '../../components/table/table';
+import AddFinance from './AddFinance';
+import Table from '../../components/table/Table';
 import { ColumnData, dummyData } from './finance.data';
 
 const Finance = () => {

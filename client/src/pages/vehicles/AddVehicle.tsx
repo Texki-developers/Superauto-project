@@ -1,6 +1,6 @@
 import { SetStateAction } from 'react';
-import Header from '../../components/header/header';
-import AddvehicleForm from '../../components/vehicles/addVehicleForm';
+import Header from '../../components/header/Header';
+import AddvehicleForm from '../../components/vehicles/AddVehicleForm';
 
 interface IProps {
   setShowAddPage: React.Dispatch<SetStateAction<boolean>>;

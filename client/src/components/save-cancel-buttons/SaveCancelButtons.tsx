@@ -1,4 +1,4 @@
-import Button from '../button.tsx/button';
+import Button from '../button.tsx/Button';
 
 interface IProps {
   hideReset?: boolean;

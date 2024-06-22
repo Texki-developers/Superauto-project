@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import Button from '../button.tsx/button';
+import Button from '../button.tsx/Button';
 import { useCallback } from 'react';
 import sidebarData from '../../config/sidebar.data';
 
@@ -18,7 +18,7 @@ const Sidebar = () => {
     [location],
   );
   return (
-    <nav className='h-screen w-full bg-black-300'>
+    <nav className='h-screen w-full bg-black-300 overflow-auto'>
       <div className='logo text-white-100 grid h-[100px] w-full place-items-center'>
         LOGO
       </div>

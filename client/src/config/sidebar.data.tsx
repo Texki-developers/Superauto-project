@@ -9,10 +9,10 @@ import OtherExpensesImage from '../assets/sidebar-icons/otherexpensesicon.svg';
 import DeliveryImage from '../assets/sidebar-icons/deliveryicon.svg';
 import AllReportsImage from '../assets/sidebar-icons/allreportsicon.svg';
 import { ISidebarItem } from '../types/sidebar/sidebar';
-import Dashboard from '../pages/dashboard/dashboard';
-import Vehicles from '../pages/vehicles/vehicles';
-import Finance from '../pages/finance/finance';
-import ServiceShop from '../pages/serviceShop/serviceShop';
+import Dashboard from '../pages/dashboard/Dashboard';
+import Vehicles from '../pages/vehicles/Vehicles';
+import Finance from '../pages/finance/Finance';
+import ServiceShop from '../pages/serviceShop/ServiceShop';
 
 export const sidebarData: ISidebarItem[] = [
   {

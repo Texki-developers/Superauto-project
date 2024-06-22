@@ -1,7 +1,7 @@
-import Button from '../button.tsx/button';
-import DragAndDrop from '../dragAndDrop/dragAndDrop';
-import InputBox from '../inputBox/inputBox';
-import SelectInput from '../selectInput/selectInput';
+import Button from '../button.tsx/Button';
+import DragAndDrop from '../dragAndDrop/DragAndDrop';
+import InputBox from '../inputBox/InputBox';
+import SelectInput from '../selectInput/SelectInput';
 
 interface IProps {
   onCancelClick: () => void;

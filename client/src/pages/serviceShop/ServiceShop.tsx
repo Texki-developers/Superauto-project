@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import AddAndSearchItem from '../../components/addAndSearchItem/addAndSearchItem';
-import Header from '../../components/header/header';
+import AddAndSearchItem from '../../components/addAndSearchItem/AddAndSearchItem';
+import Header from '../../components/header/Header';
 import ModalWrapper from '../../components/modalWrapper';
 import AddServiceShop from './AddServiceShop';
 

@@ -1,5 +1,5 @@
-import Button from '../button.tsx/button';
-import SearchInput from '../searchInput/searchInput';
+import Button from '../button.tsx/Button';
+import SearchInput from '../searchInput/SearchInput';
 import AddIcon from '../../assets/header-icons/add-icon.svg';
 
 interface IAddAndSearchItemProps {

@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom';
 import LogoutImg from '../../assets/header-icons/logout.svg';
-import Breadcrumb from '../breadcrumb/breadcrumb';
+import Breadcrumb from '../breadcrumb/Breadcrumb';
 import { headersData } from '../../config/pageHeader.data';
 import { useMemo } from 'react';
 import { IBreadCrumb } from '../../types/breadCrumb/breadCrumb';

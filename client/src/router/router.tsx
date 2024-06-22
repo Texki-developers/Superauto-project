@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import ErrorPage from './not-found';
-import DashboardLayout from '../layouts/dashboardLayout/dashboardLayout';
+import DashboardLayout from '../layouts/dashboardLayout/DashboardLayout';
 import { ISidebarItem } from '../types/sidebar/sidebar';
 import sidebarData from '../config/sidebar.data';
 
