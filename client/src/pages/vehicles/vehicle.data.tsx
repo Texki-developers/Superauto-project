@@ -52,6 +52,36 @@ export const dummyData = [
     proof: false,
     date: '23/11/2024',
   },
+  {
+    id: '43',
+    vehicle_no: 'KL 09 AB 4321',
+    customer: 'Rohan',
+    mobile: '7766554433',
+    rc: true,
+    insurance: true,
+    proof: true,
+    date: '21/11/2024',
+  },
+  {
+    id: '53',
+    vehicle_no: 'KL 10 CD 5678',
+    customer: 'Sofia',
+    mobile: '9988776655',
+    rc: false,
+    insurance: false,
+    proof: true,
+    date: '22/11/2024',
+  },
+  {
+    id: '63',
+    vehicle_no: 'KL 11 EF 6789',
+    customer: 'Arun',
+    mobile: '8899776655',
+    rc: true,
+    insurance: false,
+    proof: false,
+    date: '23/11/2024',
+  },
 ];
 
 export const ColumnData = [

@@ -1,5 +1,4 @@
-.table {
-  table-layout: fixed; /* Ensures fixed table layout */
+table {
   thead {
     th {
       padding: 1rem;
@@ -7,6 +6,7 @@
       text-align: center;
     }
   }
+
   tbody {
     tr {
       td {

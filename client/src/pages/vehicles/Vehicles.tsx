@@ -45,7 +45,7 @@ const Vehicles = () => {
     ];
   }, []);
   return (
-    <main>
+    <main className='grid h-full grid-rows-[auto_auto_1fr]'>
       {!showAddPage ? (
         <>
           <Header />
@@ -55,7 +55,7 @@ const Vehicles = () => {
               onAddButtonClick={onAddButtonClick}
             />
           </div>
-          <section className='pt-5'>
+          <section className='pt-5 pb-2'>
             <Table data={dummyData} columnData={columnData} />
           </section>
         </>

@@ -9,7 +9,7 @@ interface ITableProps {
 
 const Table = (props: ITableProps) => {
   return (
-    <div className='bg-white-100 table w-full overflow-hidden rounded-lg border border-gray-300'>
+    <div className='bg-white-100 w-full h-full overflow-hidden rounded-lg border border-gray-300 flex justify-between flex-col'>
       <table className='w-full'>
         <thead className='border-b border-gray-300'>
           <tr className='p-3'>
@@ -18,10 +18,10 @@ const Table = (props: ITableProps) => {
             ))}
           </tr>
         </thead>
-        <tbody>
+        <tbody className='h-full oveflow-auto'>
           {props?.data?.map((item: any, i: number) => {
             return (
-              <tr key={i}>
+              <tr key={i} >
                 {props?.columnData?.map((keyItem) => (
                   <td key={keyItem.key}>
                     {keyItem?.columnData ? (
@@ -47,7 +47,7 @@ const Table = (props: ITableProps) => {
             <option value='30'>30</option>
           </select>
         </div>
-        <div className='pagination flex gap-1 align-middle'>
+        <div className='pagination flex gap-1  align-middle'>
           <span className='pagination-box'>1</span>
           <span className='pagination-box'>2</span>
           <span className='pagination-box'>3</span>

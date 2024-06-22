@@ -13,7 +13,7 @@ const Finance = () => {
   };
 
   return (
-    <div>
+    <div className='grid h-full grid-rows-[auto_auto_1fr]'>
       {showAddFinancerPopup && (
         <ModalWrapper
           onClose={() => {
@@ -31,7 +31,7 @@ const Finance = () => {
           onAddButtonClick={onAddItemClick}
         />
       </section>
-      <section className='pt-5'>
+      <section className='pt-5 pb-2'>
         <Table data={dummyData} columnData={ColumnData} />
       </section>
     </div>
