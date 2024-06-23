@@ -1,5 +1,5 @@
 import { createPortal } from 'react-dom';
-import ModalWrapperComponent from './modalWrapper';
+import ModalWrapperComponent from './ModalWrapper';
 import CloseIcon from '../../assets/icons/close-icon';
 
 interface IModalWrapperProps {

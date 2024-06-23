@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import AddAndSearchItem from '../../components/addAndSearchItem/addAndSearchItem';
-import Header from '../../components/header/header';
+import AddAndSearchItem from '../../components/addAndSearchItem/AddAndSearchItem';
+import Header from '../../components/header/Header';
 import ModalWrapper from '../../components/modalWrapper';
-import AddFinance from './addFinance';
-import Table from '../../components/table/table';
+import AddFinance from './AddFinance';
+import Table from '../../components/table/Table';
 import { ColumnData, dummyData } from './finance.data';
 
 const Finance = () => {
@@ -13,7 +13,7 @@ const Finance = () => {
   };
 
   return (
-    <div>
+    <div className='grid h-full grid-rows-[auto_auto_1fr]'>
       {showAddFinancerPopup && (
         <ModalWrapper
           onClose={() => {
@@ -31,7 +31,7 @@ const Finance = () => {
           onAddButtonClick={onAddItemClick}
         />
       </section>
-      <section className='pt-5'>
+      <section className='pt-5 pb-2'>
         <Table data={dummyData} columnData={ColumnData} />
       </section>
     </div>
