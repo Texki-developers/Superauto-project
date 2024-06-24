@@ -1,4 +1,4 @@
-import InputBox from '../../components/inputBox/InputBox';
+import InputBox from '../../components/formComponents/inputBox/InputBox';
 import SaveCancelButtons from '../../components/save-cancel-buttons/SaveCancelButtons';
 
 const AddFinance = () => {

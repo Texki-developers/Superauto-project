@@ -1,4 +1,4 @@
-import UploadIcon from '../../assets/icons/upload-icon';
+import UploadIcon from '../../../assets/icons/upload-icon';
 
 interface iDragAndDropProps {
   label?: string;
@@ -9,7 +9,7 @@ interface iDragAndDropProps {
 const DragAndDrop = (props: iDragAndDropProps) => {
   return (
     <div className='gird gap-1'>
-      <label className='text-sm font-bold'>
+      <label className='input-label'>
         {props?.label}
         {props?.required && <span>*</span>}{' '}
       </label>

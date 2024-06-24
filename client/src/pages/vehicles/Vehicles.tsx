@@ -45,7 +45,7 @@ const Vehicles = () => {
     ];
   }, []);
   return (
-    <main className='grid h-full grid-rows-[auto_auto_1fr]'>
+    <main className='table-wrapper'>
       {!showAddPage ? (
         <>
           <Header />

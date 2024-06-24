@@ -1,4 +1,4 @@
-import SearchIcon from '../../assets/header-icons/searchIcon';
+import SearchIcon from '../../../assets/header-icons/searchIcon';
 
 const SearchInput = () => {
   return (

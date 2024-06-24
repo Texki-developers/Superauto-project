@@ -23,7 +23,7 @@ export default function SelectInput(props: ISelectInputProps) {
   return (
     <div className='gird gap-1'>
       {!props?.hideLabel && (
-        <label className='text-sm font-bold'>
+        <label className='input-label'>
           {props?.label}
           {props?.required && <span>*</span>}{' '}
         </label>

@@ -17,7 +17,7 @@ const ModalWrapperComponent = ({
         onClick={(e) => {
           e.stopPropagation();
         }}
-        className='bg-white-100 min-h-[150px] min-w-[400px] rounded-md p-3'
+        className='bg-white-100 min-h-[150px] min-w-[600px] rounded-md p-3'
       >
         {children}
       </div>

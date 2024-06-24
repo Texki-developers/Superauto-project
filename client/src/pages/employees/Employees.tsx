@@ -2,32 +2,32 @@ import { useState } from 'react';
 import AddAndSearchItem from '../../components/addAndSearchItem/AddAndSearchItem';
 import Header from '../../components/header/Header';
 import ModalWrapper from '../../components/modalWrapper';
-import AddServiceShop from './AddServiceShop';
-import { ColumnData, dummyData } from './serviceShop.data';
+import AddEmployees from './AddEmployees';
+import { ColumnData, dummyData } from './employees.data';
 import Table from '../../components/table/Table';
 
-const ServiceShop = () => {
-  const [showServiceShopPopup, setShowServiceShopPopup] = useState(false);
+const Employees = () => {
+  const [showEmployeesPopup, setShowEmployeesPopup] = useState(false);
   const onAddItemClick = () => {
-    setShowServiceShopPopup(true);
+    setShowEmployeesPopup(true);
   };
   return (
     <>
-      {showServiceShopPopup && (
+      {showEmployeesPopup && (
         <ModalWrapper
           onClose={() => {
-            setShowServiceShopPopup(false);
+            setShowEmployeesPopup(false);
           }}
-          title='Add Service Shop'
+          title='Add Employees'
         >
-          <AddServiceShop />
+          <AddEmployees />
         </ModalWrapper>
       )}
       <div className='table-wrapper'>
         <Header />
         <section className='pt-[50px]'>
           <AddAndSearchItem
-            addButtonText='Add Service Shop'
+            addButtonText='Add Employees'
             onAddButtonClick={onAddItemClick}
           />
         </section>
@@ -39,4 +39,4 @@ const ServiceShop = () => {
   );
 };
 
-export default ServiceShop;
+export default Employees;

@@ -1,20 +1,28 @@
 import InputBox from '../../components/formComponents/inputBox/InputBox';
 import SaveCancelButtons from '../../components/save-cancel-buttons/SaveCancelButtons';
 
-const AddServiceShop = () => {
+const AddEmployees = () => {
   return (
     <div className='grid gap-3'>
-      <div className='flex gap-2'>
+      <div className="grid grid-cols-2 gap-2">
         <InputBox
           label='Name'
           required
-          onChange={() => {}}
+          onChange={() => { }}
           placeholder='John Doe'
         />
         <InputBox
+          required
           label='Phone Number'
-          onChange={() => {}}
+          onChange={() => { }}
           placeholder='Mobile'
+        />
+        <InputBox
+          required
+          type='number'
+          label='Salary (Per Month)'
+          onChange={() => { }}
+          placeholder='Salary'
         />
       </div>
       <SaveCancelButtons hideReset />
@@ -22,4 +30,4 @@ const AddServiceShop = () => {
   );
 };
 
-export default AddServiceShop;
+export default AddEmployees;
