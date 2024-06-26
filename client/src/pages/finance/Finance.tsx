@@ -13,7 +13,7 @@ const Finance = () => {
   };
 
   return (
-    <div className='grid h-full grid-rows-[auto_auto_1fr]'>
+    <div className='table-wrapper'>
       {showAddFinancerPopup && (
         <ModalWrapper
           onClose={() => {

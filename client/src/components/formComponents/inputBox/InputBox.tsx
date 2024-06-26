@@ -11,14 +11,14 @@ interface IInputProps {
 }
 const InputBox = (props: IInputProps) => {
   return (
-    <div className='grid gap-1'>
-      <label className='text-sm font-bold text-black-200'>
+    <div className='grid gap-1 w-full'>
+      <label className='input-label'>
         {props?.label}
         {props?.required && <span>*</span>}{' '}
       </label>
       <input
         placeholder={props?.placeholder}
-        className='input-normal'
+        className='input-normal w-full'
         type={props?.type ?? 'text'}
         value={props.value}
         name={props?.name}

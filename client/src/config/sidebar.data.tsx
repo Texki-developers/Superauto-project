@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import { v4 as uuidv4 } from 'uuid';
 import DashboardImage from '../assets/sidebar-icons/dashboardicon.svg';
 import VehiclesImage from '../assets/sidebar-icons/vehiclesicon.svg';
@@ -13,6 +15,10 @@ import Dashboard from '../pages/dashboard/Dashboard';
 import Vehicles from '../pages/vehicles/Vehicles';
 import Finance from '../pages/finance/Finance';
 import ServiceShop from '../pages/serviceShop/ServiceShop';
+import Customers from '../pages/customers/Customers';
+import Employees from '../pages/employees/Employees';
+import OtherExpenses from '../pages/otherExpenses/OtherExpenses';
+import DeliveryServices from '../pages/deliveryServices/DeliveryServices';
 
 export const sidebarData: ISidebarItem[] = [
   {
@@ -53,7 +59,7 @@ export const sidebarData: ISidebarItem[] = [
     icon: CustomersImage,
     id: uuidv4(),
     isSubMenu: false,
-    element: <Dashboard />,
+    element: <Customers />,
   },
   {
     name: 'Employees',
@@ -61,7 +67,7 @@ export const sidebarData: ISidebarItem[] = [
     icon: EmployeesImage,
     id: uuidv4(),
     isSubMenu: false,
-    element: <Dashboard />,
+    element: <Employees />,
   },
   {
     name: 'Other Expenses',
@@ -69,7 +75,7 @@ export const sidebarData: ISidebarItem[] = [
     icon: OtherExpensesImage,
     id: uuidv4(),
     isSubMenu: false,
-    element: <Dashboard />,
+    element: <OtherExpenses />,
   },
   {
     name: 'Delivery Services',
@@ -77,15 +83,33 @@ export const sidebarData: ISidebarItem[] = [
     icon: DeliveryImage,
     id: uuidv4(),
     isSubMenu: false,
-    element: <Dashboard />,
+    element: <DeliveryServices />,
   },
   {
     name: 'All Reports',
     url: '/all-reports',
     icon: AllReportsImage,
     id: uuidv4(),
-    isSubMenu: false,
+    isSubMenu: true,
     element: <Dashboard />,
+    children: [
+      {
+        name: 'Employees',
+        url: '/employees',
+        icon: EmployeesImage,
+        id: uuidv4(),
+        isSubMenu: false,
+        element: <Employees />,
+      },
+      {
+        name: 'Other Expenses',
+        url: '/other-expenses',
+        icon: OtherExpensesImage,
+        id: uuidv4(),
+        isSubMenu: false,
+        element: <OtherExpenses />,
+      }
+    ]
   },
 ];
 

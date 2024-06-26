@@ -7,4 +7,5 @@ export interface ISidebarItem {
   id: string;
   isSubMenu: boolean;
   element: React.ReactNode;
+  children?: ISidebarItem[];
 }
