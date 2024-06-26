@@ -94,17 +94,16 @@ export const sidebarData: ISidebarItem[] = [
     element: <Dashboard />,
     children: [
       {
-        name: 'Employees',
-        url: '/employees',
+        name: 'Report 1',
+        url: '/report1',
         icon: EmployeesImage,
         id: uuidv4(),
         isSubMenu: false,
         element: <Employees />,
       },
       {
-        name: 'Other Expenses',
-        url: '/other-expenses',
-        icon: OtherExpensesImage,
+        name: 'Report 2',
+        url: '/report2',
         id: uuidv4(),
         isSubMenu: false,
         element: <OtherExpenses />,
