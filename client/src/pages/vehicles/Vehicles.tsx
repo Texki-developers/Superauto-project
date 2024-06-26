@@ -7,14 +7,17 @@ import { ColumnData, dummyData } from './vehicle.data';
 import addProduct from '../../assets/icons/addCart.svg';
 import DeleteIcon from '../../assets/icons/delete.svg';
 import EditIcon from '../../assets/icons/edit.svg';
+import SellVehicle from './SellVehicle';
 const Vehicles = () => {
   const [showAddPage, setShowAddPage] = useState<boolean>(false);
+  const [showSellPage, setShowSellPage] = useState<boolean>(false);
   const onAddButtonClick = () => {
     setShowAddPage(true);
   };
 
   const onActionClick = (type: 'add' | 'edit' | 'delete', id: string) => {
-    console.log(type, id);
+    type === 'add' && setShowSellPage(true);
+    console.log(id)
   };
   const columnData = useMemo(() => {
     return [
@@ -46,23 +49,29 @@ const Vehicles = () => {
   }, []);
   return (
     <main className='table-wrapper'>
-      {!showAddPage ? (
-        <>
-          <Header />
-          <div className='pt-[50px]'>
-            <AddAndSearchItem
-              addButtonText='Add Vehicle'
-              onAddButtonClick={onAddButtonClick}
-            />
-          </div>
-          <section className='pt-5 pb-2'>
-            <Table data={dummyData} columnData={columnData} />
-          </section>
-        </>
-      ) : (
+
+      {showAddPage ? (
         <AddVehicle setShowAddPage={setShowAddPage} />
-      )}
-    </main>
+      ) :
+        showSellPage ? (
+          <SellVehicle setShowSellPage={setShowSellPage} />
+        ) :
+          (
+            <>
+              <Header />
+              <div className='pt-[50px]'>
+                <AddAndSearchItem
+                  addButtonText='Add Vehicle'
+                  onAddButtonClick={onAddButtonClick}
+                />
+              </div>
+              <section className='pt-5 pb-2'>
+                <Table data={dummyData} columnData={columnData} />
+              </section>
+            </>
+          )
+      }
+    </main >
   );
 };
 

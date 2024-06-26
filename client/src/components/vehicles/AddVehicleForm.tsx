@@ -14,7 +14,7 @@ const AddvehicleForm = ({ onCancelClick }: IProps) => {
   ];
   return (
     <div className='bg-white-100 grid w-full grid-rows-[1fr_80px] rounded p-5'>
-      <form className='grid h-full w-full grid-cols-[1fr_300px] gap-3'>
+      <div className='grid h-full w-full grid-cols-[1fr_300px] gap-3'>
         <div className='grid gap-4'>
           <h1 className='primary-heading'>Vehicle Details</h1>
           <div className='grid grid-cols-2 gap-3'>
@@ -33,7 +33,7 @@ const AddvehicleForm = ({ onCancelClick }: IProps) => {
                 <InputBox
                   label='Registration Number'
                   placeholder='Enter Registration Number'
-                  onChange={() => {}}
+                  onChange={() => { }}
                   required
                 />
                 <SelectInput
@@ -49,20 +49,20 @@ const AddvehicleForm = ({ onCancelClick }: IProps) => {
                 <InputBox
                   label='Purchase Rate'
                   placeholder='Enter Purchase Rate'
-                  onChange={() => {}}
+                  onChange={() => { }}
                   type='number'
                   required
                 />
                 <InputBox
                   label='Balance'
                   placeholder='Enter Balance'
-                  onChange={() => {}}
+                  onChange={() => { }}
                   type='number'
                 />
                 <InputBox
                   label='Purchase Date'
                   placeholder='Select Purchase Date'
-                  onChange={() => {}}
+                  onChange={() => { }}
                   type='date'
                   required
                 />
@@ -73,7 +73,7 @@ const AddvehicleForm = ({ onCancelClick }: IProps) => {
                 <InputBox
                   label='Ownership'
                   placeholder='Enter Vehicle Ownership Name'
-                  onChange={() => {}}
+                  onChange={() => { }}
                   required
                 />
                 <SelectInput
@@ -89,7 +89,7 @@ const AddvehicleForm = ({ onCancelClick }: IProps) => {
                 <InputBox
                   label='Year of Manufacture'
                   placeholder='Enter Year of Manufacture'
-                  onChange={() => {}}
+                  onChange={() => { }}
                   type='number'
                   value={2018}
                   required
@@ -97,14 +97,14 @@ const AddvehicleForm = ({ onCancelClick }: IProps) => {
                 <InputBox
                   label='Purchase Amount'
                   placeholder='Enter Purchase Amount'
-                  onChange={() => {}}
+                  onChange={() => { }}
                   type='number'
                   required
                 />
                 <InputBox
                   label='Insurance Date'
                   placeholder='Select Insurance Date'
-                  onChange={() => {}}
+                  onChange={() => { }}
                   type='date'
                   required
                 />
@@ -117,13 +117,13 @@ const AddvehicleForm = ({ onCancelClick }: IProps) => {
               <SelectInput
                 label='Delivery Service'
                 placeholder='Select Delivery Service'
-                onChange={() => {}}
+                onChange={() => { }}
                 options={options}
               />
               <InputBox
                 label='Delivery Amount'
                 placeholder='Enter Delivery Amount'
-                onChange={() => {}}
+                onChange={() => { }}
                 type='number'
               />
             </div>
@@ -137,7 +137,7 @@ const AddvehicleForm = ({ onCancelClick }: IProps) => {
             <DragAndDrop label='RC Book' />
           </div>
         </div>
-      </form>
+      </div>
       <div>
         <div className='button-wrapper flex h-full w-full items-center justify-between'>
           <Button

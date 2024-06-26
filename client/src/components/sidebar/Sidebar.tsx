@@ -19,9 +19,10 @@ const Sidebar = () => {
     [location],
   );
 
-  const onSidebarItemClick = useCallback((url: string, hasSubmenu: boolean) => {
+  const onSidebarItemClick = useCallback((url: string, hasSubmenu: boolean, isSidebar?: boolean) => {
+    console.log(hasSubmenu, isSidebar)
     if (!hasSubmenu) { navigate(url); return }
-    setShowSubmenu(!showSubmenu)
+    !isSidebar && setShowSubmenu(!showSubmenu)
   }, [navigate, showSubmenu])
   return (
     <nav className='h-screen w-full bg-black-300 overflow-auto'>
@@ -49,25 +50,20 @@ const Sidebar = () => {
             />
             {
               showSubmenu && (
-                item?.children?.map((child) => (
-                  <Button
-                    onClick={() => onSidebarItemClick(child?.url, item?.isSubMenu)}
-                    text={child?.name}
-                    className='hover:bg-primary-400 ml-3'
-                    bg={isActive(child?.url) ? 'primary' : 'none'}
-                    h='50px'
-                    
-                    style={{ whiteSpace: 'nowrap', transition: 'all 550ms ease' }}
-                    iconStyle={{ width: '20px', height: '20px' }}
-                    icon={
-                      <img
-                        className='h-[20px] w-[20px]'
-                        alt={child?.name}
-                        src={item?.icon}
+                <div>
+                  {
+                    item?.children?.map((child) => (
+                      <Button
+                        onClick={() => onSidebarItemClick(child?.url, child?.isSubMenu, true)}
+                        text={child?.name}
+                        bg={isActive(child?.url) ? 'primary' : 'none'}
+                        h='50px'
+                        w="150px"
+                        style={{ whiteSpace: 'nowrap', justifyContent: "start", transition: 'all 550ms ease' }}
                       />
-                    }
-                  />
-                ))
+                    ))
+                  }
+                </div>
               )
             }
           </React.Fragment>
