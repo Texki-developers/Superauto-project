@@ -1,29 +1,29 @@
 import { SetStateAction } from 'react';
 import Header from '../../components/header/Header';
-import AddvehicleForm from '../../components/vehicles/AddVehicleForm';
+import SellVehicleForm from '../../components/vehicles/SellVehicleForm';
 
 interface IProps {
-  setShowAddPage: React.Dispatch<SetStateAction<boolean>>;
+  setShowSellPage: React.Dispatch<SetStateAction<boolean>>;
 }
-const AddVehicle = ({ setShowAddPage }: IProps) => {
+const SellVehicle = ({ setShowSellPage }: IProps) => {
   const onCancelClick = () => {
-    setShowAddPage(false);
+    setShowSellPage(false);
   };
   const breadCrumbData = [
     { name: 'Dashboard', link: '/' },
     { name: 'Vehicles', link: '/vehicles' },
-    { name: 'Add Vehicles' },
+    { name: 'Sell Vehicles' },
   ];
   return (
     <div>
       <Header breadCrumbData={breadCrumbData} />
-      <div className='pt-5'>
+      <div className='pt-5 mb-3'>
         <form action="">
-          <AddvehicleForm onCancelClick={onCancelClick} />
+          <SellVehicleForm onCancelClick={onCancelClick} />
         </form>
       </div>
     </div>
   );
 };
 
-export default AddVehicle;
+export default SellVehicle;
