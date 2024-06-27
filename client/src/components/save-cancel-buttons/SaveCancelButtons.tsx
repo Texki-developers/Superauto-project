@@ -7,6 +7,7 @@ interface IProps {
   onResetClick?: () => void;
   onSaveClick?: () => void;
   onCancelClick?: () => void;
+  type: 'button'| 'submit'
 }
 
 const SaveCancelButtons = (props: IProps) => {
@@ -20,6 +21,7 @@ const SaveCancelButtons = (props: IProps) => {
             }}
             text='Reset'
             className='bg-gray-300'
+          
           />
         )}
       </div>
@@ -38,6 +40,7 @@ const SaveCancelButtons = (props: IProps) => {
             onClick={() => {
               props?.onSaveClick && props?.onSaveClick();
             }}
+            type={props.type ?? 'button'}
             bg='primary'
             text='Save'
           />
