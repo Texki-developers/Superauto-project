@@ -1,17 +1,35 @@
+import { Control, FieldErrors, UseFormRegister } from 'react-hook-form';
 import Button from '../button.tsx/Button';
 import DragAndDrop from '../formComponents/dragAndDrop/DragAndDrop';
 import InputBox from '../formComponents/inputBox/InputBox';
 import SelectInput from '../formComponents/selectInput/SelectInput';
+import { IVehicleAddFormValues } from '../../types/vehicle/addVehicle';
+import CreateSelectInput from '../formComponents/creatableSelect/CreatableSelect';
 
 interface IProps {
   onCancelClick: () => void;
+  register: UseFormRegister<IVehicleAddFormValues>;
+  control: Control<IVehicleAddFormValues>;
+  errors: FieldErrors<IVehicleAddFormValues>;
+  reset: (values?: IVehicleAddFormValues) => void;
+  watch: (name: keyof IVehicleAddFormValues) => IVehicleAddFormValues[keyof IVehicleAddFormValues]; // Watch function for watching form values
+  setValue: (
+    name: keyof IVehicleAddFormValues,
+    value: IVehicleAddFormValues[keyof IVehicleAddFormValues],
+    options?: {
+      shouldValidate?: boolean;
+      shouldDirty?: boolean;
+    }
+  ) => void; // SetValue function for setting form values
 }
-const AddvehicleForm = ({ onCancelClick }: IProps) => {
+
+const AddvehicleForm = ({ onCancelClick, register, reset, control, errors, watch, setValue }: IProps) => {
   const options = [
     { value: 'chocolate', label: 'Chocolate' },
     { value: 'strawberry', label: 'Strawberry' },
     { value: 'vanilla', label: 'Vanilla' },
   ];
+
   return (
     <div className='bg-white-100 grid w-full grid-rows-[1fr_80px] rounded p-5'>
       <div className='grid h-full w-full grid-cols-[1fr_300px] gap-3'>
@@ -21,49 +39,57 @@ const AddvehicleForm = ({ onCancelClick }: IProps) => {
             <div className='first-section grid gap-3'>
               <div className='form-items grid gap-2'>
                 <SelectInput
+                  name='party'
                   label='Party'
                   isSearchable
                   placeholder='Select Party Name'
                   options={options}
-                  onChange={(value) => {
-                    console.log(value);
-                  }}
+                  control={control}
+                  error={errors}
                   required
                 />
                 <InputBox
+                  name='registrationNumber'
                   label='Registration Number'
                   placeholder='Enter Registration Number'
-                  onChange={() => { }}
+                  register={register}
+                  error={errors}
                   required
                 />
-                <SelectInput
+                <CreateSelectInput
+                  name='model'
                   label='Model'
                   isSearchable
-                  placeholder='Select Model'
                   options={options}
-                  onChange={(value) => {
-                    console.log(value);
-                  }}
+                  placeholder='Select Model'
+                  control={control}
+                  error={errors}
                   required
                 />
                 <InputBox
+                  name='purchaseRate'
                   label='Purchase Rate'
                   placeholder='Enter Purchase Rate'
-                  onChange={() => { }}
                   type='number'
+                  register={register}
+                  error={errors}
                   required
                 />
                 <InputBox
+                  name='balance'
                   label='Balance'
                   placeholder='Enter Balance'
-                  onChange={() => { }}
                   type='number'
+                  register={register}
+                  error={errors}
                 />
                 <InputBox
+                  name='purchaseDate'
                   label='Purchase Date'
                   placeholder='Select Purchase Date'
-                  onChange={() => { }}
                   type='date'
+                  register={register}
+                  error={errors}
                   required
                 />
               </div>
@@ -71,41 +97,49 @@ const AddvehicleForm = ({ onCancelClick }: IProps) => {
             <div>
               <div className='second-section grid gap-2'>
                 <InputBox
+                  name='ownership'
                   label='Ownership'
                   placeholder='Enter Vehicle Ownership Name'
-                  onChange={() => { }}
+                  register={register}
+                  error={errors}
                   required
                 />
-                <SelectInput
+                <CreateSelectInput
+                  name='brand'
                   label='Brand'
                   isSearchable
                   placeholder='Select Brand'
                   options={options}
-                  onChange={(value) => {
-                    console.log(value);
-                  }}
+                  control={control}
+                  error={errors}
                   required
                 />
                 <InputBox
+                  name='yearOfManufacture'
                   label='Year of Manufacture'
                   placeholder='Enter Year of Manufacture'
-                  onChange={() => { }}
                   type='number'
-                  value={2018}
+                  register={register}
+                  error={errors}
+                  defaultValue={'2024'}
                   required
                 />
                 <InputBox
+                  name='purchaseAmount'
                   label='Purchase Amount'
                   placeholder='Enter Purchase Amount'
-                  onChange={() => { }}
                   type='number'
+                  register={register}
+                  error={errors}
                   required
                 />
                 <InputBox
+                  name='insuranceDate'
                   label='Insurance Date'
                   placeholder='Select Insurance Date'
-                  onChange={() => { }}
                   type='date'
+                  register={register}
+                  error={errors}
                   required
                 />
               </div>
@@ -115,16 +149,20 @@ const AddvehicleForm = ({ onCancelClick }: IProps) => {
             <h1 className='primary-heading'>Delivery Services</h1>
             <div className='grid grid-cols-2 gap-3 pt-1'>
               <SelectInput
+                name='deliveryService'
                 label='Delivery Service'
                 placeholder='Select Delivery Service'
-                onChange={() => { }}
                 options={options}
+                control={control}
+                error={errors}
               />
               <InputBox
+                name='deliveryAmount'
                 label='Delivery Amount'
                 placeholder='Enter Delivery Amount'
-                onChange={() => { }}
                 type='number'
+                register={register}
+                error={errors}
               />
             </div>
           </div>
@@ -132,9 +170,9 @@ const AddvehicleForm = ({ onCancelClick }: IProps) => {
         <div className='documents'>
           <h1 className='primary-heading'>Documents</h1>
           <div className='grid gap-2 pt-3'>
-            <DragAndDrop label='RC Book' />
-            <DragAndDrop label='RC Book' />
-            <DragAndDrop label='RC Book' />
+            <DragAndDrop watchValue={watch('rcBook')} setValue={setValue} name='rcBook' label='RC Book' />
+            <DragAndDrop watchValue={watch('insurance')} setValue={setValue} name='insurance' label='Insurance' />
+            <DragAndDrop watchValue={watch('proof')} setValue={setValue} name='proof' label='Proof' />
           </div>
         </div>
       </div>
@@ -144,6 +182,8 @@ const AddvehicleForm = ({ onCancelClick }: IProps) => {
             className='bg-gray-300 font-semibold text-black-400'
             w='100px'
             text='Reset'
+            type='button'
+            onClick={() => reset()}
           />
           <div className='save-cancel-btn flex gap-3'>
             <Button

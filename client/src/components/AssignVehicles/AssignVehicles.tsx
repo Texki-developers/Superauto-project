@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Button from '../../components/button.tsx/Button';
 import InputBox from '../../components/formComponents/inputBox/InputBox';
 import AddIcon from '../../assets/header-icons/add-icon.svg';
@@ -42,7 +43,7 @@ export default function AssignVehicles({ setAssign }: AssignVehiclesProps) {
     },
   ];
 
-  const onSubmit: SubmitHandler<IassignFormInput> = (data) => {
+  const onSubmit: SubmitHandler<IassignFormInput> = (data: any) => {
     console.log(data, 'The data');
 
     setAssign(false);
@@ -97,7 +98,7 @@ export default function AssignVehicles({ setAssign }: AssignVehiclesProps) {
 
               <div>
                 <Button
-                  className='!gap-0 !px-3'
+                  className='!gap-0 !px-3 mb-4'
                   iconStyle={{ width: '1rem', textAlign: 'center' }}
                   text=''
                   type='button'

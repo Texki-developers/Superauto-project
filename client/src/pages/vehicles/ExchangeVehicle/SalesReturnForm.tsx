@@ -1,30 +1,42 @@
+import { Control, FieldErrors, UseFormRegister } from "react-hook-form";
 import Button from "../../../components/button.tsx/Button";
 import InputBox from "../../../components/formComponents/inputBox/InputBox";
-import SelectInput from "../../../components/formComponents/selectInput/SelectInput";
+import { IVehicleNewFormValues } from "../../../types/vehicle/sellVehicle";
+import CreateSelectInput from "../../../components/formComponents/creatableSelect/CreatableSelect";
 interface IProps {
     onCancelClick: () => void;
+    register: UseFormRegister<IVehicleNewFormValues>;
+    control: Control<IVehicleNewFormValues>;
+    errors: FieldErrors<IVehicleNewFormValues>;
+    reset: (values?: IVehicleNewFormValues) => void;
 }
 const options = [
     { value: 'chocolate', label: 'Chocolate' },
     { value: 'strawberry', label: 'Strawberry' },
     { value: 'vanilla', label: 'Vanilla' },
 ];
-const SalesReturnForm = ({ onCancelClick }: IProps) => {
+
+
+const SalesReturnForm = ({ onCancelClick, reset, register, control, errors, }: IProps) => {
     return (
         <div className="grid gap-3 ">
             <div className="grid grid-cols-2 gap-3 py-6">
-                <SelectInput
+                <CreateSelectInput
+                    name="registrationNumber"
                     label='Registartion Number'
                     placeholder='Registartion Number'
-                    onChange={() => { }}
                     options={options}
+                    control={control}
+                    error={errors}
                     required
                 />
                 <InputBox
+                    name="value"
                     label='Value'
                     placeholder='Value'
                     required
-                    onChange={() => { }}
+                    register={register}
+                    error={errors}
                     type='number'
                 />
             </div>
@@ -33,6 +45,8 @@ const SalesReturnForm = ({ onCancelClick }: IProps) => {
                     className='bg-gray-300 font-semibold text-black-400'
                     w='100px'
                     text='Reset'
+                    type="button"
+                    onClick={() => { reset() }}
                 />
                 <div className='save-cancel-btn flex gap-3'>
                     <Button
