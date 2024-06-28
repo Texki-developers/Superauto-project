@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface IInputProps {
   label: string;
   required?: boolean;
@@ -5,10 +6,10 @@ interface IInputProps {
   value?: string | number;
   defaultValue?: string;
   type?: string;
-  name?: string;
+  name: string;
   isDisabled?: boolean;
   register: any;
-  error:any;
+  error: any;
 }
 const InputBox = (props: IInputProps) => {
   return (
@@ -25,11 +26,12 @@ const InputBox = (props: IInputProps) => {
         name={props?.name}
         disabled={props?.isDisabled}
         defaultValue={props?.defaultValue}
-        {...props.register(props.name,{required:`${props.label} is Required`})}
-        aria-invalid={props.error[props.name??''] ? "true" : "false"}
+        {...props.register(props?.name, { required: props?.required ? `${props.label} is Required` : false })}
+        aria-invalid={props.error?.[props.name ?? ''] ? "true" : "false"}
       />
-      {props.error[props.name??''] && <p role="alert" className="absolute top-16 text-xs text-red-500">{props.error[props.name].message}</p>}
-
+      <div className="h-3">
+        {props.error?.[props?.name ?? ''] && <p role="alert" className="absolute top-16 text-xs text-red-500">{props.error?.[props.name]?.message}</p>}
+      </div>
     </div>
   );
 };
