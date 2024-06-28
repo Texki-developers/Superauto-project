@@ -3,6 +3,7 @@ import logger from 'morgan';
 import path from 'path';
 import cors from 'cors';
 import { pool } from './config/dbConfig';
+import { authRoutes } from './api/v1/routes';
 
 const app: Application = express();
 
@@ -14,6 +15,12 @@ app.use(logger('dev'));
 
 app.use(express.urlencoded({ limit: 50 * 1024 * 1024 }));
 app.use(express.json({ limit: '50mb' }));
+
+///THE ROUTES
+app.use('/api/v1/auth',authRoutes)
+
+///THE ROUTES
+
 
 app.use('*/images', express.static('./public/uploads'));
 app.use('/public', express.static(path.join(__dirname, 'public')));
@@ -46,5 +53,8 @@ app.get('/data', async (_: any, res: any) => {
     res.status(500).send('Error fetching data');
   }
 });
+
+
+
 
 export { app };
