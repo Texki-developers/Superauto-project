@@ -5,9 +5,11 @@ import ModalWrapper from '../../components/modalWrapper';
 import AddServiceShop from './AddServiceShop';
 import { ColumnData, dummyData } from './serviceShop.data';
 import Table from '../../components/table/Table';
+import AssignVehicles from '../../components/AssignVehicles/AssignVehicles';
 
 const ServiceShop = () => {
   const [showServiceShopPopup, setShowServiceShopPopup] = useState(false);
+  const [showAssignVehiclePopup, setAssignVehiclePopup] = useState(true);
   const onAddItemClick = () => {
     setShowServiceShopPopup(true);
   };
@@ -21,6 +23,17 @@ const ServiceShop = () => {
           title='Add Service Shop'
         >
           <AddServiceShop />
+        </ModalWrapper>
+      )}
+
+{showAssignVehiclePopup && (
+        <ModalWrapper
+          onClose={() => {
+            setAssignVehiclePopup(false);
+          }}
+          title='Assign Vehicle'
+        >
+          <AssignVehicles setAssign={setAssignVehiclePopup}/>
         </ModalWrapper>
       )}
       <div className='table-wrapper'>

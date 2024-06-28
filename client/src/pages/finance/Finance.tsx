@@ -5,8 +5,8 @@ import ModalWrapper from '../../components/modalWrapper';
 import AddFinance from './AddFinance';
 import Table from '../../components/table/Table';
 import { ColumnData, dummyData } from './finance.data';
+import AssignVehicles from '../../components/AssignVehicles/AssignVehicles';
 
-import AssignVehicles from './AssignVehicles';
 
 const Finance = () => {
   const [showAddFinancerPopup, setShowAddFinancerPopup] = useState(false);
