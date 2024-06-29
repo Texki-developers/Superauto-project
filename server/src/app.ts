@@ -4,6 +4,7 @@ import path from 'path';
 import cors from 'cors';
 import { pool } from './config1/dbConfig';
 import { authRoutes } from './api/v1/routes';
+import Accounts from './models/accounts';
 
 const app: Application = express();
 
@@ -33,13 +34,8 @@ app.get('/', (_: Request, res: Response) => {
 
 app.get('/add', async (_: any, res: any) => {
   try {
-    const result = await pool.query(`CREATE TABLE accounts (
-      user_id SERIAL PRIMARY KEY,
-      username VARCHAR(50) UNIQUE NOT NULL,
-      email VARCHAR(100) UNIQUE NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-  )`);
-    res.status(201).json(result.rows[0]);
+    const result = await Accounts.create({name: "Muhsin", category: "ABC", contact_info: "8606113002", head: 1})
+    res.status(201).json(result);
   } catch (error) {
     res.status(500).send('Error inserting data');
   }
