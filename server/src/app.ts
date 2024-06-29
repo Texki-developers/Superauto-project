@@ -2,7 +2,7 @@ import express, { Application, Request, Response } from 'express';
 import logger from 'morgan';
 import path from 'path';
 import cors from 'cors';
-import { pool } from './config/dbConfig';
+import { pool } from './config1/dbConfig';
 import { authRoutes } from './api/v1/routes';
 
 const app: Application = express();

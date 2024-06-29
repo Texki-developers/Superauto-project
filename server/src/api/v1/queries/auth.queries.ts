@@ -1,4 +1,4 @@
-import { pool } from "../../../config/dbConfig";
+import { pool } from "../../../config1/dbConfig";
 
 class authQueries {
 
