@@ -11,7 +11,8 @@ class authService {
           const account_id = accountResult[0].account_id;
           await authQueries.createEmployee({ account_id, salary });
         }
-        return { message: 'Account created successfully' };
+
+        return resolve( { message: 'Account created successfully' })
       } catch (error) {
         throw new Error('Account creation failed');
       }
