@@ -4,6 +4,8 @@ import {
   Optional
 } from 'sequelize';
 import {db} from '../config/database'
+import PrimaryLedger from './primaryLedger';
+import Employee from './employee';
 
 
 // Define the interface for model attributes
@@ -31,7 +33,11 @@ Accounts.init({
   account_id:{
     type: DataTypes.INTEGER,
     autoIncrement: true,
-    primaryKey: true
+    primaryKey: true,
+    references:{
+      model:Employee,
+      key:'account_id'
+    }
   },
   name: {
     type: DataTypes.STRING
@@ -43,7 +49,12 @@ Accounts.init({
     type: DataTypes.STRING
   },
   head: {
-    type: DataTypes.INTEGER
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: PrimaryLedger, 
+      key: 'pl_id'
+    }
   }
 }, {
   sequelize: db,
