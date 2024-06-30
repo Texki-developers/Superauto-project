@@ -47,23 +47,34 @@ class InventoryService {
           registration_number: data.registration_number,
         };
 
-        const operations = [
-          async (transaction:any):Promise<void> => {
-            await inventoryQueries.addVehicle(insertInventoryData, { transaction });
-          },
-          async (transaction :any) => {
-            await accountsQueries.generateTransaction([
-              {
-                amount: data.purchase_rate,
-                credit_account: data.account_id,
-                debit_account: data.delivery_amount
-              }
-            ], { transaction });
-          }
-        ];
+        const purchaseResult = await accountsQueries.findAccount('Purchase');
+        const cashResult = await accountsQueries.findAccount('Cash');
+        if (purchaseResult && cashResult) {
+          const operations = [
+            async (transaction: any): Promise<void> => {
+              await inventoryQueries.addVehicle(insertInventoryData, { transaction });
+            },
+            async (transaction: any) => {
+              await accountsQueries.generateTransaction(
+                [
+                  {
+                    amount: data.purchase_rate,
+                    credit_account: data.account_id,
+                    debit_account: purchaseResult,
+                  },
+                  {
+                    amount: data.purchase_rate,
+                    credit_account: cashResult,
+                    debit_account: data.account_id,
+                  },
+                ],
+                { transaction }
+              );
+            },
+          ];
 
-        await performTransaction(operations);
-
+          await performTransaction(operations);
+        }
 
         return resolve({ message: messages.success.ACCOUNT_CREATED });
       } catch (error) {
