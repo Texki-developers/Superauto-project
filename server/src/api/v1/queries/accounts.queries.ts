@@ -33,11 +33,18 @@ class AccountQueries {
 
       async generateTransaction (data:ITransactionParams[],options?:any){
             try{
-              const TransactionResult  = await Transaction.bulkCreate(data)
+              const TransactionResult  = await Transaction.bulkCreate(data,options)
               return TransactionResult
             }catch(error){
               throw new Error('Failed To Generate Transaction')
             }
+      }
+
+
+      async findAccount (name:string) {
+        const result =  await Accounts.findOne({ where: { name:name } })
+
+        return result?.account_id
       }
       
 }
