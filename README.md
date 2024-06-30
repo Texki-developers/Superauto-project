@@ -27,3 +27,7 @@ make attach-client
 ```bash
 make attach-server
 ```
+#### Command for Seed the DB With initial Data
+```bash
+make seed-db
+```
