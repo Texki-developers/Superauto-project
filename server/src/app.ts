@@ -2,7 +2,7 @@ import express, { Application, Request, Response } from 'express';
 import logger from 'morgan';
 import cors from 'cors';
 import { pool } from './config1/dbConfig';
-import { accountRoutes } from './api/v1/routes';
+import { accountRoutes, inventoryRoutes } from './api/v1/routes';
 import Accounts from './models/accounts';
 import { E_ACCOUNT_CATEGORIES } from './utils/constants/constants';
 import fileUpload from 'express-fileupload';
@@ -21,6 +21,7 @@ app.use(express.json({ limit: '50mb' }));
 
 ///THE ROUTES
 app.use('/api/v1/accounts',accountRoutes)
+app.use('/api/v1/inventory',inventoryRoutes)
 
 ///THE ROUTES
 

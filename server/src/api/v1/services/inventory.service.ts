@@ -1,6 +1,7 @@
 import { IfileReturn } from '../../../types/base.type';
-import { IInventoryAttributes } from '../../../types/db.type';
-import { IInventoryBody } from '../../../types/request.type';
+import { IInventoryAttributes, ITransactionParams } from '../../../types/db.type';
+import { IassignVehicle, IInventoryBody } from '../../../types/request.type';
+import { E_PRIMARY_LEDGERS } from '../../../utils/constants/constants';
 import messages from '../../../utils/constants/messages';
 import { uploadFile } from '../../../utils/fileUpload/fileUpload';
 import { performTransaction } from '../../../utils/PerformTransaction/PerformTransaction';
@@ -82,6 +83,111 @@ class InventoryService {
       }
     });
   };
+
+  assignVehiclesToFinance(body: IassignVehicle[]) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const transactions: ITransactionParams[] = [];
+
+        await Promise.all(
+          body.map(async (items) => {
+            const [Vehicle, customer, cash, financer] = await Promise.all([
+              inventoryQueries.findVehicle(items.regNum),
+              accountsQueries.findAccount('customer'),
+              accountsQueries.findAccount('cash'),
+              accountsQueries.findAccount(E_PRIMARY_LEDGERS.FINANCER),
+            ]);
+
+            if (Vehicle && customer && financer) {
+              transactions.push({
+                amount: items.amount,
+                credit_account: customer,
+                debit_account: financer,
+              });
+            } else if (Vehicle && financer && cash) {
+              transactions.push(
+                {
+                  amount: items.amount,
+                  credit_account: cash,
+                  debit_account: financer,
+                }
+              );
+            }
+          })
+        );
+
+        await accountsQueries.generateTransaction(transactions);
+        resolve({
+          message: 'Vehicle assigned to Financer',
+        });
+      } catch (error) {
+        reject(new Error('Failed to generate transaction when assign vehicle to financer'));
+      }
+    });
+  }
+
+  assignVehiclesToService(body: IassignVehicle[]) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const transactions: ITransactionParams[] = [];
+        await Promise.all(
+          body.map(async (items) => {
+            const [serviceShop, directExpense] = await Promise.all([
+              accountsQueries.findAccount(E_PRIMARY_LEDGERS.SERVICE_SHOP),
+              accountsQueries.findAccount('directExpense'),
+            ]);
+
+            if (serviceShop && directExpense) {
+              transactions.push({
+                amount: items.amount,
+                debit_account: directExpense,
+                credit_account: serviceShop,
+              });
+            }
+          })
+        );
+
+        await accountsQueries.generateTransaction(transactions);
+        resolve({
+          message: 'Vehicle assigned to Service Shop',
+        });
+      } catch (error) {
+        reject(new Error('Failed to generate transaction when assign vehicle to Service'));
+      }
+    });
+  }
+
+
+  assignVehiclesToDelivery(body: IassignVehicle[]) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const transactions: ITransactionParams[] = [];
+        await Promise.all(
+          body.map(async (items) => {
+            const [serviceShop, directExpense] = await Promise.all([
+              accountsQueries.findAccount(E_PRIMARY_LEDGERS.DELIVERY_SERVICE),
+              accountsQueries.findAccount('directExpense'),
+            ]);
+
+            if (serviceShop && directExpense) {
+              transactions.push({
+                amount: items.amount,
+                debit_account: directExpense,
+                credit_account: serviceShop,
+              });
+            }
+          })
+        );
+
+        await accountsQueries.generateTransaction(transactions);
+        resolve({
+          message: 'Vehicle assigned to Service Shop',
+        });
+      } catch (error) {
+        reject(new Error('Failed to generate transaction when assign vehicle to Service'));
+      }
+    });
+  }
 }
 
 export default new InventoryService();

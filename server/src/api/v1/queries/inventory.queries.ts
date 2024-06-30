@@ -1,7 +1,8 @@
 import BrandModel from '../../../models/brand';
 import FileStore from '../../../models/documents';
+import DsTransaction from '../../../models/dsTransactions';
 import Inventory from '../../../models/inventory';
-import { IInventoryAttributes } from '../../../types/db.type';
+import { IInventoryAttributes, ITransactionParams } from '../../../types/db.type';
 import { IInventoryBody } from '../../../types/request.type';
 
 class InventoryQueries {
@@ -19,6 +20,22 @@ class InventoryQueries {
       model,
     });
   }
+
+
+  async findVehicle (regNum:string){
+    return await Inventory.findOne({where:{
+      registration_number:regNum
+    }})
+  }
+
+  async generateFinanceTransaction (data:ITransactionParams[],options?:any){
+    try{
+      const TransactionResult  = await DsTransaction.bulkCreate(data,options)
+      return TransactionResult
+    }catch(error){
+      throw new Error('Failed To Generate Transaction')
+    }
+}
 }
 
 export default new InventoryQueries();

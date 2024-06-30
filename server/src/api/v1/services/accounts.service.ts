@@ -8,6 +8,7 @@ class AccountService {
     return new Promise(async (resolve, reject) => {
       const { category, salary } = data;
       try {
+
         const primaryLedger = E_PRIMARY_LEDGERS[category];
         const headResult = await authQueries.getHead(primaryLedger);
         if(headResult?.pl_id){
