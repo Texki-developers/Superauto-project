@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import { v4 as uuidv4 } from 'uuid';
 import DashboardImage from '../assets/sidebar-icons/dashboardicon.svg';
 import VehiclesImage from '../assets/sidebar-icons/vehiclesicon.svg';
@@ -9,10 +11,16 @@ import OtherExpensesImage from '../assets/sidebar-icons/otherexpensesicon.svg';
 import DeliveryImage from '../assets/sidebar-icons/deliveryicon.svg';
 import AllReportsImage from '../assets/sidebar-icons/allreportsicon.svg';
 import { ISidebarItem } from '../types/sidebar/sidebar';
-import Dashboard from '../pages/dashboard/dashboard';
-import Vehicles from '../pages/vehicles/vehicles';
-import Finance from '../pages/finance/finance';
-import ServiceShop from '../pages/serviceShop/serviceShop';
+import Dashboard from '../pages/dashboard/Dashboard';
+import Vehicles from '../pages/vehicles/Vehicles';
+import Finance from '../pages/finance/Finance';
+import ServiceShop from '../pages/serviceShop/ServiceShop';
+import Customers from '../pages/customers/Customers';
+import Employees from '../pages/employees/Employees';
+import OtherExpenses from '../pages/otherExpenses/OtherExpenses';
+import DeliveryServices from '../pages/deliveryServices/DeliveryServices';
+import DailyBook from '../pages/reports/dailyBook/DailyBook';
+import Ledger from '../pages/reports/ledger/Ledger';
 
 export const sidebarData: ISidebarItem[] = [
   {
@@ -53,7 +61,7 @@ export const sidebarData: ISidebarItem[] = [
     icon: CustomersImage,
     id: uuidv4(),
     isSubMenu: false,
-    element: <Dashboard />,
+    element: <Customers />,
   },
   {
     name: 'Employees',
@@ -61,7 +69,7 @@ export const sidebarData: ISidebarItem[] = [
     icon: EmployeesImage,
     id: uuidv4(),
     isSubMenu: false,
-    element: <Dashboard />,
+    element: <Employees />,
   },
   {
     name: 'Other Expenses',
@@ -69,7 +77,7 @@ export const sidebarData: ISidebarItem[] = [
     icon: OtherExpensesImage,
     id: uuidv4(),
     isSubMenu: false,
-    element: <Dashboard />,
+    element: <OtherExpenses />,
   },
   {
     name: 'Delivery Services',
@@ -77,15 +85,30 @@ export const sidebarData: ISidebarItem[] = [
     icon: DeliveryImage,
     id: uuidv4(),
     isSubMenu: false,
-    element: <Dashboard />,
+    element: <DeliveryServices />,
   },
   {
     name: 'All Reports',
     url: '/all-reports',
     icon: AllReportsImage,
     id: uuidv4(),
-    isSubMenu: false,
-    element: <Dashboard />,
+    isSubMenu: true,
+    children: [
+      {
+        name: 'Daily Book',
+        url: '/all-reports/daily-book',
+        id: uuidv4() + 2,
+        isSubMenu: false,
+        element: <DailyBook key='dailybook' />,
+      },
+      {
+        name: 'Report 2',
+        url: '/all-reports/report2',
+        id: uuidv4() + 3,
+        isSubMenu: false,
+        element: <Ledger />,
+      }
+    ]
   },
 ];
 

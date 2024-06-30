@@ -4,7 +4,8 @@ down:
 	docker compose down
 clean-docker:
 	$(MAKE) down
-	docker images -a --format "{{.ID}}" | xargs docker rmi -f
+	docker images -a --format "{{.ID}}" | xargs docker rmi -f 
+	docker volume ls | awk '{print $2}' | xargs docker volume rm -f
 attach-client:
 	docker attach superauto-client-1
 attach-server:
@@ -13,3 +14,6 @@ setup-project:
 	chmod +x setup.sh
 	./setup.sh
 	$(MAKE) up
+seed-db:
+	chmod +x seed_db_data.sh
+	bash seed_db_data.sh

@@ -7,11 +7,13 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - pgdata:/var/lib/postgres
+      - pgdata:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: postgresdb
       POSTGRES_PASSWORD: root
       POSTGRES_DB: superauto_db
+    networks:
+      - superauto_network
   server:
     depends_on:
       - superauto_db
@@ -20,8 +22,10 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - ./server:/apps
-      - server_node_modules:/apps/node_modules
+      - ./server:/apps:delegated
+      - /apps/node_modules
+    networks:
+      - superauto_network
     ports:
       - 8080:8080
   client:
@@ -32,11 +36,18 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - ./client:/apps
-      - client_node_modules:/apps/node_modules
+      - ./client:/apps:delegated
+      - /apps/node_modules
     ports:
       - 5173:5173
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - 8081:8080
+    networks:
+      - superauto_network
 volumes:
   pgdata:
-  client_node_modules:
-  server_node_modules:
+networks:
+  superauto_network:

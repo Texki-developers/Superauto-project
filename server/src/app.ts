@@ -1,8 +1,11 @@
 import express, { Application, Request, Response } from 'express';
 import logger from 'morgan';
-import path from 'path';
 import cors from 'cors';
-import { pool } from './config/dbConfig';
+import { pool } from './config1/dbConfig';
+import { accountRoutes } from './api/v1/routes';
+import Accounts from './models/accounts';
+import { E_ACCOUNT_CATEGORIES } from './utils/constants/constants';
+import fileUpload from 'express-fileupload';
 
 const app: Application = express();
 
@@ -12,11 +15,17 @@ require('dotenv').config();
 // Middleware
 app.use(logger('dev'));
 
+app.use(fileUpload({ limits: { fileSize: 50 * 1024 * 1024 } }));
 app.use(express.urlencoded({ limit: 50 * 1024 * 1024 }));
 app.use(express.json({ limit: '50mb' }));
 
+///THE ROUTES
+app.use('/api/v1/accounts',accountRoutes)
+
+///THE ROUTES
+
 app.use('*/images', express.static('./public/uploads'));
-app.use('/public', express.static(path.join(__dirname, 'public')));
+
 
 app.use(cors());
 
@@ -26,11 +35,8 @@ app.get('/', (_: Request, res: Response) => {
 
 app.get('/add', async (_: any, res: any) => {
   try {
-    const result = await pool.query('INSERT INTO your_table (name, value) VALUES ($1, $2) RETURNING *', [
-      'manshad',
-      'test value',
-    ]);
-    res.status(201).json(result.rows[0]);
+    const result = await Accounts.create({name: "Muhsin", category: E_ACCOUNT_CATEGORIES.EMPLOYEE, contact_info: "8606113002", head: 1})
+    res.status(201).json(result);
   } catch (error) {
     res.status(500).send('Error inserting data');
   }
@@ -46,5 +52,8 @@ app.get('/data', async (_: any, res: any) => {
     res.status(500).send('Error fetching data');
   }
 });
+
+
+
 
 export { app };
