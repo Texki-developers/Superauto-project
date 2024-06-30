@@ -15,6 +15,7 @@ export default class AuthApiService {
       console.log(response);
     } catch (error) {
       console.log(error);
+      throw new Error()
     }
   }
 }

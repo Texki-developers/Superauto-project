@@ -7,8 +7,9 @@ import { IBreadCrumb } from '../../types/breadCrumb/breadCrumb';
 
 interface IBreadCrumbData {
   breadCrumbData?: IBreadCrumb[];
+  title?: string;
 }
-const Header = ({ breadCrumbData }: IBreadCrumbData) => {
+const Header = ({ breadCrumbData, title }: IBreadCrumbData) => {
   const location = useLocation();
   const key = useMemo(
     () =>
@@ -23,7 +24,7 @@ const Header = ({ breadCrumbData }: IBreadCrumbData) => {
     <header>
       <div className='flex justify-between'>
         <div className='grid gap-1'>
-          <h1 className='main-heading text-md'>{headerData?.title}</h1>
+          <h1 className='main-heading text-md'>{title ?? headerData?.title}</h1>
           {(breadCrumbData ?? headerData?.breadCrumb?.length > 1) && (
             <Breadcrumb data={breadCrumbData || headerData?.breadCrumb} />
           )}

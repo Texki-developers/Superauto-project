@@ -22,7 +22,11 @@ const Breadcrumb = ({ data }: IBreadCrumbProps) => {
               {index !== data?.length - 1 && <ArrowIcon />}
             </>
           ) : (
-            <span className='text-sm text-gray-400'>{item?.name}</span>
+            <>
+              <span className='text-sm text-gray-400'>{item?.name}</span>
+              {index !== data?.length - 1 && <ArrowIcon />}
+
+            </>
           )}
         </React.Fragment>
       ))}
