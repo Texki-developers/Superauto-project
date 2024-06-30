@@ -14,7 +14,7 @@ export const connectDB = async () => {
         await db.authenticate();
         console.log('DB Connection has been established successfully');
 
-        await db.sync({force: true})
+        await db.sync()
         console.log('All models were synchronized successfully.');
     }catch(error){
         console.error('Unable to connect to the database: ', error)
