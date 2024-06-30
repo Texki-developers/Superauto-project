@@ -1,12 +1,10 @@
-import {PostgresDialect} from '@sequelize/postgres'
-
 export default {
   "development": {
     "username": "postgresdb",
     "password": "root",
     "database": "superauto_db",
     "host": "superauto_db",
-    "dialect": PostgresDialect
+    "dialect": 'postgres'
   },
   "test": {
     "username": "root",
