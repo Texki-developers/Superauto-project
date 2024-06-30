@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useDropzone } from 'react-dropzone';
 import UploadIcon from '../../../assets/icons/upload-icon';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import DoneIcon from '../../../assets/icons/Done.icon';
 
 interface iDragAndDropProps {
@@ -14,9 +14,11 @@ interface iDragAndDropProps {
 }
 
 const DragAndDrop = (props: iDragAndDropProps) => {
+  const [fileName, setFileName] = useState<string>('')
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onDrop = useCallback((acceptedFiles: any) => {
     props.setValue(props?.name, acceptedFiles?.[0]?.name);
+    setFileName(acceptedFiles?.[0]?.name)
     console.log(acceptedFiles)
   }, [props])
 
@@ -38,7 +40,7 @@ const DragAndDrop = (props: iDragAndDropProps) => {
         <input {...getInputProps()} name={props.name} />
         {!props?.watchValue ? <UploadIcon /> :
           <DoneIcon />}
-        <p className='text-center text-[.7rem]'>{!props?.watchValue ? (props?.placeholder ?? 'Click here or drop files to upload') : 'Successfully Uploaded'}</p>
+        <p className='text-center text-[.7rem]'>{!props?.watchValue ? (props?.placeholder ?? 'Click here or drop files to upload') : fileName}</p>
       </div>
     </div>
   );

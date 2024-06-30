@@ -5,6 +5,7 @@ import './style.scss';
 interface ITableProps {
   columnData: ITableColumn[];
   data: { [key: string]: any }[];
+  hideFooter?: boolean
 }
 
 const Table = (props: ITableProps) => {
@@ -38,7 +39,7 @@ const Table = (props: ITableProps) => {
           })}
         </tbody>
       </table>
-      <footer className='flex justify-between border-t border-gray-300 p-3 align-middle'>
+      {!props?.hideFooter && <footer className='flex gap-5 border-t border-gray-300 p-3 align-middle'>
         <div className='perpage flex items-center gap-2'>
           <p className='text-[12px] leading-none'>Per Page</p>
           <select className='rounded border border-black-200 bg-gray-200 p-1 text-[12px]'>
@@ -54,7 +55,7 @@ const Table = (props: ITableProps) => {
           <span className='font-bold leading-none tracking-wide'>...</span>
           <span className='pagination-box'>8</span>
         </div>
-      </footer>
+      </footer>}
     </div>
   );
 };

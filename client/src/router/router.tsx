@@ -5,12 +5,23 @@ import { ISidebarItem } from '../types/sidebar/sidebar';
 import sidebarData from '../config/sidebar.data';
 
 const generateRoutes = (sidebarItems: ISidebarItem[]) => {
-  return sidebarItems.map((item) => ({
-    path: item.url,
-    element: item?.element,
-  }));
+  return sidebarItems.map((item) => {
+    const data: any = {
+      path: item.url,
+      element: item?.element,
+    }
+    if (item.isSubMenu && item?.children) {
+      data.children = item.children.map((item) => (
+        {
+          path: item?.url,
+          element: item?.element,
+        }
+      ))
+    }
+    return data
+  });
 };
-
+console.log(generateRoutes(sidebarData))
 export const router = createBrowserRouter([
   {
     path: '/',
