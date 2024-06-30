@@ -1,10 +1,10 @@
 import { pool } from "../../../config1/dbConfig";
+import Accounts from "../../../models/accounts";
 import PrimaryLedger from "../../../models/primaryLedger";
+import Transaction from "../../../models/transaction";
+import { ITransactionParams } from "../../../types/db.type";
 
-class authQueries {
-
-
-
+class AccountQueries {
     async createAccount(body: { name: string, contact_info: string, category: string, head: number }) {
         const query = `INSERT INTO account (name, contact_info, category, head) VALUES ($1, $2, $3, $4) RETURNING *`;
         const values = [body.name, body.contact_info, body.category, body.head];
@@ -30,7 +30,16 @@ class authQueries {
           console.error('Error fetching ledger:', error);
         }
       }
+
+      async generateTransaction (data:ITransactionParams[]){
+            try{
+              const TransactionResult  = await Transaction.bulkCreate(data)
+              return TransactionResult
+            }catch(error){
+              throw new Error('Failed To Generate Transaction')
+            }
+      }
       
 }
 
-export default new authQueries();
+export default new AccountQueries();

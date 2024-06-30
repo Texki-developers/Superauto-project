@@ -1,22 +1,21 @@
 import { Request, Response } from 'express';
 import { responseHandler } from '../../../utils/responseHandler/responseHandler';
-import authService from '../services/auth.service';
-import { IAuthServiceParams } from '../../../types/auth.type';
+import AccountService from '../services/accounts.service';
+import { IAccountBody } from '../../../types/request.type';
 
-class authController {
+class AccountController {
   createAccount = (req: Request, res: Response) => {
     const { body } = req;
     
-    const data:IAuthServiceParams = {
+    const data:IAccountBody = {
       name: body.name,
       category: body.category,
       salary: body?.salary,
       contact_info: body.name,
-      head:''
     };
 
-    authService
-      .loginService(data)
+    AccountService
+      .createAccount(data)
       .then((data: any) => {
         responseHandler(res, 'CREATED', { message: data.message });
       })
@@ -24,6 +23,8 @@ class authController {
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
       });
   };
+
+
 }
 
-export default new authController();
+export default new AccountController();

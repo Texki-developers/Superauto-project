@@ -1,7 +1,7 @@
-import authRoutes from './auth.routes'
+import accountRoutes from './accounts.routes'
 
 
 
 export{ 
-    authRoutes
+    accountRoutes
 }

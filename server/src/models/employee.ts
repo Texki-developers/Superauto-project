@@ -4,6 +4,7 @@ import {
     Optional
   } from 'sequelize';
   import { db } from '../config/database';
+import Accounts from './accounts';
   
   interface EmployeeAttributes {
     employee_id: number;
@@ -27,11 +28,16 @@ import {
     employee_id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
-      primaryKey: true
+      primaryKey: true,
+
     },
     account_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references:{
+        model:Accounts,
+        key:'account_id'
+      }
     },
     salary: {
       type: DataTypes.INTEGER,

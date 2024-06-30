@@ -5,21 +5,12 @@ import {
 } from 'sequelize';
 import {db} from '../config/database'
 import PrimaryLedger from './primaryLedger';
-import Employee from './employee';
+import { IAccountAttributes } from '../types/db.type';
 
 
-// Define the interface for model attributes
-interface AccountAttributes {
-  account_id: number;
-  name: string;
-  contact_info: string;
-  category: string;
-  head: number;
-}
+interface AccountCreationAttributes extends Optional<IAccountAttributes, 'account_id'> {}
 
-interface AccountCreationAttributes extends Optional<AccountAttributes, 'account_id'> {}
-
-class Accounts extends Model<AccountAttributes, AccountCreationAttributes> {
+class Accounts extends Model<IAccountAttributes, AccountCreationAttributes> {
   public account_id!: number;
   public name!: string;
   public contact_info!: string;
@@ -34,10 +25,7 @@ Accounts.init({
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true,
-    references:{
-      model:Employee,
-      key:'account_id'
-    }
+    
   },
   name: {
     type: DataTypes.STRING

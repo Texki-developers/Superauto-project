@@ -1,112 +1,114 @@
-import {
-    DataTypes,
-    Model,
-    Optional
-  } from 'sequelize';
-  import { db } from '../config/database';
-  
-  // Define the interface for model attributes
-  interface InventoryAttributes {
-    inventory_id: number;
-    brand_model_id: number;
-    year_of_manufacture: number;
-    ownership_name: string;
-    purchase_rate: number;
-    insurance_date: string | null;
-    sale_status: boolean;
-    rc_book: string | null;
-    insurance_doc: string | null;
-    proof_doc: string | null;
-    date_of_purchase: string | null;
-    sold_price: number | null;
-    createdAt: Date;
-    updatedAt: Date;
-  }
-  
-  interface InventoryCreationAttributes extends Optional<InventoryAttributes, 'inventory_id' | 'insurance_date' | 'rc_book' | 'insurance_doc' | 'proof_doc' | 'date_of_purchase' | 'sold_price'> {}
-  
-  class Inventory extends Model<InventoryAttributes, InventoryCreationAttributes> implements InventoryAttributes {
-    public inventory_id!: number;
-    public brand_model_id!: number;
-    public year_of_manufacture!: number;
-    public ownership_name!: string;
-    public purchase_rate!: number;
-    public insurance_date!: string | null;
-    public sale_status!: boolean;
-    public rc_book!: string | null;
-    public insurance_doc!: string | null;
-    public proof_doc!: string | null;
-    public date_of_purchase!: string | null;
-    public sold_price!: number | null;
-    public readonly createdAt!: Date;
-    public readonly updatedAt!: Date;
-  }
-  
-  Inventory.init({
+import { DataTypes, Model, Optional } from 'sequelize';
+import { db } from '../config/database';
+import { IInventoryAttributes } from '../types/db.type';
+import Accounts from './accounts';
+
+// Define the interface for model attributes
+
+interface InventoryCreationAttributes
+  extends Optional<
+    IInventoryAttributes,
+    'inventory_id' | 'insurance_date' | 'rc_book' | 'insurance_doc' | 'proof_doc' | 'date_of_purchase' | 'sold_price'
+  > {}
+
+class Inventory extends Model<IInventoryAttributes, InventoryCreationAttributes> implements IInventoryAttributes {
+  public inventory_id!: number;
+  public account_id?: number | undefined;
+  public brand_model_id!: number;
+  public year_of_manufacture!: number;
+  public registration_number!: string;
+  public ownership_name!: string;
+  public purchase_rate!: number;
+  public insurance_date!: string | null;
+  public sale_status!: boolean;
+  public rc_book!: string | null;
+  public insurance_doc!: string | null;
+  public proof_doc!: string | null;
+  public date_of_purchase!: string | null;
+  public sold_price!: number | null;
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+}
+
+Inventory.init(
+  {
     inventory_id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
-      primaryKey: true
+      primaryKey: true,
+    },
+    account_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Accounts,
+        key: 'account_id',
+      },
     },
     brand_model_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
     },
     year_of_manufacture: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
     },
     ownership_name: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     purchase_rate: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
     },
     insurance_date: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
+    },
+    registration_number: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     sale_status: {
       type: DataTypes.BOOLEAN,
-      allowNull: false
+      allowNull: false,
     },
     rc_book: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
     insurance_doc: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
     proof_doc: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
     date_of_purchase: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
     sold_price: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: true,
     },
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW
+      defaultValue: DataTypes.NOW,
     },
     updatedAt: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW
-    }
-  }, {
+      defaultValue: DataTypes.NOW,
+    },
+  },
+  {
     sequelize: db,
     tableName: 'inventory',
-    timestamps: true
-  });
-  
-  export default Inventory;
-  
+    timestamps: true,
+  }
+);
+
+export default Inventory;

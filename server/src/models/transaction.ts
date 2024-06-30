@@ -7,14 +7,14 @@ import {
   
   // Define the interface for model attributes
   interface TransactionAttributes {
-    transaction_id: number;
-    description: string;
+    transaction_id?: number;
+    description?: string;
     amount: number;
     credit_account: number;
     debit_account: number;
-    voucher_id: number;
-    createdAt: Date;
-    updatedAt: Date;
+    voucher_id?: number;
+    createdAt?: Date;
+    updatedAt?: Date;
   }
   
   interface TransactionCreationAttributes extends Optional<TransactionAttributes, 'transaction_id'> {}
