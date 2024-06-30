@@ -1,33 +1,47 @@
+import { Control, FieldErrors, UseFormRegister } from 'react-hook-form';
 import InputBox from '../../components/formComponents/inputBox/InputBox';
 import SaveCancelButtons from '../../components/save-cancel-buttons/SaveCancelButtons';
+import { IDeliveryService } from '../../types/deliveryServices/deliveryServices';
 
-const AddDeliveryServices = () => {
+interface IProps {
+  onCancelClick: () => void;
+  register: UseFormRegister<IDeliveryService>;
+  control: Control<IDeliveryService>;
+  errors: FieldErrors<IDeliveryService>;
+  reset: (values?: IDeliveryService) => void;
+}
+
+const AddDeliveryServices = ({ onCancelClick, reset, register, errors }: IProps) => {
+
   return (
     <div className='grid gap-3'>
       <div className="grid grid-cols-2 gap-2">
         <InputBox
           label='Name'
           required
-          onChange={() => { }}
+          register={register}
           placeholder='John Doe'
+          error={errors}
+          name='name'
         />
         <InputBox
-          required
           label='Phone Number'
-          onChange={() => { }}
-          placeholder='Mobile'
-        />
-        <InputBox
           required
-          type='number'
-          label='Salary (Per Month)'
-          onChange={() => { }}
-          placeholder='Salary'
+          register={register}
+          placeholder='Mobile'
+          error={errors}
+          name='phoneNumber'
         />
       </div>
-      <SaveCancelButtons hideReset />
+      <SaveCancelButtons
+        onCancelClick={onCancelClick}
+        type='submit'
+        onResetClick={() => reset()}
+      />
     </div>
   );
 };
 
-export default AddDeliveryServices;
+
+
+export default AddDeliveryServices
