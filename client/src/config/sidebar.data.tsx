@@ -19,6 +19,8 @@ import Customers from '../pages/customers/Customers';
 import Employees from '../pages/employees/Employees';
 import OtherExpenses from '../pages/otherExpenses/OtherExpenses';
 import DeliveryServices from '../pages/deliveryServices/DeliveryServices';
+import DailyBook from '../pages/reports/dailyBook/DailyBook';
+import Ledger from '../pages/reports/ledger/Ledger';
 
 export const sidebarData: ISidebarItem[] = [
   {
@@ -91,22 +93,20 @@ export const sidebarData: ISidebarItem[] = [
     icon: AllReportsImage,
     id: uuidv4(),
     isSubMenu: true,
-    element: <Dashboard />,
     children: [
       {
-        name: 'Report 1',
-        url: '/report1',
-        icon: EmployeesImage,
-        id: uuidv4(),
+        name: 'Daily Book',
+        url: '/all-reports/daily-book',
+        id: uuidv4() + 2,
         isSubMenu: false,
-        element: <Employees />,
+        element: <DailyBook key='dailybook' />,
       },
       {
         name: 'Report 2',
-        url: '/report2',
-        id: uuidv4(),
+        url: '/all-reports/report2',
+        id: uuidv4() + 3,
         isSubMenu: false,
-        element: <OtherExpenses />,
+        element: <Ledger />,
       }
     ]
   },

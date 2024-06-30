@@ -1,3 +1,4 @@
+import Addbutton from '../../components/addButton/Addbutton';
 import Sidebar from '../../components/sidebar/Sidebar';
 import { Outlet } from 'react-router-dom';
 
@@ -7,6 +8,7 @@ const DashboardLayout = () => {
       <Sidebar />
       <div className='p-4 h-screen overflow-auto'>
         <Outlet />
+        <Addbutton />
       </div>
     </main>
   );
