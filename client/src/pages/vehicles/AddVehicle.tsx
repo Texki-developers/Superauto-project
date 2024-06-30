@@ -36,7 +36,7 @@ const AddVehicle = ({ setShowAddPage }: IProps) => {
   };
   const breadCrumbData = [
     { name: 'Dashboard', link: '/' },
-    { name: 'Vehicles', link: '/vehicles' },
+    { name: 'Vehicles' },
     { name: 'Add Vehicles' },
   ];
   const onSubmit = (data: IVehicleAddFormValues) => {

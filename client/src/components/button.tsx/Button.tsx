@@ -55,7 +55,7 @@ const Button: React.FC<ButtonProps> = ({
       {...otherProps}
     >
       {icon && iconPos === 'left' && <span style={iconStyle}>{icon}</span>}
-      <span>{text}</span>
+      <span className='whitespace-nowrap'>{text}</span>
       {icon && iconPos === 'right' && <span style={iconStyle}>{icon}</span>}
     </button>
   );

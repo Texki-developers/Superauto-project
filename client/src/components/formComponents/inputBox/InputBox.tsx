@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface IInputProps {
-  label: string;
+  label?: string;
   required?: boolean;
   placeholder?: string;
   value?: string | number;
@@ -14,10 +14,10 @@ interface IInputProps {
 const InputBox = (props: IInputProps) => {
   return (
     <div className='grid gap-1 w-full relative'>
-      <label className='input-label'>
+      {props?.label && <label className='input-label'>
         {props?.label}
         {props?.required && <span>*</span>}{' '}
-      </label>
+      </label>}
       <input
         placeholder={props?.placeholder}
         className='input-normal w-full '

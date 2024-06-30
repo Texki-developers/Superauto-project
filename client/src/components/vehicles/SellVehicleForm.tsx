@@ -57,6 +57,7 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
                   placeholder='Value'
                   type='number'
                   register={register}
+                  isDisabled
                   error={errors}
                   required
                 />
@@ -83,7 +84,7 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
 
               <div className="flex gap-2">
                 <h1 className='primary-heading'>Finance Details</h1>
-                <CheckBox label="" />
+                <CheckBox register={register} error={errors} name='Finance' label="" />
               </div>
               <div className="grid grid-cols-[2fr_1fr]">
                 <div className='grid grid-cols-2 gap-4'>

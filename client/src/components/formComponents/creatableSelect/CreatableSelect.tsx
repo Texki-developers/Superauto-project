@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Creatable from 'react-select/creatable'
 import { Controller } from "react-hook-form";
+import { SetStateAction } from 'react';
 interface IOption {
     value: string;
     label: string;
@@ -13,6 +14,7 @@ interface ISelectInputProps {
     options: IOption[];
     defaultValue?: string;
     hideLabel?: boolean;
+    setIsNew?: React.Dispatch<SetStateAction<boolean>>;
     name?: string;
     isDisabled?: boolean;
     isSearchable?: boolean;
@@ -45,6 +47,14 @@ export default function CreateSelectInput(props: ISelectInputProps) {
                             // @ts-expect-error
                             value={props?.value}
                             {...field}
+                            onChange={(value) => {
+                                field.onChange(value)
+                                if (value?.__isNew__) {
+                                    props?.setIsNew && props.setIsNew(true)
+                                } else {
+                                    props?.setIsNew && props.setIsNew(false)
+                                }
+                            }}
                             options={props?.options}
                             aria-invalid={props?.error?.[props?.name ?? ''] ? "true" : "false"}
                         />
