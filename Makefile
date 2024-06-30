@@ -14,3 +14,6 @@ setup-project:
 	chmod +x setup.sh
 	./setup.sh
 	$(MAKE) up
+seed-db:
+	chmod +x seed_db_data.sh
+	bash seed_db_data.sh

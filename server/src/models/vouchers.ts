@@ -10,6 +10,9 @@ import {
     voucher_id: number;
     voucher_name: string;
     last_invoice_number: number;
+    prefix: string;
+    createdAt?: Date;
+    updateAt?: Date;
   }
   
   interface VoucherCreationAttributes extends Optional<VoucherAttributes, 'voucher_id'> {}
@@ -18,6 +21,9 @@ import {
     public voucher_id!: number;
     public voucher_name!: string;
     public last_invoice_number!: number;
+    public prefix!: string;
+    public createdAt!: Date;
+    public updateAt!: Date;
   }
   
   Voucher.init({
@@ -30,6 +36,10 @@ import {
       type: DataTypes.STRING,
       allowNull: false
     },
+    prefix: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     last_invoice_number: {
       type: DataTypes.INTEGER,
       allowNull: false
@@ -37,7 +47,7 @@ import {
   }, {
     sequelize: db,
     tableName: 'vouchers',
-    timestamps: false
+    timestamps: true
   });
   
   export default Voucher;

@@ -22,8 +22,8 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - ./server:/apps
-      - server_node_modules:/apps/node_modules
+      - ./server:/apps:delegated
+      - /apps/node_modules
     networks:
       - superauto_network
     ports:
@@ -36,8 +36,8 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - ./client:/apps
-      - client_node_modules:/apps/node_modules
+      - ./client:/apps:delegated
+      - /apps/node_modules
     ports:
       - 5173:5173
   adminer:
@@ -49,7 +49,5 @@ services:
       - superauto_network
 volumes:
   pgdata:
-  client_node_modules:
-  server_node_modules:
 networks:
   superauto_network:
