@@ -3,6 +3,7 @@ import { IInventoryAttributes } from '../../../types/db.type';
 import { IInventoryBody } from '../../../types/request.type';
 import messages from '../../../utils/constants/messages';
 import { uploadFile } from '../../../utils/fileUpload/fileUpload';
+import { performTransaction } from '../../../utils/PerformTransaction/PerformTransaction';
 import accountsQueries from '../queries/accounts.queries';
 import inventoryQueries from '../queries/inventory.queries';
 
@@ -46,14 +47,22 @@ class InventoryService {
           registration_number: data.registration_number,
         };
 
-        await inventoryQueries.addVehicle(insertInventoryData);
-        await accountsQueries.generateTransaction([
-          {
-            amount:data.purchase_rate,
-            credit_account:data.account_id,
-            debit_account: data.account_id
+        const operations = [
+          async (transaction:any):Promise<void> => {
+            await inventoryQueries.addVehicle(insertInventoryData, { transaction });
+          },
+          async (transaction :any) => {
+            await accountsQueries.generateTransaction([
+              {
+                amount: data.purchase_rate,
+                credit_account: data.account_id,
+                debit_account: data.delivery_amount
+              }
+            ], { transaction });
           }
-        ])
+        ];
+
+        await performTransaction(operations);
 
 
         return resolve({ message: messages.success.ACCOUNT_CREATED });

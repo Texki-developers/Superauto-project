@@ -31,7 +31,7 @@ class AccountQueries {
         }
       }
 
-      async generateTransaction (data:ITransactionParams[]){
+      async generateTransaction (data:ITransactionParams[],options?:any){
             try{
               const TransactionResult  = await Transaction.bulkCreate(data)
               return TransactionResult

@@ -5,8 +5,8 @@ import { IInventoryAttributes } from '../../../types/db.type';
 import { IInventoryBody } from '../../../types/request.type';
 
 class InventoryQueries {
-  async addVehicle(data: IInventoryAttributes) {
-    return await Inventory.create(data);
+  async addVehicle(data: IInventoryAttributes,options?:any) {
+    return await Inventory.create(data,options);
   }
 
   async uploadManyDocs(docs: { location: string; name: string }[]) {
