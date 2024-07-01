@@ -18,7 +18,7 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true 
   },
   "include": ["src", "src/components/receiptForm.tsx copy/ReceiptForm.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }]

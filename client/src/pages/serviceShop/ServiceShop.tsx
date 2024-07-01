@@ -8,6 +8,8 @@ import Table from '../../components/table/Table';
 import AssignVehicles from '../../components/AssignVehicles/AssignVehicles';
 import { useForm } from 'react-hook-form';
 import { IServiceShop } from '../../types/serviceShop/serviceShop';
+import { IAccountApiBody, ICategory } from '../../types/apimodal/apimodal.d';
+import useAccountApi from '../../hooks/useAccountApi.hook';
 
 const defaultValues: IServiceShop = {
   name: '', // Default value for name
@@ -16,7 +18,7 @@ const defaultValues: IServiceShop = {
 
 const ServiceShop = () => {
   const [showServiceShopPopup, setShowServiceShopPopup] = useState(false);
-  const [showAssignVehiclePopup, setAssignVehiclePopup] = useState(true);
+  const [showAssignVehiclePopup, setAssignVehiclePopup] = useState(false);
   const onAddItemClick = () => {
     setShowServiceShopPopup(true);
   };
@@ -26,11 +28,18 @@ const ServiceShop = () => {
   const onCancelClick = useCallback(() => {
     setShowServiceShopPopup(false);
   }, [])
+  const accountApi = useAccountApi()
   const onSubmit = (data: IServiceShop) => {
-    console.log(data);
+    const body: IAccountApiBody = {
+      "name": data?.name,
+      "contactInfo": data?.phoneNumber,
+      category: ICategory.SERVICE_SHOP
+    }
     setShowServiceShopPopup(false);
+    accountApi(body, 'Service Shop creation Failed', 'Service Shop Successfully Created', () => { reset() })
+
   };
-  
+
   return (
     <>
       {showServiceShopPopup && (
