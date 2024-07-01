@@ -1,6 +1,13 @@
 import { IfileReturn } from '../../../types/base.type';
-import { IInventoryAttributes } from '../../../types/db.type';
-import { IInventoryBody } from '../../../types/request.type';
+import {
+  IDsTransactionAttributes,
+  IFinancerTransactionAttributes,
+  IInventoryAttributes,
+  IServiceTransactionAttributes,
+  ITransactionParams,
+} from '../../../types/db.type';
+import { IassignVehicle, IInventoryBody } from '../../../types/request.type';
+import { E_PRIMARY_LEDGERS } from '../../../utils/constants/constants';
 import messages from '../../../utils/constants/messages';
 import { uploadFile } from '../../../utils/fileUpload/fileUpload';
 import { performTransaction } from '../../../utils/PerformTransaction/PerformTransaction';
@@ -82,6 +89,149 @@ class InventoryService {
       }
     });
   };
+
+  assignVehiclesToFinance(body: IassignVehicle[]) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const transactions: ITransactionParams[] = [];
+        const financerDetails: IFinancerTransactionAttributes[] = [];
+        await Promise.all(
+          body.map(async (items) => {
+            const [Vehicle, cash] = await Promise.all([
+              inventoryQueries.findVehicle(items.regNum),
+              accountsQueries.findAccount('cash'),
+            ]);
+
+            if (Vehicle && Vehicle.account_id && items.financerId) {
+              transactions.push({
+                amount: items.amount,
+                credit_account: Vehicle.account_id,
+                debit_account: items.financerId,
+              });
+              financerDetails.push({
+                financer_id: items.financerId,
+                vehicle_id: Vehicle.inventory_id,
+              });
+            }
+            if (Vehicle && items.financerId && cash) {
+              transactions.push({
+                amount: items.amount,
+                credit_account: items.financerId,
+                debit_account: cash,
+              });
+            }
+          })
+        );
+
+        const operations = [
+          async (transaction: any): Promise<void> => {
+            await accountsQueries.generateTransaction(transactions, { transaction });
+          },
+          async (transaction: any) => {
+            await inventoryQueries.addTofinanceTable(financerDetails, { transaction });
+          },
+        ];
+
+        await performTransaction(operations);
+
+        return resolve({
+          message: 'Vehicle assigned to Financer',
+        });
+      } catch (error) {
+        reject(new Error('Failed to generate transaction when assign vehicle to financer'));
+      }
+    });
+  }
+
+  assignVehiclesToDeliveryService(body: IassignVehicle[]) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const transactions: ITransactionParams[] = [];
+        const dsTransactions: IDsTransactionAttributes[] = [];
+
+        const directExpense = await accountsQueries.findAccount('directExpense');
+        if (!directExpense) {
+          throw new Error('Direct expense account not found');
+        }
+
+        await Promise.all(
+          body.map(async (item) => {
+            const vehicle = await inventoryQueries.findVehicle(item.regNum);
+            if (item.serviceId) {
+              transactions.push({
+                amount: item.amount,
+                debit_account: directExpense,
+                credit_account: item.serviceId,
+              });
+
+              if (vehicle?.inventory_id) {
+                dsTransactions.push({
+                  ds_id: item.serviceId,
+                  vehicle_id: vehicle.inventory_id,
+                });
+              }
+            }
+          })
+        );
+
+        const operations = [
+          async (transaction: any): Promise<void> => {
+            await accountsQueries.generateTransaction(transactions, { transaction });
+          },
+          async (transaction: any): Promise<void> => {
+            await inventoryQueries.addTodeliveryServiceTable(dsTransactions, { transaction });
+          },
+        ];
+
+        await performTransaction(operations);
+
+        return resolve({ message: 'Vehicle assigned to Delivery Service Shop' });
+      } catch (error) {
+        throw new Error('Failed to generate transaction when assigning vehicle to delivery Service');
+      }
+    });
+  }
+
+  assignVehiclesToService(body: IassignVehicle[]) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const transactions: ITransactionParams[] = [];
+        const serviceTransaction: IServiceTransactionAttributes[] = [];
+        const directExpense = await accountsQueries.findAccount('directExpense');
+        if (!directExpense) {
+          throw new Error('Direct expense account not found');
+        }
+
+        await Promise.all(
+          body.map(async (item) => {
+            const vehicle = await inventoryQueries.findVehicle(item.regNum);
+            if (item.serviceId) {
+              transactions.push({
+                amount: item.amount,
+                debit_account: directExpense,
+                credit_account: item.serviceId,
+              });
+
+              if (vehicle?.inventory_id) {
+                serviceTransaction.push({
+                  vehicle_id: vehicle?.inventory_id,
+                  service_shop_id: item.serviceId,
+                });
+              }
+            }
+          })
+        );
+
+        await accountsQueries.generateTransaction(transactions);
+
+        return resolve({
+          message: 'Vehicle assigned to delivery Shop',
+        });
+      } catch (error) {
+        throw new Error('Failed to generate transaction when assigning vehicle to delivery shop');
+      }
+    });
+  }
 }
 
 export default new InventoryService();

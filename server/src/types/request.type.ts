@@ -10,8 +10,22 @@ interface IInventoryBody extends IInventoryAttributes,IDeliveryAttributes {
 }
 
 
+interface IassignVehicle {
+    amount:number;
+    regNum:string;
+    financerId?:number;
+    deliveryId?:number;
+    serviceId?:number
+}
+
+interface IassignVehicleBody{
+    Vehicles: IassignVehicle[]
+}
+
 
 export type {
     IAccountBody,
-    IInventoryBody
+    IInventoryBody,
+    IassignVehicleBody,
+    IassignVehicle
 }

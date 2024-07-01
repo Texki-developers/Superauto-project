@@ -13,7 +13,7 @@ interface InventoryCreationAttributes
 
 class Inventory extends Model<IInventoryAttributes, InventoryCreationAttributes> implements IInventoryAttributes {
   public inventory_id!: number;
-  public account_id?: number | undefined;
+  public account_id!: number ;
   public brand_model_id!: number;
   public year_of_manufacture!: number;
   public registration_number!: string;

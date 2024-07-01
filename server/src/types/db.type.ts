@@ -50,10 +50,39 @@ interface IDeliveryAttributes {
 }
 
 
+interface IFinancerTransactionAttributes {
+  financer_transaction_id?: number;
+  financer_id: number;
+  vehicle_id: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+
+interface  IDsTransactionAttributes {
+  ds_txn_id?: number;
+  ds_id: number;
+  vehicle_id: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+
+interface IServiceTransactionAttributes {
+  service_txn_id?: number;
+  service_shop_id: number;
+  vehicle_id: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
 export {
     IAccountAttributes,
     IEmployeeAttributes,
     IInventoryAttributes,
     IDeliveryAttributes,
-    ITransactionParams
+    ITransactionParams,
+    IFinancerTransactionAttributes,
+    IDsTransactionAttributes,
+    IServiceTransactionAttributes
 }
