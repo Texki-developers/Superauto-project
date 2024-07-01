@@ -68,9 +68,21 @@ class InventoryController {
       });
   }
 
-  assignVehiclesToService(req: Request, res: Response) {
+  assignVehiclesToDeliveryService(req: Request, res: Response) {
     const { Vehicles }: IassignVehicleBody = req.body;
 
+    inventoryService
+      .assignVehiclesToDeliveryService(Vehicles)
+      .then((data: any) => {
+        responseHandler(res, 'CREATED', { message: data.message });
+      })
+      .catch((error) => {
+        responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+      });
+  }
+
+  assignVehiclesToService(req: Request, res: Response) {
+    const { Vehicles }: IassignVehicleBody = req.body;
     inventoryService
       .assignVehiclesToService(Vehicles)
       .then((data: any) => {
@@ -80,22 +92,6 @@ class InventoryController {
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
       });
   }
-
-  assignVehiclesToDelivery(req: Request, res: Response) {
-    const { Vehicles }: IassignVehicleBody = req.body;
-    inventoryService
-      .assignVehiclesToDelivery(Vehicles)
-      .then((data: any) => {
-        responseHandler(res, 'CREATED', { message: data.message });
-      })
-      .catch((error) => {
-        responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
-      });
-  }
-
-  
-
-
 }
 
 export default new InventoryController();

@@ -4,20 +4,14 @@ import {
     Optional
   } from 'sequelize';
   import { db } from '../config/database';
+import { IServiceTransactionAttributes } from '../types/db.type';
   
   // Define the interface for model attributes
-  interface ServiceTransactionAttributes {
-    service_txn_id: number;
-    service_shop_id: number;
-    vehicle_id: number;
-    transaction_id: number;
-    createdAt: Date;
-    updatedAt: Date;
-  }
+
   
-  interface ServiceTransactionCreationAttributes extends Optional<ServiceTransactionAttributes, 'service_txn_id'> {}
+  interface ServiceTransactionCreationAttributes extends Optional<IServiceTransactionAttributes, 'service_txn_id'> {}
   
-  class ServiceTransaction extends Model<ServiceTransactionAttributes, ServiceTransactionCreationAttributes> implements ServiceTransactionAttributes {
+  class ServiceTransaction extends Model<IServiceTransactionAttributes, ServiceTransactionCreationAttributes> implements IServiceTransactionAttributes {
     public service_txn_id!: number;
     public service_shop_id!: number;
     public vehicle_id!: number;
@@ -37,10 +31,6 @@ import {
       allowNull: false
     },
     vehicle_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    transaction_id: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
