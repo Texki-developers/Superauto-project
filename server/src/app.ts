@@ -12,6 +12,14 @@ const app: Application = express();
 // configure environment variables
 require('dotenv').config();
 
+const corsOptions = {
+  origin: true,
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Preflight requests
+
 // Middleware
 app.use(logger('dev'));
 
@@ -27,8 +35,6 @@ app.use('/api/v1/inventory',inventoryRoutes)
 
 app.use('*/images', express.static('./public/uploads'));
 
-
-app.use(cors());
 
 app.get('/', (_: Request, res: Response) => {
   res.send('Super Auto V1/..');

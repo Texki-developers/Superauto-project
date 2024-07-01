@@ -24,9 +24,9 @@ class AccountService {
           return resolve({ message: 'Account created successfully' });
         }
         throw new Error('Head is not Found!');
-      } catch (error) {
+      } catch (error: any) {
         console.log(error, 'THE ERROR');
-        throw new Error('Account creation failed');
+        reject(error.message)
       }
     });
   };
@@ -36,17 +36,19 @@ class AccountService {
       try {
         const expenseAcResult: any = await accountsQueries.findAccount(E_LEDGERS_BASIC.OTHER_EXPENSE);
 
-        // await accountsQueries.generateTransaction(
-        //   [
-        //     {
-        //       amount: data?.amount,
-        //       credit_account: data.expense_to,
-        //       debit_account: expenseAcResult?.[0]?.account_id,
-        //       description: data.description
-        //     },
-        //   ],
-        //   { transaction }
-        // );
+        const transactionResult  = await accountsQueries.generateTransaction(
+          [
+            {
+              amount: data?.amount,
+              credit_account: 
+              data.expense_to,
+              debit_account: expenseAcResult?.[0]?.account_id,
+              description: data.description
+            },
+          ]
+        );
+
+         
       } catch (error) {
         console.error(error);
         throw new Error('Adding expense failed!');
