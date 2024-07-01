@@ -7,7 +7,7 @@ import {
   
   // Define the interface for model attributes
   interface BrandModelAttributes {
-    brand_model_id: number;
+    brand_model_id?: number;
     brand: string;
     model: string;
   }

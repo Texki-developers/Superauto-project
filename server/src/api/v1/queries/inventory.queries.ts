@@ -24,8 +24,8 @@ class InventoryQueries {
 
   async uploadBrandModel(brand: string, model: string) {
     return await BrandModel.create({
-      brand,
-      model,
+      brand :brand,
+     model: model,
     });
   }
 

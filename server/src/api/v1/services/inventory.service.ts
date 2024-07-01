@@ -21,6 +21,10 @@ class InventoryService {
       const fileType = 'doc';
       try {
         const docs = [data.rc_book, data.proof_doc, data.insurance_doc];
+
+        const purchaseVoucher = ' '
+        const paymentVoucher = ''
+
         const docsResult: any = await Promise.all(docs.map((file) => uploadFile(file, fileType, allowedExtension)));
         let uploadDocs;
 
@@ -33,11 +37,11 @@ class InventoryService {
           const brandResult = await inventoryQueries.uploadBrandModel(data.brand, data.model);
           if (brandResult) {
             brandID = brandResult.brand_model_id;
-          }
+         } 
         } else {
           brandID = data?.brand_model_id;
         }
-
+        
         const insertInventoryData: IInventoryAttributes = {
           account_id: data.account_id,
           brand_model_id: brandID || 0,
@@ -56,7 +60,7 @@ class InventoryService {
 
         const purchaseResult = await accountsQueries.findAccount('Purchase');
         const cashResult = await accountsQueries.findAccount('Cash');
-        if (purchaseResult && cashResult) {
+        if (purchaseResult && cashResult && brandID) {
           const operations = [
             async (transaction: any): Promise<void> => {
               await inventoryQueries.addVehicle(insertInventoryData, { transaction });
@@ -68,11 +72,13 @@ class InventoryService {
                     amount: data.purchase_rate,
                     credit_account: data.account_id,
                     debit_account: purchaseResult,
+                    voucher_id:purchaseVoucher
                   },
                   {
                     amount: data.purchase_rate,
                     credit_account: cashResult,
                     debit_account: data.account_id,
+                    voucher_id:paymentVoucher
                   },
                 ],
                 { transaction }
@@ -85,6 +91,7 @@ class InventoryService {
 
         return resolve({ message: messages.success.ACCOUNT_CREATED });
       } catch (error) {
+        console.log(error,"EROR")
         throw new Error('Failed to add Vehicle to inventory...');
       }
     });
@@ -95,6 +102,8 @@ class InventoryService {
       try {
         const transactions: ITransactionParams[] = [];
         const financerDetails: IFinancerTransactionAttributes[] = [];
+        const customerVoucher = ''
+        const financerVoucher = ''
         await Promise.all(
           body.map(async (items) => {
             const [Vehicle, cash] = await Promise.all([
@@ -107,6 +116,7 @@ class InventoryService {
                 amount: items.amount,
                 credit_account: Vehicle.account_id,
                 debit_account: items.financerId,
+                voucher_id:customerVoucher
               });
               financerDetails.push({
                 financer_id: items.financerId,
@@ -118,6 +128,7 @@ class InventoryService {
                 amount: items.amount,
                 credit_account: items.financerId,
                 debit_account: cash,
+                voucher_id:financerVoucher
               });
             }
           })
@@ -146,6 +157,7 @@ class InventoryService {
   assignVehiclesToDeliveryService(body: IassignVehicle[]) {
     return new Promise(async (resolve, reject) => {
       try {
+        const expenseVoucher  = ''
         const transactions: ITransactionParams[] = [];
         const dsTransactions: IDsTransactionAttributes[] = [];
 
@@ -162,6 +174,7 @@ class InventoryService {
                 amount: item.amount,
                 debit_account: directExpense,
                 credit_account: item.serviceId,
+                voucher_id:expenseVoucher
               });
 
               if (vehicle?.inventory_id) {
@@ -196,6 +209,7 @@ class InventoryService {
     return new Promise(async (resolve, reject) => {
       try {
         const transactions: ITransactionParams[] = [];
+        const expenseVoucher  = ''
         const serviceTransaction: IServiceTransactionAttributes[] = [];
         const directExpense = await accountsQueries.findAccount('directExpense');
         if (!directExpense) {
@@ -210,6 +224,7 @@ class InventoryService {
                 amount: item.amount,
                 debit_account: directExpense,
                 credit_account: item.serviceId,
+                voucher_id: expenseVoucher 
               });
 
               if (vehicle?.inventory_id) {

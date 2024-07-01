@@ -12,7 +12,7 @@ import {
     amount: number;
     credit_account: number;
     debit_account: number;
-    voucher_id?: number;
+    voucher_id?: string;
  
   }
   
@@ -24,7 +24,7 @@ import {
     public amount!: number;
     public credit_account!: number;
     public debit_account!: number;
-    public voucher_id!: number;
+    public voucher_id!: string;
    
   }
   
@@ -36,7 +36,7 @@ import {
     },
     description: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     amount: {
       type: DataTypes.INTEGER,
@@ -51,7 +51,7 @@ import {
       allowNull: false
     },
     voucher_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false
     }
   }, {

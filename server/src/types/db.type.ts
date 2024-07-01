@@ -39,6 +39,7 @@ interface IAccountAttributes {
     amount:number;
     credit_account:number;
     debit_account:number
+    voucher_id:string;
 }
 
 
