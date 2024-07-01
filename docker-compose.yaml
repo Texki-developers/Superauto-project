@@ -27,7 +27,7 @@ services:
     networks:
       - superauto_network
     ports:
-      - 8080:8080
+      - 8080:8087
   client:
     depends_on:
       - server
