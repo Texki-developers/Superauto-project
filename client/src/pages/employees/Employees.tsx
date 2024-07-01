@@ -7,6 +7,8 @@ import { ColumnData, dummyData } from './employees.data';
 import Table from '../../components/table/Table';
 import { IEmployee } from '../../types/employees/employees';
 import { useForm } from 'react-hook-form';
+import useAccountApi from '../../hooks/useAccountApi.hook';
+import { IAccountApiBody, ICategory } from '../../types/apimodal/apimodal.d';
 
 const defaultValues: IEmployee = {
   name: '', // Default value for name
@@ -15,17 +17,24 @@ const defaultValues: IEmployee = {
 };
 
 const Employees = () => {
+  const [showEmployeesPopup, setShowEmployeesPopup] = useState(false);
   const { register, handleSubmit, reset, formState: { errors }, control } = useForm({
     defaultValues
   })
+  const accountApi = useAccountApi()
   const onSubmit = (data: IEmployee) => {
-    console.log(data);
+    const body: IAccountApiBody = {
+      name: data?.name,
+      contactInfo: data?.phoneNumber,
+      salary: data?.salary,
+      category: ICategory.EMPLOYEE
+    }
     setShowEmployeesPopup(false);
+    accountApi(body, 'Employees creation Failed', 'Employees Successfully Created', () => { reset() })
   };
   const onCancelClick = useCallback(() => {
     setShowEmployeesPopup(false);
   }, [])
-  const [showEmployeesPopup, setShowEmployeesPopup] = useState(false);
   const onAddItemClick = () => {
     setShowEmployeesPopup(true);
   };
