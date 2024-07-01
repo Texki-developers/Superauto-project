@@ -10,8 +10,6 @@ import Accounts from './accounts';
     employee_id: number;
     account_id: number;
     salary: number;
-    createdAt: Date;
-    updatedAt: Date;
   }
   
   interface EmployeeCreationAttributes extends Optional<EmployeeAttributes, 'employee_id'> {}
@@ -20,8 +18,6 @@ import Accounts from './accounts';
     public employee_id!: number;
     public account_id!: number;
     public salary!: number;
-    public readonly createdAt!: Date;
-    public readonly updatedAt!: Date;
   }
   
   Employee.init({
@@ -42,16 +38,6 @@ import Accounts from './accounts';
     salary: {
       type: DataTypes.INTEGER,
       allowNull: false
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
     }
   }, {
     sequelize: db,

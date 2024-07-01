@@ -11,8 +11,7 @@ import {
     due_date: Date;
     transaction_id: number;
     amount: number;
-    createdAt: Date;
-    updatedAt: Date;
+   
   }
   
   interface OtherExpenseCreationAttributes extends Optional<OtherExpenseAttributes, 'ot_expense_id'> {}
@@ -22,8 +21,7 @@ import {
     public due_date!: Date;
     public transaction_id!: number;
     public amount!: number;
-    public readonly createdAt!: Date;
-    public readonly updatedAt!: Date;
+ 
   }
   
   OtherExpense.init({
@@ -43,16 +41,6 @@ import {
     amount: {
       type: DataTypes.INTEGER,
       allowNull: false
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
     }
   }, {
     sequelize: db,
