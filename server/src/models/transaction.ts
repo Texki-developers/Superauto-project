@@ -12,8 +12,7 @@ import {
     amount: number;
     credit_account: number;
     debit_account: number;
-    voucher_id?: number;
- 
+    voucher_id?: string;
   }
   
   interface TransactionCreationAttributes extends Optional<TransactionAttributes, 'transaction_id'> {}
@@ -24,7 +23,7 @@ import {
     public amount!: number;
     public credit_account!: number;
     public debit_account!: number;
-    public voucher_id!: number;
+    public voucher_id!: string;
    
   }
   
