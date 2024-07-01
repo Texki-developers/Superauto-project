@@ -1,6 +1,7 @@
 import { IAccountAttributes, IEmployeeAttributes } from '../../../types/db.type';
-import { IAccountBody } from '../../../types/request.type';
-import { E_ACCOUNT_CATEGORIES, E_PRIMARY_LEDGERS } from '../../../utils/constants/constants';
+import { IAccountBody, IOtherExpenseBody } from '../../../types/request.type';
+import { E_ACCOUNT_CATEGORIES, E_LEDGERS_BASIC, E_PRIMARY_LEDGERS } from '../../../utils/constants/constants';
+import accountsQueries from '../queries/accounts.queries';
 import authQueries from '../queries/accounts.queries';
 
 class AccountService {
@@ -26,6 +27,29 @@ class AccountService {
       } catch (error) {
         console.log(error, 'THE ERROR');
         throw new Error('Account creation failed');
+      }
+    });
+  };
+
+  bookOtherExpense = (data: IOtherExpenseBody) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const expenseAcResult: any = await accountsQueries.findAccount(E_LEDGERS_BASIC.OTHER_EXPENSE);
+
+        // await accountsQueries.generateTransaction(
+        //   [
+        //     {
+        //       amount: data?.amount,
+        //       credit_account: data.expense_to,
+        //       debit_account: expenseAcResult?.[0]?.account_id,
+        //       description: data.description
+        //     },
+        //   ],
+        //   { transaction }
+        // );
+      } catch (error) {
+        console.error(error);
+        throw new Error('Adding expense failed!');
       }
     });
   };

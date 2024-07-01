@@ -67,6 +67,7 @@ class InventoryController {
         responseHandler(res, 'CREATED', { message: data.message });
       })
       .catch((error) => {
+        console.log(error,"ERROR")
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
       });
   }
@@ -83,6 +84,7 @@ class InventoryController {
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
       });
   }
+  
 
   assignVehiclesToService(req: Request, res: Response) {
     const { Vehicles }: IassignVehicleBody = req.body;

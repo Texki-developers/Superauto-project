@@ -38,8 +38,9 @@ interface IAccountAttributes {
   interface ITransactionParams{
     amount:number;
     credit_account:number;
-    debit_account:number
-    voucher_id:string;
+    debit_account:number;
+    description?: string;
+    voucher_id?: string;
 }
 
 

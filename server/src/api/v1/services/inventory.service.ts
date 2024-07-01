@@ -1,3 +1,4 @@
+import { db } from '../../../config/database';
 import { IfileReturn } from '../../../types/base.type';
 import {
   IDsTransactionAttributes,
@@ -7,9 +8,10 @@ import {
   ITransactionParams,
 } from '../../../types/db.type';
 import { IassignVehicle, IInventoryBody } from '../../../types/request.type';
-import { E_PRIMARY_LEDGERS } from '../../../utils/constants/constants';
+import { E_PRIMARY_LEDGERS, E_VOUCHERS } from '../../../utils/constants/constants';
 import messages from '../../../utils/constants/messages';
 import { uploadFile } from '../../../utils/fileUpload/fileUpload';
+import getVoucher from '../../../utils/getVoucher/getVoucher';
 import { performTransaction } from '../../../utils/PerformTransaction/PerformTransaction';
 import accountsQueries from '../queries/accounts.queries';
 import inventoryQueries from '../queries/inventory.queries';
@@ -21,9 +23,9 @@ class InventoryService {
       const fileType = 'doc';
       try {
         const docs = [data.rc_book, data.proof_doc, data.insurance_doc];
-
-        const purchaseVoucher = ' '
-        const paymentVoucher = ''
+        const dbTransaction = await db.transaction();
+        const purchaseVoucher = await getVoucher(E_VOUCHERS.Purchase);
+        const paymentVoucher = await getVoucher(E_VOUCHERS.Payments);
 
         const docsResult: any = await Promise.all(docs.map((file) => uploadFile(file, fileType, allowedExtension)));
         let uploadDocs;
@@ -37,11 +39,11 @@ class InventoryService {
           const brandResult = await inventoryQueries.uploadBrandModel(data.brand, data.model);
           if (brandResult) {
             brandID = brandResult.brand_model_id;
-         } 
+          }
         } else {
           brandID = data?.brand_model_id;
         }
-        
+
         const insertInventoryData: IInventoryAttributes = {
           account_id: data.account_id,
           brand_model_id: brandID || 0,
@@ -61,37 +63,32 @@ class InventoryService {
         const purchaseResult = await accountsQueries.findAccount('Purchase');
         const cashResult = await accountsQueries.findAccount('Cash');
         if (purchaseResult && cashResult && brandID) {
-          const operations = [
-            async (transaction: any): Promise<void> => {
-              await inventoryQueries.addVehicle(insertInventoryData, { transaction });
-            },
-            async (transaction: any) => {
-              await accountsQueries.generateTransaction(
-                [
-                  {
-                    amount: data.purchase_rate,
-                    credit_account: data.account_id,
-                    debit_account: purchaseResult,
-                    voucher_id:purchaseVoucher
-                  },
-                  {
-                    amount: data.purchase_rate,
-                    credit_account: cashResult,
-                    debit_account: data.account_id,
-                    voucher_id:paymentVoucher
-                  },
-                ],
-                { transaction }
-              );
-            },
-          ];
+          await inventoryQueries.addVehicle(insertInventoryData, { transaction: dbTransaction })
 
-          await performTransaction(operations);
+        const TransactionResult =  accountsQueries.generateTransaction(
+            [
+              {
+                amount: data.purchase_rate,
+                credit_account: data.account_id,
+                debit_account: purchaseResult,
+                voucher_id: purchaseVoucher,
+              },
+              {
+                amount: data.purchase_rate,
+                credit_account: cashResult,
+                debit_account: data.account_id,
+                voucher_id: paymentVoucher,
+              },
+            ],
+            { transaction: dbTransaction }
+          )
+          console.log(TransactionResult, 'RESULTTTTT');
+          await performTransaction(dbTransaction);
         }
 
         return resolve({ message: messages.success.ACCOUNT_CREATED });
       } catch (error) {
-        console.log(error,"EROR")
+        console.log(error, 'EROR');
         throw new Error('Failed to add Vehicle to inventory...');
       }
     });
@@ -102,8 +99,9 @@ class InventoryService {
       try {
         const transactions: ITransactionParams[] = [];
         const financerDetails: IFinancerTransactionAttributes[] = [];
-        const customerVoucher = ''
-        const financerVoucher = ''
+        const customerVoucher = '';
+        const financerVoucher = '';
+        const dbTransaction = await db.transaction();
         await Promise.all(
           body.map(async (items) => {
             const [Vehicle, cash] = await Promise.all([
@@ -116,7 +114,7 @@ class InventoryService {
                 amount: items.amount,
                 credit_account: Vehicle.account_id,
                 debit_account: items.financerId,
-                voucher_id:customerVoucher
+                voucher_id: customerVoucher,
               });
               financerDetails.push({
                 financer_id: items.financerId,
@@ -128,27 +126,25 @@ class InventoryService {
                 amount: items.amount,
                 credit_account: items.financerId,
                 debit_account: cash,
-                voucher_id:financerVoucher
+                voucher_id: financerVoucher,
               });
             }
           })
         );
 
-        const operations = [
-          async (transaction: any): Promise<void> => {
-            await accountsQueries.generateTransaction(transactions, { transaction });
-          },
-          async (transaction: any) => {
-            await inventoryQueries.addTofinanceTable(financerDetails, { transaction });
-          },
-        ];
+        const TransactionResult = await accountsQueries.generateTransaction(transactions, {
+          transaction: dbTransaction,
+        });
+     
+        await inventoryQueries.addTofinanceTable(financerDetails, { transaction: dbTransaction });
 
-        await performTransaction(operations);
+        await performTransaction(dbTransaction);
 
         return resolve({
           message: 'Vehicle assigned to Financer',
         });
       } catch (error) {
+        console.log('BUG:',error)
         reject(new Error('Failed to generate transaction when assign vehicle to financer'));
       }
     });
@@ -157,9 +153,10 @@ class InventoryService {
   assignVehiclesToDeliveryService(body: IassignVehicle[]) {
     return new Promise(async (resolve, reject) => {
       try {
-        const expenseVoucher  = ''
+        const expenseVoucher = '';
         const transactions: ITransactionParams[] = [];
         const dsTransactions: IDsTransactionAttributes[] = [];
+        const dbTransaction = await db.transaction();
 
         const directExpense = await accountsQueries.findAccount('directExpense');
         if (!directExpense) {
@@ -174,7 +171,7 @@ class InventoryService {
                 amount: item.amount,
                 debit_account: directExpense,
                 credit_account: item.serviceId,
-                voucher_id:expenseVoucher
+                voucher_id: expenseVoucher,
               });
 
               if (vehicle?.inventory_id) {
@@ -187,16 +184,9 @@ class InventoryService {
           })
         );
 
-        const operations = [
-          async (transaction: any): Promise<void> => {
-            await accountsQueries.generateTransaction(transactions, { transaction });
-          },
-          async (transaction: any): Promise<void> => {
-            await inventoryQueries.addTodeliveryServiceTable(dsTransactions, { transaction });
-          },
-        ];
-
-        await performTransaction(operations);
+        await accountsQueries.generateTransaction(transactions, { transaction: dbTransaction });
+        await inventoryQueries.addTodeliveryServiceTable(dsTransactions, { transaction: dbTransaction });
+        await performTransaction(dbTransaction);
 
         return resolve({ message: 'Vehicle assigned to Delivery Service Shop' });
       } catch (error) {
@@ -209,7 +199,7 @@ class InventoryService {
     return new Promise(async (resolve, reject) => {
       try {
         const transactions: ITransactionParams[] = [];
-        const expenseVoucher  = ''
+        const expenseVoucher = '';
         const serviceTransaction: IServiceTransactionAttributes[] = [];
         const directExpense = await accountsQueries.findAccount('directExpense');
         if (!directExpense) {
@@ -224,7 +214,7 @@ class InventoryService {
                 amount: item.amount,
                 debit_account: directExpense,
                 credit_account: item.serviceId,
-                voucher_id: expenseVoucher 
+                voucher_id: expenseVoucher,
               });
 
               if (vehicle?.inventory_id) {
