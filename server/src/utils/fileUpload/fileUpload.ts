@@ -5,7 +5,7 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 
-export const uploadFile = (file: UploadedFile, type: 'image' | 'doc' | 'video', allowedExtension: string[] | null):IfileReturn[]|void => {
+export const uploadFile = (file: UploadedFile, type: 'image' | 'doc' | 'video', allowedExtension: string[] | null):IfileReturn|void => {
   const allowedFileTypes: string[] = allowedExtension || []; // Add the file types you want to allow
 
   const newdate = new Date().toLocaleDateString('fr-CA');
@@ -29,11 +29,13 @@ export const uploadFile = (file: UploadedFile, type: 'image' | 'doc' | 'video', 
 
   const files = file.mv(newpath, function (err: any) {
     if (err) {
+      console.log(err,"REASON")
       throw new Error(`File Upload failed Error: ${err}`);
     } else {
       console.log('File uploaded....');
   
-      return {location:filepath,name:file.name};
+      
     }
   });
+  return {location:filepath,name:file.name};
 };

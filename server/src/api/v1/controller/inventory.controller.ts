@@ -11,7 +11,9 @@ class InventoryController {
     const rcBook = getFile(req, 'rcBook');
     const insuranceDoc = getFile(req, 'insuranceDoc');
     const proofDoc = getFile(req, 'proofDoc');
-
+    if(!rcBook && !insuranceDoc && !proofDoc){
+      throw new Error('The Required Docs are not provided')
+    }
     const data: IInventoryBody = {
       account_id: body.accountId,
       ownership_name: body.ownershipName,
@@ -29,7 +31,7 @@ class InventoryController {
       date_of_purchase: body.dateOfPurchase,
       model: body.model,
       brand: body.brand,
-      isNew: body.is,
+      isNew: body.isNew,
     };
 
     inventoryService
@@ -38,6 +40,7 @@ class InventoryController {
         responseHandler(res, 'CREATED', { message: data.message });
       })
       .catch((error) => {
+        console.log(error,"ERROR")
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
       });
   }
@@ -64,6 +67,7 @@ class InventoryController {
         responseHandler(res, 'CREATED', { message: data.message });
       })
       .catch((error) => {
+        console.log(error,"ERROR")
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
       });
   }
@@ -80,6 +84,7 @@ class InventoryController {
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
       });
   }
+  
 
   assignVehiclesToService(req: Request, res: Response) {
     const { Vehicles }: IassignVehicleBody = req.body;

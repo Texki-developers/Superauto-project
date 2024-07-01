@@ -35,7 +35,7 @@ import {
     },
     description: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     amount: {
       type: DataTypes.INTEGER,
@@ -50,7 +50,7 @@ import {
       allowNull: false
     },
     voucher_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false
     }
   }, {
