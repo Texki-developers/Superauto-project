@@ -6,8 +6,6 @@ enum E_ACCOUNT_CATEGORIES {
   BROKER = 'BROKER',
 }
 
-
-
 const E_PRIMARY_LEDGERS = {
   EMPLOYEE: 7,                  // Salary Payables
   SERVICE_SHOP: 1,              // Inventory
@@ -33,5 +31,21 @@ const E_PRIMARY_LEDGERS = {
   SALE: 17
 };
 
+enum E_LEDGERS_BASIC  {
+  BANK = "Bank",
+  CASH = "Cash",
+  SALARY_PAYABLES = 'Salary Payables',
+  OTHER_PAYABLES = 'Other Payables',
+  LOAN = 'Loan',
+  TAX_PAYABLES = 'Tax Payables',
+  CAPITAL_AC = 'Capital A/C',
+  RETAINED_EARNINGS = 'Retained Earnings',
+  DIRECT_EXPENSE = 'Direct  Expense',
+  OTHER_EXPENSE = 'Other Expense',
+  ADMINISTRATION_EXPENSE = 'Administration Expense',
+  PURCHASE = 'Purchase',
+  SALE = 'Sale'
+}
 
-export { E_ACCOUNT_CATEGORIES, E_PRIMARY_LEDGERS };
+
+export { E_ACCOUNT_CATEGORIES, E_PRIMARY_LEDGERS, E_LEDGERS_BASIC };

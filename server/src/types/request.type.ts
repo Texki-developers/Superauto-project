@@ -22,10 +22,17 @@ interface IassignVehicleBody{
     Vehicles: IassignVehicle[]
 }
 
+interface IOtherExpenseBody{
+    expense_to: number;
+    description: string;
+    date: Date;
+    amount: number;
+}
 
 export type {
     IAccountBody,
     IInventoryBody,
     IassignVehicleBody,
-    IassignVehicle
+    IassignVehicle,
+    IOtherExpenseBody
 }
