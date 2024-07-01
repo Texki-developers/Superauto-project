@@ -11,7 +11,7 @@ class AccountController {
       name: body.name,
       category: body.category,
       salary: body?.salary,
-      contact_info: body.name,
+      contact_info: body.contactInfo,
     };
 
     AccountService

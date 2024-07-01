@@ -19,8 +19,6 @@ import {
     is_exchange: number;
     exchange_vehicle_id: number;
     due_date: Date;
-    createdAt: Date;
-    updatedAt: Date;
   }
   
   interface SalesCreationAttributes extends Optional<SalesAttributes, 'sales_id'> {}
@@ -38,8 +36,7 @@ import {
     public is_exchange!: number;
     public exchange_vehicle_id!: number;
     public due_date!: Date;
-    public readonly createdAt!: Date;
-    public readonly updatedAt!: Date;
+  
   }
   
   Sales.init({
@@ -91,16 +88,6 @@ import {
     due_date: {
       type: DataTypes.DATE,
       allowNull: true
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
     }
   }, {
     sequelize: db,

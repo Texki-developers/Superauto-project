@@ -15,8 +15,6 @@ import { IFinancerTransactionAttributes } from '../types/db.type';
     public financer_transaction_id!: number;
     public financer_id!: number;
     public vehicle_id!: number;
-    public readonly createdAt!: Date;
-    public readonly updatedAt!: Date;
   }
   
   FinancerTransaction.init({
@@ -32,16 +30,6 @@ import { IFinancerTransactionAttributes } from '../types/db.type';
     vehicle_id: {
       type: DataTypes.INTEGER,
       allowNull: false
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
     }
   }, {
     sequelize: db,

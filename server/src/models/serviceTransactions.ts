@@ -16,8 +16,7 @@ import { IServiceTransactionAttributes } from '../types/db.type';
     public service_shop_id!: number;
     public vehicle_id!: number;
     public transaction_id!: number;
-    public readonly createdAt!: Date;
-    public readonly updatedAt!: Date;
+ 
   }
   
   ServiceTransaction.init({
@@ -33,16 +32,6 @@ import { IServiceTransactionAttributes } from '../types/db.type';
     vehicle_id: {
       type: DataTypes.INTEGER,
       allowNull: false
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
     }
   }, {
     sequelize: db,

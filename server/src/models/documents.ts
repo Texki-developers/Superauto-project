@@ -37,21 +37,11 @@ import {
     location: {
       type: DataTypes.STRING,
       allowNull: false
-    },
-    createdAt: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
     }
   }, {
     sequelize: db,
     tableName: 'files',
-    timestamps: false
+    timestamps: true
   });
   
   export default FileStore;

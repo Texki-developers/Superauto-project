@@ -7,17 +7,15 @@ interface IAccountAttributes {
     contact_info: string;
     category: E_ACCOUNT_CATEGORIES
     head?: number;
-    createdAt?: Date;
-    updatedAt?: Date;
-  }
 
+  }
 
   interface IEmployeeAttributes { 
       salary: number;
       employee_id?:number;
       account_id?:number;
   }
-
+  
   interface IInventoryAttributes {
     inventory_id?: number;
     account_id:number;
@@ -33,8 +31,7 @@ interface IAccountAttributes {
     proof_doc: typeof fileUpload
     date_of_purchase: string | null;
     sold_price?: number | null;
-    createdAt?: Date;
-    updatedAt?: Date;
+
   }
 
 

@@ -26,8 +26,7 @@ class Inventory extends Model<IInventoryAttributes, InventoryCreationAttributes>
   public proof_doc!: string | null;
   public date_of_purchase!: string | null;
   public sold_price!: number | null;
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+
 }
 
 Inventory.init(
@@ -92,17 +91,7 @@ Inventory.init(
     sold_price: {
       type: DataTypes.INTEGER,
       allowNull: true,
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
-    },
+    }
   },
   {
     sequelize: db,

@@ -13,8 +13,6 @@ import {
     description: string;
     mode: string;
     transaction_id: number;
-    createdAt: Date;
-    updatedAt: Date;
   }
   
   interface ReceiptCreationAttributes extends Optional<ReceiptAttributes, 'receipt_id'> {}
@@ -26,8 +24,6 @@ import {
     public description!: string;
     public mode!: string;
     public transaction_id!: number;
-    public readonly createdAt!: Date;
-    public readonly updatedAt!: Date;
   }
   
   Receipt.init({
@@ -58,16 +54,6 @@ import {
     transaction_id: {
       type: DataTypes.INTEGER,
       allowNull: false
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
     }
   }, {
     sequelize: db,

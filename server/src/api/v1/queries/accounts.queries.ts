@@ -1,5 +1,6 @@
 import { pool } from "../../../config1/dbConfig";
 import Accounts from "../../../models/accounts";
+import Employee from "../../../models/employee";
 import PrimaryLedger from "../../../models/primaryLedger";
 import Transaction from "../../../models/transaction";
 import { ITransactionParams } from "../../../types/db.type";
@@ -12,9 +13,7 @@ class AccountQueries {
     
     
     async createEmployee(body: { account_id: number, salary: number }) {
-        const query = `INSERT INTO employee (account_id, salary) VALUES ($1, $2) RETURNING *`;
-        const values = [body.account_id, body.salary];
-        return await  pool.query(query, values);
+        return await  Employee.create(body)
     }
 
     async getHead(primaryLedger: string) {

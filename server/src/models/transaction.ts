@@ -13,8 +13,7 @@ import {
     credit_account: number;
     debit_account: number;
     voucher_id?: number;
-    createdAt?: Date;
-    updatedAt?: Date;
+ 
   }
   
   interface TransactionCreationAttributes extends Optional<TransactionAttributes, 'transaction_id'> {}
@@ -26,8 +25,7 @@ import {
     public credit_account!: number;
     public debit_account!: number;
     public voucher_id!: number;
-    public readonly createdAt!: Date;
-    public readonly updatedAt!: Date;
+   
   }
   
   Transaction.init({
@@ -55,16 +53,6 @@ import {
     voucher_id: {
       type: DataTypes.INTEGER,
       allowNull: false
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
     }
   }, {
     sequelize: db,

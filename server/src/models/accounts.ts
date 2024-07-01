@@ -43,16 +43,6 @@ Accounts.init({
       model: PrimaryLedger, 
       key: 'pl_id'
     }
-  },
-  createdAt: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    defaultValue: DataTypes.NOW
-  },
-  updatedAt: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    defaultValue: DataTypes.NOW
   }
 }, {
   sequelize: db,
