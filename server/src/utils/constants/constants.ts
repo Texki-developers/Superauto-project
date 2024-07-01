@@ -7,13 +7,31 @@ enum E_ACCOUNT_CATEGORIES {
 }
 
 
-enum E_PRIMARY_LEDGERS {
-   EMPLOYEE = 'salary payables',
-   SERVICE_SHOP = 'Customer',
-   DELIVERY_SERVICE = '',
-   FINANCER = '',
-   BROKER = 'Payables',
-}
+
+const E_PRIMARY_LEDGERS = {
+  EMPLOYEE: 7,                  // Salary Payables
+  SERVICE_SHOP: 1,              // Inventory
+  DELIVERY_SERVICE: 13,         // Direct Expense
+  FINANCER: 14,                 // Other Expense
+  BROKER: 8,                    // Other Payables
+  INVENTORY: 1,
+  SUNDRY_DEBTORS: 2,
+  CASH: 3,
+  BANK: 4,
+  FIXED_ASSETS: 5,
+  SUNDRY_CREDITOR: 6,
+  SALARY_PAYABLES: 7,
+  OTHER_PAYABLES: 8,
+  LOAN: 9,
+  TAX_PAYABLES: 10,
+  CAPITAL_AC: 11,
+  RETAINED_EARNINGS: 12,
+  DIRECT_EXPENSE: 13,
+  OTHER_EXPENSE: 14,
+  ADMINISTRATION_EXPENSE: 15,
+  PURCHASE: 16,
+  SALE: 17
+};
 
 
 export { E_ACCOUNT_CATEGORIES, E_PRIMARY_LEDGERS };

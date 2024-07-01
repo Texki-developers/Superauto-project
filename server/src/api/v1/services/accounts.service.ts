@@ -6,15 +6,19 @@ import authQueries from '../queries/accounts.queries';
 class AccountService {
   createAccount = (data:IAccountBody ) => {
     return new Promise(async (resolve, reject) => {
-      const { category, salary } = data;
+      const { category, salary }:{category:E_ACCOUNT_CATEGORIES,salary:number} = data;
       try {
 
         const primaryLedger = E_PRIMARY_LEDGERS[category];
-        const headResult = await authQueries.getHead(primaryLedger);
-        if(headResult?.pl_id){
-          const accountResult = await authQueries.createAccount({ ...data, head: headResult?.pl_id  });
+        
+        if(primaryLedger){
+          const accountResult = await authQueries.createAccount({ ...data, head: primaryLedger  });
+          console.log(accountResult,"RESULT >>>>>>")
+
           if (category === E_ACCOUNT_CATEGORIES.EMPLOYEE) {
-            const account_id = accountResult[0].account_id;
+            const account_id = accountResult?.account_id;
+
+            console.log(account_id,"ACcount id")
             if (salary) {
               await authQueries.createEmployee({ account_id, salary });
             }

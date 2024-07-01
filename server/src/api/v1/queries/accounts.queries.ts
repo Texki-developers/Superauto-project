@@ -3,12 +3,11 @@ import Accounts from "../../../models/accounts";
 import PrimaryLedger from "../../../models/primaryLedger";
 import Transaction from "../../../models/transaction";
 import { ITransactionParams } from "../../../types/db.type";
+import { E_ACCOUNT_CATEGORIES } from "../../../utils/constants/constants";
 
 class AccountQueries {
-    async createAccount(body: { name: string, contact_info: string, category: string, head: number }) {
-        const query = `INSERT INTO account (name, contact_info, category, head) VALUES ($1, $2, $3, $4) RETURNING *`;
-        const values = [body.name, body.contact_info, body.category, body.head];
-        return await  pool.query(query, values);
+    async createAccount(body: { name: string, contact_info: string, category: E_ACCOUNT_CATEGORIES, head: number }) { 
+        return await  Accounts.create(body)
     }
     
     
