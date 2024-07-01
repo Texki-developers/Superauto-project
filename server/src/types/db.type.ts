@@ -5,8 +5,10 @@ interface IAccountAttributes {
     account_id?: number;
     name: string;
     contact_info: string;
-    category: E_ACCOUNT_CATEGORIES;
+    category: E_ACCOUNT_CATEGORIES
     head?: number;
+    createdAt?: Date;
+    updatedAt?: Date;
   }
 
 
@@ -15,7 +17,6 @@ interface IAccountAttributes {
       employee_id?:number;
       account_id?:number;
   }
-
 
   interface IInventoryAttributes {
     inventory_id?: number;
