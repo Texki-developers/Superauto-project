@@ -13,8 +13,7 @@ class AccountService {
 
         if (primaryLedger) {
           const accountResult = await authQueries.createAccount({ ...data, head: primaryLedger });
-          console.log(accountResult, 'RESULT >>>>>>');
-
+      
           if (category === E_ACCOUNT_CATEGORIES.EMPLOYEE) {
             const account_id = accountResult?.account_id;
             console.log(account_id, 'ACcount id');
