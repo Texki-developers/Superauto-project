@@ -19,7 +19,7 @@ const defaultValues: IFinance = {
 
 const Finance = () => {
   const [showAddFinancerPopup, setShowAddFinancerPopup] = useState(false);
-  const [showAssignVehiclePopup, setAssignVehiclePopup] = useState(true);
+  const [showAssignVehiclePopup, setAssignVehiclePopup] = useState(false);
 
   const onAddItemClick = () => {
     setShowAddFinancerPopup(true);

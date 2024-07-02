@@ -17,9 +17,8 @@ const DragAndDrop = (props: iDragAndDropProps) => {
   const [fileName, setFileName] = useState<string>('')
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onDrop = useCallback((acceptedFiles: any) => {
-    props.setValue(props?.name, acceptedFiles?.[0]?.name);
+    props.setValue(props?.name, acceptedFiles?.[0]);
     setFileName(acceptedFiles?.[0]?.name)
-    console.log(acceptedFiles)
   }, [props])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })

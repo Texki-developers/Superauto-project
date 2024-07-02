@@ -8,7 +8,7 @@ export default class AuthApiService {
     },
   });
 
-  static async postApi<T, R>(url: string, body: T): Promise<R> {
+  static async postApi<T, R>(url: string, body: T): Promise<R | null> {
     try {
       const response = await AuthApiService.instance.post<R>(
         url,
@@ -18,7 +18,24 @@ export default class AuthApiService {
       return response.data;
     } catch (error) {
       console.log('Error posting to API:', error);
-      throw new Error('Failed to post to API');
+      return null;
+    }
+  }
+
+  static async postApiFormData<R>(
+    url: string,
+    formData: FormData,
+  ): Promise<R | null> {
+    try {
+      const response = await AuthApiService.instance.post<R>(url, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.log('Error posting to API:', error);
+      return null;
     }
   }
 }
