@@ -1,18 +1,43 @@
+// export interface IVehicleAddFormValues {
+//   party: string;
+//   registrationNumber: string;
+//   model: string;
+//   purchaseRate: string;
+//   rcBook: Blob | null;
+//   balance: string;
+//   purchaseDate: string;
+//   ownership: string;
+//   brand: string;
+//   yearOfManufacture: number;
+//   purchaseAmount: string;
+//   insuranceDate: string;
+//   insurance: Blob | null;
+//   proof: Blob | null;
+//   deliveryService: string;
+//   deliveryAmount: string;
+// }
+
+interface DataItem {
+  value: string;
+  label: string;
+  __isNew__?: boolean;
+}
+
 export interface IVehicleAddFormValues {
-  party: string;
+  party: DataItem;
   registrationNumber: string;
-  model: string;
+  model: DataItem;
   purchaseRate: string;
-  rcBook: string;
   balance: string;
   purchaseDate: string;
+  insurance: Blob | null;
+  proof: Blob | null;
+  rcBook: Blob | null;
   ownership: string;
-  brand: string;
-  yearOfManufacture: number;
+  brand: DataItem;
+  yearOfManufacture: string;
   purchaseAmount: string;
   insuranceDate: string;
-  insurance: string;
-  proof: string;
-  deliveryService: string;
+  deliveryService: DataItem;
   deliveryAmount: string;
 }

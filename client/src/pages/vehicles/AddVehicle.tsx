@@ -3,27 +3,41 @@ import Header from '../../components/header/Header';
 import AddvehicleForm from '../../components/vehicles/AddVehicleForm';
 import { useForm } from 'react-hook-form';
 import { IVehicleAddFormValues } from '../../types/vehicle/addVehicle';
+import AuthApiService from '../../services/api-services';
+import useToast from '../../hooks/useToast.hook';
 
 interface IProps {
   setShowAddPage: React.Dispatch<SetStateAction<boolean>>;
 }
 
 const defaultValues: IVehicleAddFormValues = {
-  party: '',
+  party: {
+    value: '',
+    label: '',
+  },
   registrationNumber: '',
-  model: '',
+  model: {
+    label: '',
+    value: '',
+  },
   purchaseRate: '',
   balance: '',
   purchaseDate: '',
-  insurance: '',
-  proof: '',
-  rcBook: '',
+  insurance: null,
+  proof: null,
+  rcBook: null,
   ownership: '',
-  brand: '',
-  yearOfManufacture: 2024,
+  brand: {
+    value: '',
+    label: '',
+  },
+  yearOfManufacture: '2024',
   purchaseAmount: '',
   insuranceDate: '',
-  deliveryService: '',
+  deliveryService: {
+    value: '',
+    label: '',
+  },
   deliveryAmount: '',
 };
 
@@ -31,6 +45,7 @@ const AddVehicle = ({ setShowAddPage }: IProps) => {
   const { register, handleSubmit, reset, watch, setValue, formState: { errors }, control } = useForm({
     defaultValues
   })
+  const { toastError, toastLoading, toastSuccess } = useToast()
   const onCancelClick = () => {
     setShowAddPage(false);
   };
@@ -39,10 +54,36 @@ const AddVehicle = ({ setShowAddPage }: IProps) => {
     { name: 'Vehicles' },
     { name: 'Add Vehicles' },
   ];
-  const onSubmit = (data: IVehicleAddFormValues) => {
+  const onSubmit = async (data: IVehicleAddFormValues) => {
     console.log(data)
+    const formData = new FormData();
+    formData.append('accountId', '31');
+    formData.append('ownershipName', data.ownership);
+    formData.append('registrationNumber', data.registrationNumber);
+    formData.append('brandModel_id', 'null'); // You can update this value as needed
+    formData.append('yearOfManufacture', data.yearOfManufacture);
+    formData.append('purchaseRate', data.purchaseRate);
+    formData.append('saleStatus', 'false');
+    formData.append('insuranceDate', data.insuranceDate);
+    formData.append('deliveryService', data.deliveryService.value);
+    formData.append('deliveryAmount', data.deliveryAmount);
+    data.rcBook && formData.append('rcBook', data.rcBook);
+    data.insurance && formData.append('insuranceDoc', data.insurance);
+    data.proof && formData.append('proofDoc', data.proof);
+    formData.append('dateOfPurchase', data.purchaseDate);
+    formData.append('model', data.model.value);
+    formData.append('brand', data.brand.value);
+    formData.append('isNew', data?.brand?.__isNew__ ? 'true' : 'false');
+    const id = toastLoading('Loading...');
+    try {
+      await AuthApiService.postApiFormData('inventory/add/vehicle', formData,)
+      setShowAddPage(false)
+      toastSuccess(id, 'Vehicle added successfully')
+    } catch (error) {
+      setShowAddPage(false)
+      toastError(id, 'Something went wrong')
+    }
   }
-  console.log(errors, "errorsssssss")
   return (
     <div>
       <Header breadCrumbData={breadCrumbData} />
