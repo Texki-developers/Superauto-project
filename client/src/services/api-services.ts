@@ -1,21 +1,24 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 
 export default class AuthApiService {
-  instance;
-  constructor() {
-    this.instance = axios.create({
-      baseURL: 'http://localhost:8081/api/v1',
-      timeout: 10000,
-    });
-  }
+  private static instance: AxiosInstance = axios.create({
+    baseURL: 'http://localhost:8080/api/v1/',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 
-  static async addVehicle(): Promise<any> {
+  static async postApi<T, R>(url: string, body: T): Promise<R> {
     try {
-      const response = await axios.post('/client/vehicle');
+      const response = await AuthApiService.instance.post<R>(
+        url,
+        JSON.stringify(body),
+      );
       console.log(response);
+      return response.data;
     } catch (error) {
-      console.log(error);
-      throw new Error()
+      console.log('Error posting to API:', error);
+      throw new Error('Failed to post to API');
     }
   }
 }

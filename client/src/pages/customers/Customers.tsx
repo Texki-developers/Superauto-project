@@ -7,6 +7,8 @@ import { ColumnData, dummyData } from './customers.data';
 import { ICustomer } from '../../types/customers/customers';
 import { useForm } from 'react-hook-form';
 import Table from '../../components/table/Table';
+import AuthApiService from '../../services/api-services';
+import { IAccountApiBody, ICategory } from '../../types/apimodal/apimodal.d';
 
 const defaultValues: ICustomer = {
   name: '', // Default value for name
@@ -25,8 +27,13 @@ const Customers = () => {
   const onCancelClick = useCallback(() => {
     setShowCustomersPopup(false);
   }, [])
-  const onSubmit = (data: ICustomer) => {
-    console.log(data);
+  const onSubmit = async (data: ICustomer) => {
+    const body: IAccountApiBody = {
+      "name": data?.name,
+      "contactInfo": data?.phoneNumber,
+      category: data?.isBroker ? ICategory.BROKER : ICategory.CUSTOMER
+    }
+    await AuthApiService.postApi<IAccountApiBody, IAccountApiBody>('accounts/create/account', body)
     setShowCustomersPopup(false);
   };
   return (

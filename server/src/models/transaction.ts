@@ -13,7 +13,6 @@ import {
     credit_account: number;
     debit_account: number;
     voucher_id?: string;
- 
   }
   
   interface TransactionCreationAttributes extends Optional<TransactionAttributes, 'transaction_id'> {}
