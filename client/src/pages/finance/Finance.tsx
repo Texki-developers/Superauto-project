@@ -8,6 +8,8 @@ import AssignVehicles from '../../components/AssignVehicles/AssignVehicles';
 import { useForm } from 'react-hook-form';
 import AddFinance from './AddFinance';
 import { IFinance } from '../../types/finance/finance';
+import { IAccountApiBody, ICategory } from '../../types/apimodal/apimodal.d';
+import useAccountApi from '../../hooks/useAccountApi.hook';
 
 
 const defaultValues: IFinance = {
@@ -17,7 +19,7 @@ const defaultValues: IFinance = {
 
 const Finance = () => {
   const [showAddFinancerPopup, setShowAddFinancerPopup] = useState(false);
-  const [showAssignVehiclePopup, setAssignVehiclePopup] = useState(true);
+  const [showAssignVehiclePopup, setAssignVehiclePopup] = useState(false);
 
   const onAddItemClick = () => {
     setShowAddFinancerPopup(true);
@@ -26,12 +28,19 @@ const Finance = () => {
   const { register, handleSubmit, reset, formState: { errors }, control } = useForm({
     defaultValues
   })
+
   const onCancelClick = useCallback(() => {
     setShowAddFinancerPopup(false);
   }, [])
-  const onSubmit = (data: IFinance) => {
-    console.log(data);
+  const accountApi = useAccountApi()
+  const onSubmit = async (data: IFinance) => {
+    const body: IAccountApiBody = {
+      "name": data?.name,
+      "contactInfo": data?.phoneNumber,
+      category: ICategory.FINANCER
+    }
     setShowAddFinancerPopup(false);
+    accountApi(body, 'Financer creation Failed', 'Financer Successfully Created', () => { reset() })
   };
 
   return (

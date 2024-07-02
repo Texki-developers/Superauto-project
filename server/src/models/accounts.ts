@@ -1,12 +1,7 @@
-import {
-  DataTypes,
-  Model,
-  Optional
-} from 'sequelize';
-import {db} from '../config/database'
+import { DataTypes, Model, Optional } from 'sequelize';
+import { db } from '../config/database';
 import PrimaryLedger from './primaryLedger';
 import { IAccountAttributes } from '../types/db.type';
-
 
 interface AccountCreationAttributes extends Optional<IAccountAttributes, 'account_id'> {}
 
@@ -20,35 +15,36 @@ class Accounts extends Model<IAccountAttributes, AccountCreationAttributes> {
   public readonly updatedAt!: Date;
 }
 
-Accounts.init({
-  account_id:{
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-    
+Accounts.init(
+  {
+    account_id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+    },
+    contact_info: {
+      type: DataTypes.STRING,
+    },
+    category: {
+      type: DataTypes.STRING,
+    },
+    head: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: PrimaryLedger,
+        key: 'pl_id',
+      },
+    },
   },
-  name: {
-    type: DataTypes.STRING
-  },
-  contact_info: {
-    type: DataTypes.STRING
-  },
-  category: {
-    type: DataTypes.STRING
-  },
-  head: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: PrimaryLedger, 
-      key: 'pl_id'
-    }
+  {
+    sequelize: db,
+    tableName: 'accounts',
+    timestamps: true,
   }
-}, {
-  sequelize: db,
-  tableName: 'accounts',
-  timestamps: true
-});
+);
 
-
-export default Accounts
+export default Accounts;

@@ -7,6 +7,8 @@ import { ColumnData, dummyData } from './deliveryServices.data';
 import Table from '../../components/table/Table';
 import { IDeliveryService } from '../../types/deliveryServices/deliveryServices';
 import { useForm } from 'react-hook-form';
+import useAccountApi from '../../hooks/useAccountApi.hook';
+import { IAccountApiBody, ICategory } from '../../types/apimodal/apimodal.d';
 
 const defaultValues: IDeliveryService = {
   name: '', // Default value for name
@@ -24,9 +26,16 @@ const DeliveryServices = () => {
   const onCancelClick = useCallback(() => {
     setShowDeliveryServicesPopup(false);
   }, [])
+  const accountApi = useAccountApi()
   const onSubmit = (data: IDeliveryService) => {
+    const body: IAccountApiBody = {
+      "name": data?.name,
+      "contactInfo": data?.phoneNumber,
+      category: ICategory.DELIVERY_SERVICE
+    }
     console.log(data);
     setShowDeliveryServicesPopup(false);
+    accountApi(body, 'Customer creation Failed', 'Customer Successfully Created')
   };
   return (
     <>

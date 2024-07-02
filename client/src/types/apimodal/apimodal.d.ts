@@ -13,3 +13,14 @@ export interface IAccountApiBody {
   contactInfo: string;
   salary?: number;
 }
+
+export interface IAccountApiBodyResponseBody {
+  status: string;
+  statusCode: number;
+  message: string;
+  data: Data;
+}
+
+export interface IAccountApiResponseData {
+  message: string;
+}
