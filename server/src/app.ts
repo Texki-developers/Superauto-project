@@ -27,10 +27,9 @@ app.use('/api/v1/inventory',inventoryRoutes)
 
 app.use('*/images', express.static('./public/uploads'));
 
-
 app.use(cors());
 
-app.get('/', (_: Request, res: Response) => {
+app.get('/', (_: Request, res: Response) =>{ 
   res.send('Super Auto V1/..');
 });
 

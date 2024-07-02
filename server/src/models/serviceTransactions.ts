@@ -5,6 +5,7 @@ import {
   } from 'sequelize';
   import { db } from '../config/database';
 import { IServiceTransactionAttributes } from '../types/db.type';
+import Transaction from './transaction';
   
   // Define the interface for model attributes
 
@@ -32,6 +33,14 @@ import { IServiceTransactionAttributes } from '../types/db.type';
     vehicle_id: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    transaction_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:Transaction,
+        key: 'transaction_id'
+      }
     }
   }, {
     sequelize: db,

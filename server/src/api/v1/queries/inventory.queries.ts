@@ -3,6 +3,7 @@ import FileStore from '../../../models/documents';
 import DsTransaction from '../../../models/dsTransactions';
 import FinancerTransaction from '../../../models/financeTransactions';
 import Inventory from '../../../models/inventory';
+import Sales from '../../../models/sales';
 import ServiceTransaction from '../../../models/serviceTransactions';
 import {
   IDsTransactionAttributes,
@@ -62,6 +63,21 @@ class InventoryQueries {
     } catch (error) {
       throw new Error('Failed To Generate Transaction');
     }
+  }
+
+  async changeStatusOfVehicle (data:any,options?:any){
+  console.log(data)
+    return await Inventory.update({sale_status:true},{
+      where:{
+        registration_number:data.registration_number
+      },
+      returning:true
+    })
+  }
+
+
+  async addDatatoSales(data:any,options?:any){
+    return await Sales.create(data)
   }
 }
 
