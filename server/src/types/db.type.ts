@@ -50,6 +50,7 @@ interface IFinancerTransactionAttributes {
   financer_id: number;
   vehicle_id: number;
   createdAt?: Date;
+  transaction_id: number;
   updatedAt?: Date;
 }
 
@@ -57,6 +58,7 @@ interface IDsTransactionAttributes {
   ds_txn_id?: number;
   ds_id: number;
   vehicle_id: number;
+  transaction_id: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -64,6 +66,7 @@ interface IDsTransactionAttributes {
 interface IServiceTransactionAttributes {
   service_txn_id?: number;
   service_shop_id: number;
+  transaction_id: number;
   vehicle_id: number;
   createdAt?: Date;
   updatedAt?: Date;

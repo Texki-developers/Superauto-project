@@ -4,6 +4,7 @@ enum E_ACCOUNT_CATEGORIES {
   DELIVERY_SERVICE = 'DELIVERY_SERVICE',
   FINANCER = 'FINANCER',
   BROKER = 'BROKER',
+  CUSTOMER ='SUNDRY_DEBTORS'
 }
 
 enum E_PRIMARY_LEDGERS {
@@ -40,7 +41,7 @@ enum E_LEDGERS_BASIC {
   TAX_PAYABLES = 'Tax Payables',
   CAPITAL_AC = 'Capital A/C',
   RETAINED_EARNINGS = 'Retained Earnings',
-  DIRECT_EXPENSE = 'Direct  Expense',
+  DIRECT_EXPENSE = 'Direct Expense',
   OTHER_EXPENSE = 'Other Expense',
   ADMINISTRATION_EXPENSE = 'Administration Expense',
   PURCHASE = 'Purchase',
@@ -53,7 +54,8 @@ Sale	= 'Sale',
  	Expense	= 'Expense',
 	Reciept	='Reciept',
  	Payments	='Payments',
-	Salary  = 'Salary'
+	Salary  = 'Salary',
+  
 }
 
 export { E_ACCOUNT_CATEGORIES, E_PRIMARY_LEDGERS, E_LEDGERS_BASIC,E_VOUCHERS };
