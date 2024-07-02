@@ -8,7 +8,7 @@ import {
   ITransactionParams,
 } from '../../../types/db.type';
 import { IassignVehicle, IInventoryBody } from '../../../types/request.type';
-import { E_PRIMARY_LEDGERS, E_VOUCHERS } from '../../../utils/constants/constants';
+import { E_LEDGERS_BASIC, E_VOUCHERS } from '../../../utils/constants/constants';
 import messages from '../../../utils/constants/messages';
 import { uploadFile } from '../../../utils/fileUpload/fileUpload';
 import getVoucher from '../../../utils/getVoucher/getVoucher';
@@ -63,9 +63,9 @@ class InventoryService {
         const purchaseResult = await accountsQueries.findAccount('Purchase');
         const cashResult = await accountsQueries.findAccount('Cash');
         if (purchaseResult && cashResult && brandID) {
-          await inventoryQueries.addVehicle(insertInventoryData, { transaction: dbTransaction })
+          await inventoryQueries.addVehicle(insertInventoryData, { transaction: dbTransaction });
 
-        const TransactionResult =  accountsQueries.generateTransaction(
+          await accountsQueries.generateTransaction(
             [
               {
                 amount: data.purchase_rate,
@@ -81,8 +81,7 @@ class InventoryService {
               },
             ],
             { transaction: dbTransaction }
-          )
-          console.log(TransactionResult, 'RESULTTTTT');
+          );
           await performTransaction(dbTransaction);
         }
 
@@ -98,14 +97,15 @@ class InventoryService {
     return new Promise(async (resolve, reject) => {
       try {
         const transactions: ITransactionParams[] = [];
-        const financerDetails: IFinancerTransactionAttributes[] = [];
-        const customerVoucher = '';
-        const financerVoucher = '';
         const dbTransaction = await db.transaction();
+        const financerDetails: IFinancerTransactionAttributes[] = [];
+        const customerVoucher = await getVoucher(E_VOUCHERS.Reciept);
+        const financerVoucher = await getVoucher(E_VOUCHERS.Reciept); // will change later
+
         await Promise.all(
           body.map(async (items) => {
             const [Vehicle, cash] = await Promise.all([
-              inventoryQueries.findVehicle(items.regNum),
+              inventoryQueries.findVehicle(items?.regNum),
               accountsQueries.findAccount('cash'),
             ]);
 
@@ -119,6 +119,7 @@ class InventoryService {
               financerDetails.push({
                 financer_id: items.financerId,
                 vehicle_id: Vehicle.inventory_id,
+                transaction_id: 0, // not initialised
               });
             }
             if (Vehicle && items.financerId && cash) {
@@ -135,7 +136,13 @@ class InventoryService {
         const TransactionResult = await accountsQueries.generateTransaction(transactions, {
           transaction: dbTransaction,
         });
-     
+
+        console.log(TransactionResult, 'Transaction Result');
+
+        financerDetails.forEach((item, index) => {
+          financerDetails[index].transaction_id = TransactionResult[1].transaction_id;
+        });
+
         await inventoryQueries.addTofinanceTable(financerDetails, { transaction: dbTransaction });
 
         await performTransaction(dbTransaction);
@@ -144,7 +151,7 @@ class InventoryService {
           message: 'Vehicle assigned to Financer',
         });
       } catch (error) {
-        console.log('BUG:',error)
+        console.log('BUG:', error);
         reject(new Error('Failed to generate transaction when assign vehicle to financer'));
       }
     });
@@ -158,7 +165,7 @@ class InventoryService {
         const dsTransactions: IDsTransactionAttributes[] = [];
         const dbTransaction = await db.transaction();
 
-        const directExpense = await accountsQueries.findAccount('directExpense');
+        const directExpense = await accountsQueries.findAccount(E_LEDGERS_BASIC.DIRECT_EXPENSE);
         if (!directExpense) {
           throw new Error('Direct expense account not found');
         }
@@ -178,19 +185,30 @@ class InventoryService {
                 dsTransactions.push({
                   ds_id: item.serviceId,
                   vehicle_id: vehicle.inventory_id,
+                  transaction_id: 0,
                 });
               }
             }
           })
         );
 
-        await accountsQueries.generateTransaction(transactions, { transaction: dbTransaction });
-        await inventoryQueries.addTodeliveryServiceTable(dsTransactions, { transaction: dbTransaction });
-        await performTransaction(dbTransaction);
+        const resultTransaction = await accountsQueries.generateTransaction(transactions, {
+          transaction: dbTransaction,
+        });
+
+      
+        dsTransactions.forEach((item, index) => {
+          dsTransactions[index].transaction_id = resultTransaction[1].transaction_id;
+        });
+
+      const result =  await inventoryQueries.addTodeliveryServiceTable(dsTransactions, { transaction: dbTransaction });
+      
+      await performTransaction(dbTransaction);
 
         return resolve({ message: 'Vehicle assigned to Delivery Service Shop' });
       } catch (error) {
-        throw new Error('Failed to generate transaction when assigning vehicle to delivery Service');
+        console.log(error)
+        reject( {message:`${error}: Failed to generate transaction when assigning vehicle to delivery Service`});
       }
     });
   }
@@ -198,6 +216,7 @@ class InventoryService {
   assignVehiclesToService(body: IassignVehicle[]) {
     return new Promise(async (resolve, reject) => {
       try {
+        const dbTransaction = await db.transaction();
         const transactions: ITransactionParams[] = [];
         const expenseVoucher = '';
         const serviceTransaction: IServiceTransactionAttributes[] = [];
@@ -221,19 +240,43 @@ class InventoryService {
                 serviceTransaction.push({
                   vehicle_id: vehicle?.inventory_id,
                   service_shop_id: item.serviceId,
+                  transaction_id: 0,
                 });
               }
             }
           })
         );
 
-        await accountsQueries.generateTransaction(transactions);
+        const generateResult = await accountsQueries.generateTransaction(transactions, { transaction: dbTransaction });
+
+        serviceTransaction.forEach((item, index) => {
+          serviceTransaction[index].transaction_id = generateResult[0].transaction_id;
+        });
 
         return resolve({
           message: 'Vehicle assigned to delivery Shop',
-        });
+        })
+
       } catch (error) {
         throw new Error('Failed to generate transaction when assigning vehicle to delivery shop');
+      }
+    });
+  }
+
+  sellVehicle(data: any) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const changeStatus = await inventoryQueries.changeStatusOfVehicle(data);
+        console.log(changeStatus, 'change');
+
+        const saleResult = await inventoryQueries.addDatatoSales(data);
+
+        resolve({
+          message: 'vehicle sale success',
+          data: changeStatus[1][0].inventory_id,
+        });
+      } catch (error) {
+        reject({ mesage: `Failed to sell vehicle Error: ${error}` });
       }
     });
   }
