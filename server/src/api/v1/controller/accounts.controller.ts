@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { responseHandler } from '../../../utils/responseHandler/responseHandler';
 import AccountService from '../services/accounts.service';
-import { IAccountBody, IOtherExpenseBody } from '../../../types/request.type';
+import { IAccountBody, IOtherExpenseBody, IPaymentBody, IRecieptBody } from '../../../types/request.type';
 import accountsService from '../services/accounts.service';
 
 class AccountController {
@@ -40,6 +40,45 @@ class AccountController {
       .then((response:any ) => {
         responseHandler(res, 'CREATED', null, {message: response})
       }).catch((error:any) => {
+        responseHandler(res, 'INTERNAL_SERVER_ERROR')
+      })
+  }
+
+  addReciept = (req: Request, res: Response) => {
+    const {body} = req;
+
+    const data:IRecieptBody = {
+      payment_from: body?.paymentFrom,
+      payment_to: body?.paymentTo,
+      description: body?.description,
+      date: body?.date,
+      amount: body?.amount,
+    }
+
+    accountsService.addReciept(data)
+      .then((response:any ) => {
+        responseHandler(res, 'CREATED', null, {message: response})
+      }).catch((error:any) => {
+        responseHandler(res, 'INTERNAL_SERVER_ERROR')
+      })
+  }
+
+  addPayment = (req: Request, res: Response) => {
+    const {body} = req;
+
+    const data:IPaymentBody = {
+      payment_from: body?.paymentFrom,
+      payment_to: body?.paymentTo,
+      description: body?.description,
+      date: body?.date,
+      amount: body?.amount,
+    }
+
+    accountsService.addPayment(data)
+      .then((response:any ) => {
+        responseHandler(res, 'CREATED', null, {message: response})
+      }).catch((error:any) => {
+        console.log(error);
         responseHandler(res, 'INTERNAL_SERVER_ERROR')
       })
   }

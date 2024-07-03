@@ -5,5 +5,7 @@ const router: Router = express.Router();
 
 router.post('/create/account', accountsController.createAccount);
 router.post('/book/other-expense',accountsController.bookOtherExpense)
+router.post('/book/payment',accountsController.addPayment)
+router.post('/book/reciept',accountsController.addReciept)
 
 export default router;
