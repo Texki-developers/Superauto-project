@@ -1,8 +1,12 @@
+import { Transaction } from 'sequelize';
 import { IAccountAttributes, IEmployeeAttributes } from '../../../types/db.type';
 import { IAccountBody, IOtherExpenseBody } from '../../../types/request.type';
 import { E_ACCOUNT_CATEGORIES, E_LEDGERS_BASIC, E_PRIMARY_LEDGERS } from '../../../utils/constants/constants';
 import accountsQueries from '../queries/accounts.queries';
 import authQueries from '../queries/accounts.queries';
+import { db } from '../../../config/database';
+import { performTransaction } from '../../../utils/PerformTransaction/PerformTransaction';
+import getVoucher from '../../../utils/getVoucher/getVoucher';
 
 class AccountService {
   createAccount = (data: IAccountBody) => {
@@ -34,24 +38,38 @@ class AccountService {
   bookOtherExpense = (data: IOtherExpenseBody) => {
     return new Promise(async (resolve, reject) => {
       try {
+        const dbTransaction:Transaction = await db.transaction();
         const expenseAcResult: any = await accountsQueries.findAccount(E_LEDGERS_BASIC.OTHER_EXPENSE);
+        const voucher:string =  await getVoucher('Expense');
+
+        console.log(expenseAcResult,'this is expense ac');
+        
 
         const transactionResult  = await accountsQueries.generateTransaction(
           [
             {
               amount: data?.amount,
-              credit_account: 
-              data.expense_to,
-              debit_account: expenseAcResult?.[0]?.account_id,
-              description: data.description
+              credit_account: data.expense_to,
+              debit_account: expenseAcResult,
+              description: data.description,
+              voucher_id: voucher
             },
-          ]
+          ],
+          {transaction: dbTransaction}
         );
 
+        await accountsQueries.addOtherExpense({
+          transaction_id: transactionResult[0]?.transaction_id,
+          amount: data.amount,
+          due_date: data?.date
+        }, {transaction: dbTransaction})
+
+       await performTransaction(dbTransaction);
+        resolve('Updated successully')
          
-      } catch (error) {
-        console.error(error);
-        throw new Error('Adding expense failed!');
+      } catch (error:any) {
+        console.error(error.message);
+        reject(error)
       }
     });
   };
