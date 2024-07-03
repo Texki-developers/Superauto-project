@@ -46,7 +46,6 @@ class AccountQueries {
 
   async findAccount(name: string) {
     const result = await Accounts.findOne({ where: { name: name } });
-
     return result?.account_id;
   }
 

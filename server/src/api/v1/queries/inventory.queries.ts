@@ -13,6 +13,7 @@ import {
   ITransactionParams,
 } from '../../../types/db.type';
 import { IInventoryBody } from '../../../types/request.type';
+import returnDataValues from '../../../utils/commonUtils/returnDataValues';
 
 class InventoryQueries {
   async addVehicle(data: IInventoryAttributes, options?: any) {
@@ -31,11 +32,14 @@ class InventoryQueries {
   }
 
   async findVehicle(regNum: string) {
-    return await Inventory.findOne({
+    const result = await Inventory.findOne({
       where: {
         registration_number: regNum,
       },
     });
+    
+    return  result?.dataValues
+  
   }
 
   async addTofinanceTable(data: IFinancerTransactionAttributes[], options?: any) {
@@ -58,8 +62,8 @@ class InventoryQueries {
 
   async addToServiceTable(data: IServiceTransactionAttributes[], options?: any) {
     try {
-      const deliveryService = await ServiceTransaction.bulkCreate(data, options);
-      return deliveryService;
+      const Service = await ServiceTransaction.bulkCreate(data, options);
+      return Service;
     } catch (error) {
       throw new Error('Failed To Generate Transaction');
     }

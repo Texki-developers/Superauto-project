@@ -14,7 +14,6 @@ class AccountService {
       const { category, salary }: { category: E_ACCOUNT_CATEGORIES; salary: number } = data;
       try {
         const primaryLedger = E_PRIMARY_LEDGERS[category];
-
         if (primaryLedger) {
           const accountResult = await authQueries.createAccount({ ...data, head: primaryLedger });
       
@@ -30,7 +29,7 @@ class AccountService {
         throw new Error('Head is not Found!');
       } catch (error: any) {
         console.log(error, 'THE ERROR');
-        reject(error.message)
+        reject({message:error.message})
       }
     });
   };
