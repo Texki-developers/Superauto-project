@@ -4,14 +4,13 @@ import {
     Optional
   } from 'sequelize';
   import { db } from '../config/database';
+import Transaction from './transaction';
   
   // Define the interface for model attributes
   interface ReceiptAttributes {
     receipt_id: number;
-    recipient_id: number;
     date: Date;
     description: string;
-    mode: string;
     transaction_id: number;
   }
   
@@ -19,10 +18,8 @@ import {
   
   class Receipt extends Model<ReceiptAttributes, ReceiptCreationAttributes> implements ReceiptAttributes {
     public receipt_id!: number;
-    public recipient_id!: number;
     public date!: Date;
     public description!: string;
-    public mode!: string;
     public transaction_id!: number;
   }
   
@@ -32,10 +29,6 @@ import {
       autoIncrement: true,
       primaryKey: true
     },
-    recipient_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
     date: {
       type: DataTypes.DATE,
       allowNull: false
@@ -44,16 +37,13 @@ import {
       type: DataTypes.STRING,
       allowNull: false
     },
-    mode: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        isIn: [['cash', 'bank']]
-      }
-    },
     transaction_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: Transaction,
+        key: 'transaction_id'
+      }
     }
   }, {
     sequelize: db,

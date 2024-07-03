@@ -29,10 +29,28 @@ interface IOtherExpenseBody{
     amount: number;
 }
 
+interface IRecieptBody {
+    payment_from: number;
+    payment_to: 'CASH' | 'BANK';
+    description: string;
+    date: Date;
+    amount: number;
+}
+
+interface IPaymentBody {
+    payment_to: number;
+    payment_from: 'CASH' | 'BANK';
+    description: string;
+    date: Date;
+    amount: number;
+}
+
 export type {
     IAccountBody,
     IInventoryBody,
     IassignVehicleBody,
     IassignVehicle,
-    IOtherExpenseBody
+    IOtherExpenseBody,
+    IRecieptBody,
+    IPaymentBody
 }

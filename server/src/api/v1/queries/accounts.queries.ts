@@ -2,7 +2,9 @@ import { pool } from '../../../config1/dbConfig';
 import Accounts from '../../../models/accounts';
 import Employee from '../../../models/employee';
 import OtherExpense from '../../../models/otherExpense';
+import Payment from '../../../models/payments';
 import PrimaryLedger from '../../../models/primaryLedger';
+import Receipt from '../../../models/receipents';
 import Transaction from '../../../models/transaction';
 import Voucher from '../../../models/vouchers';
 import { ITransactionParams } from '../../../types/db.type';
@@ -65,6 +67,16 @@ class AccountQueries {
   }, options?:any){
     const result = await OtherExpense.create(data, {returning: true, ...options})
     return result
+  }
+
+  // async addPaymadentData(data: {date: Date, transaction_id: number, description: string}, options?:any){
+  //   const result = await Payment.create(data,{returning: true, ...options})
+  //   return result;
+  // }
+
+  async addRecieptData(data: {date: Date, transaction_id: number, description: string}, options?:any){
+    const result = await Receipt.create(data,{returning: true, ...options})
+    return result;
   }
 }
 
