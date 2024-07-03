@@ -76,7 +76,7 @@ class InventoryController {
 
   assignVehiclesToFinance(req: Request, res: Response) {
     const { Vehicles }: IassignVehicleBody = req.body;
-
+    
     inventoryService
       .assignVehiclesToFinance(Vehicles)
       .then((data: any) => {

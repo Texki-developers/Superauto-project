@@ -23,11 +23,13 @@ class InventoryService {
       const fileType = 'doc';
       try {
         const docs = [data.rc_book, data.proof_doc, data.insurance_doc];
+        console.log(docs, 'THE DC');
         const dbTransaction = await db.transaction();
         const purchaseVoucher = await getVoucher(E_VOUCHERS.Purchase);
         const paymentVoucher = await getVoucher(E_VOUCHERS.Payments);
 
         const docsResult: any = await Promise.all(docs.map((file) => uploadFile(file, fileType, allowedExtension)));
+        console.log(docsResult, 'Doc result');
         let uploadDocs;
 
         let brandID;
@@ -88,7 +90,7 @@ class InventoryService {
         return resolve({ message: messages.success.ACCOUNT_CREATED });
       } catch (error) {
         console.log(error, 'EROR');
-        throw new Error('Failed to add Vehicle to inventory...');
+        reject({ message: 'Failed to add Vehicle to inventory...' + error });
       }
     });
   };
@@ -106,10 +108,11 @@ class InventoryService {
           body.map(async (items) => {
             const [Vehicle, cash] = await Promise.all([
               inventoryQueries.findVehicle(items?.regNum),
-              accountsQueries.findAccount('cash'),
+              accountsQueries.findAccount('Cash'),
             ]);
 
-            if (Vehicle && Vehicle.account_id && items.financerId) {
+            if (Vehicle && Vehicle.account_id && items.financerId && Vehicle.inventory_id) {
+              console.log('Entering...');
               transactions.push({
                 amount: items.amount,
                 credit_account: Vehicle.account_id,
@@ -118,9 +121,11 @@ class InventoryService {
               });
               financerDetails.push({
                 financer_id: items.financerId,
-                vehicle_id: Vehicle.inventory_id,
+                vehicle_id: Vehicle?.inventory_id,
                 transaction_id: 0, // not initialised
               });
+            } else {
+              throw new Error('vehicle Reg no or financer is not valid');
             }
             if (Vehicle && items.financerId && cash) {
               transactions.push({
@@ -132,6 +137,8 @@ class InventoryService {
             }
           })
         );
+
+        console.log(transactions, 'TRANS');
 
         const TransactionResult = await accountsQueries.generateTransaction(transactions, {
           transaction: dbTransaction,
@@ -196,19 +203,18 @@ class InventoryService {
           transaction: dbTransaction,
         });
 
-      
         dsTransactions.forEach((item, index) => {
-          dsTransactions[index].transaction_id = resultTransaction[1].transaction_id;
+          dsTransactions[index].transaction_id = resultTransaction[index].transaction_id;
         });
 
-      const result =  await inventoryQueries.addTodeliveryServiceTable(dsTransactions, { transaction: dbTransaction });
-      
-      await performTransaction(dbTransaction);
+        const result = await inventoryQueries.addTodeliveryServiceTable(dsTransactions, { transaction: dbTransaction });
+
+        await performTransaction(dbTransaction);
 
         return resolve({ message: 'Vehicle assigned to Delivery Service Shop' });
       } catch (error) {
-        console.log(error)
-        reject( {message:`${error}: Failed to generate transaction when assigning vehicle to delivery Service`});
+        console.log(error);
+        reject({ message: `${error}: Failed to generate transaction when assigning vehicle to delivery Service` });
       }
     });
   }
@@ -218,9 +224,9 @@ class InventoryService {
       try {
         const dbTransaction = await db.transaction();
         const transactions: ITransactionParams[] = [];
-        const expenseVoucher = '';
+        const expenseVoucher = await getVoucher('Expense');
         const serviceTransaction: IServiceTransactionAttributes[] = [];
-        const directExpense = await accountsQueries.findAccount('directExpense');
+        const directExpense = await accountsQueries.findAccount('Direct Expense');
         if (!directExpense) {
           throw new Error('Direct expense account not found');
         }
@@ -242,23 +248,31 @@ class InventoryService {
                   service_shop_id: item.serviceId,
                   transaction_id: 0,
                 });
+              } else {
+                throw new Error('Vehicle Registration Number is invalid');
               }
+            } else {
+              throw new Error('Invalid service center');
             }
           })
         );
 
         const generateResult = await accountsQueries.generateTransaction(transactions, { transaction: dbTransaction });
-
+            console.log(generateResult,"GENERATED RESUKT")
         serviceTransaction.forEach((item, index) => {
-          serviceTransaction[index].transaction_id = generateResult[0].transaction_id;
+          serviceTransaction[index].transaction_id = generateResult[index].transaction_id;
+        });
+        await inventoryQueries.addToServiceTable(serviceTransaction, {
+          transaction: dbTransaction,
         });
 
+        await performTransaction(dbTransaction);
         return resolve({
-          message: 'Vehicle assigned to delivery Shop',
-        })
-
+          message: 'Vehicle assigned to service Shop',
+        });
       } catch (error) {
-        throw new Error('Failed to generate transaction when assigning vehicle to delivery shop');
+        console.log(error);
+        reject({ message: 'Failed to generate transaction when assigning vehicle to service shop' + error });
       }
     });
   }
