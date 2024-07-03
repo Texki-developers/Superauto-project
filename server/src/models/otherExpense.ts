@@ -4,6 +4,7 @@ import {
     Optional
   } from 'sequelize';
   import { db } from '../config/database';
+import Transaction from './transaction';
   
   // Define the interface for model attributes
   interface OtherExpenseAttributes {
@@ -36,7 +37,11 @@ import {
     },
     transaction_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references:{
+        model: Transaction,
+        key: 'transaction_id'
+      }
     },
     amount: {
       type: DataTypes.INTEGER,

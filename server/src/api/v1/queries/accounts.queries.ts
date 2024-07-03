@@ -1,10 +1,12 @@
 import { pool } from '../../../config1/dbConfig';
 import Accounts from '../../../models/accounts';
 import Employee from '../../../models/employee';
+import OtherExpense from '../../../models/otherExpense';
 import PrimaryLedger from '../../../models/primaryLedger';
 import Transaction from '../../../models/transaction';
 import Voucher from '../../../models/vouchers';
 import { ITransactionParams } from '../../../types/db.type';
+import returnDataValues from '../../../utils/commonUtils/returnDataValues';
 import { E_ACCOUNT_CATEGORIES } from '../../../utils/constants/constants';
 
 class AccountQueries {
@@ -31,9 +33,11 @@ class AccountQueries {
 
   async generateTransaction(data: ITransactionParams[], options?: any) {
     try {
-      const TransactionResult = await Transaction.bulkCreate(data, options);
-      return TransactionResult;
+      const TransactionResult = await Transaction.bulkCreate(data, {returning: true, ...options});
+      return returnDataValues(TransactionResult);
     } catch (error) {
+      console.log(error);
+      
       throw new Error('Failed To Generate Transaction');
     }
   }
@@ -52,6 +56,15 @@ class AccountQueries {
       prefix: result?.prefix,
       last_invoice_number: result?.last_invoice_number
     };
+  }
+
+  async addOtherExpense(data: {
+    transaction_id: number;
+    amount: number;
+    due_date: Date;
+  }, options?:any){
+    const result = await OtherExpense.create(data, {returning: true, ...options})
+    return result
   }
 }
 

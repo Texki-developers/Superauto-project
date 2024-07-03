@@ -1,7 +1,7 @@
 #!bin/bash
 
 echo "Finding the Docker container ID" 
-server_container_id=`docker ps | grep 'superauto-project-server-1' | awk '{print $1}'`
+server_container_id=`docker ps | grep 'server-1' | awk '{print $1}'`
 
 if [ -z "$server_container_id" ];then
     echo "Error: Server container ID not found"
