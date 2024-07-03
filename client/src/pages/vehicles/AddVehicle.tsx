@@ -76,7 +76,12 @@ const AddVehicle = ({ setShowAddPage }: IProps) => {
     formData.append('isNew', data?.brand?.__isNew__ ? 'true' : 'false');
     const id = toastLoading('Loading...');
     try {
-      await AuthApiService.postApiFormData('inventory/add/vehicle', formData,)
+      const data = await AuthApiService.postApiFormData<FormData, any>('inventory/add/vehicle', formData,)
+      console.log(data)
+      if (data?.status === "error") {
+        toastError(id, data?.message)
+        return
+      }
       setShowAddPage(false)
       toastSuccess(id, 'Vehicle added successfully')
     } catch (error) {

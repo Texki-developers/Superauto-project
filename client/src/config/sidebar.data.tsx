@@ -71,14 +71,14 @@ export const sidebarData: ISidebarItem[] = [
     isSubMenu: false,
     element: <Employees />,
   },
-  {
-    name: 'Other Expenses',
-    url: '/other-expenses',
-    icon: OtherExpensesImage,
-    id: uuidv4(),
-    isSubMenu: false,
-    element: <OtherExpenses />,
-  },
+  // {
+  //   name: 'Other Expenses',
+  //   url: '/other-expenses',
+  //   icon: OtherExpensesImage,
+  //   id: uuidv4(),
+  //   isSubMenu: false,
+  //   element: <OtherExpenses />,
+  // },
   {
     name: 'Delivery Services',
     url: '/delivery-services',

@@ -24,3 +24,18 @@ export interface IAccountApiBodyResponseBody {
 export interface IAccountApiResponseData {
   message: string;
 }
+
+export interface IApiError {
+  message: string;
+  status: 'error' | 'success';
+}
+
+interface IAssignApiBody {
+  Vehicles: IVehicle[];
+}
+
+interface IVehicle {
+  amount: number;
+  regNum: string;
+  [key: 'financerId' | 'serviceId']: number;
+}
