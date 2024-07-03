@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
+import { IApiError } from '../types/apimodal/apimodal';
 
 export default class AuthApiService {
   private static instance: AxiosInstance = axios.create({
@@ -8,7 +9,7 @@ export default class AuthApiService {
     },
   });
 
-  static async postApi<T, R>(url: string, body: T): Promise<R | null> {
+  static async postApi<T, R>(url: string, body: T): Promise<R | IApiError> {
     try {
       const response = await AuthApiService.instance.post<R>(
         url,
@@ -17,15 +18,18 @@ export default class AuthApiService {
       console.log(response);
       return response.data;
     } catch (error) {
-      console.log('Error posting to API:', error);
-      return null;
+      console.error('Error posting to API:', error);
+      return {
+        message: 'Something went wrong',
+        status: 'error',
+      };
     }
   }
 
-  static async postApiFormData<R>(
+  static async postApiFormData<T, R>(
     url: string,
-    formData: FormData,
-  ): Promise<R | null> {
+    formData: T,
+  ): Promise<R | IApiError> {
     try {
       const response = await AuthApiService.instance.post<R>(url, formData, {
         headers: {
@@ -34,8 +38,11 @@ export default class AuthApiService {
       });
       return response.data;
     } catch (error) {
-      console.log('Error posting to API:', error);
-      return null;
+      console.error('Error posting to API:', error);
+      return {
+        message: 'Something went wrong',
+        status: 'error',
+      };
     }
   }
 }
