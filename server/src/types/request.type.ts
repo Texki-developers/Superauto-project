@@ -45,6 +45,22 @@ interface IPaymentBody {
     amount: number;
 }
 
+
+interface IsellVehicle {
+    accountId: number;
+    soldRate: string;
+    soldDate: Date;
+    paymentMode: string;
+    financeAmount: number;
+    financeCharge: number;
+    soldVehicleId: number;
+    isFinance: boolean;
+    is_exchange: boolean;
+    rate: string;
+    amount: number;
+    due_date: string;
+}
+
 export type {
     IAccountBody,
     IInventoryBody,
@@ -52,5 +68,6 @@ export type {
     IassignVehicle,
     IOtherExpenseBody,
     IRecieptBody,
-    IPaymentBody
+    IPaymentBody,
+    IsellVehicle
 }
