@@ -9,7 +9,12 @@ const useAccountApi = () => {
         const id = toastLoading("Please wait...")
         console.log(id)
         try {
-            await AuthApiService.postApi<IAccountApiBody, IAccountApiBodyResponseBody>('accounts/create/account', body)
+            const data = await AuthApiService.postApi<IAccountApiBody, IAccountApiBodyResponseBody>('accounts/create/account', body)
+            if (data?.status === 'error') {
+                toastError(id, errorMessage)
+                onFailure && onFailure()
+                return
+            }
             toastSuccess(id, successMessage)
             onSuccess && onSuccess()
         } catch (error) {

@@ -9,10 +9,12 @@ import {
   IDsTransactionAttributes,
   IFinancerTransactionAttributes,
   IInventoryAttributes,
+  ISalesAttributes,
   IServiceTransactionAttributes,
   ITransactionParams,
 } from '../../../types/db.type';
 import { IInventoryBody } from '../../../types/request.type';
+import returnDataValues from '../../../utils/commonUtils/returnDataValues';
 
 class InventoryQueries {
   async addVehicle(data: IInventoryAttributes, options?: any) {
@@ -31,11 +33,14 @@ class InventoryQueries {
   }
 
   async findVehicle(regNum: string) {
-    return await Inventory.findOne({
+    const result = await Inventory.findOne({
       where: {
         registration_number: regNum,
       },
     });
+    
+    return  result?.dataValues
+  
   }
 
   async addTofinanceTable(data: IFinancerTransactionAttributes[], options?: any) {
@@ -58,8 +63,8 @@ class InventoryQueries {
 
   async addToServiceTable(data: IServiceTransactionAttributes[], options?: any) {
     try {
-      const deliveryService = await ServiceTransaction.bulkCreate(data, options);
-      return deliveryService;
+      const Service = await ServiceTransaction.bulkCreate(data, options);
+      return Service;
     } catch (error) {
       throw new Error('Failed To Generate Transaction');
     }
@@ -67,17 +72,18 @@ class InventoryQueries {
 
   async changeStatusOfVehicle (data:any,options?:any){
   console.log(data)
+
     return await Inventory.update({sale_status:true},{
       where:{
-        registration_number:data.registration_number
+        registration_number:data.soldVehicleId
       },
       returning:true
     })
   }
 
 
-  async addDatatoSales(data:any,options?:any){
-    return await Sales.create(data)
+  async addDatatoSales(data:ISalesAttributes,options?:any){
+    return await Sales.create(data,options)
   }
 }
 

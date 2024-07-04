@@ -9,7 +9,7 @@ export default defineConfig({
   },
   resolve: {
     alias: [
-      {  
+      {   
         find: 'react-query/devtools', 
         replacement: 'react-query/es/devtools/index',
       },

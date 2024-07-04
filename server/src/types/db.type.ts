@@ -72,6 +72,21 @@ interface IServiceTransactionAttributes {
   updatedAt?: Date;
 }
 
+interface ISalesAttributes {
+  sales_id: number;
+  account_id: number;
+  sold_vehicle: number;
+  sold_rate: number;
+  sold_date: Date;
+  payment_mode: string;
+  is_finance: boolean;
+  finance_amount: number;
+  finance_service_charge: number;
+  is_exchange: number;
+  exchange_vehicle_id: number;
+  due_date: Date;
+}
+
 export {
   IAccountAttributes,
   IEmployeeAttributes,
@@ -81,4 +96,5 @@ export {
   IFinancerTransactionAttributes,
   IDsTransactionAttributes,
   IServiceTransactionAttributes,
+  ISalesAttributes
 };

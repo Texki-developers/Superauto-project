@@ -7,14 +7,14 @@ import { SetStateAction, useState } from "react";
 import SelectInput from "../formComponents/selectInput/SelectInput";
 
 interface IProps {
-    setShow: React.Dispatch<SetStateAction<boolean>>
+    setShow: React.Dispatch<SetStateAction<string>>
 }
 
 const PaymentForm = ({ setShow }: IProps) => {
     const [isNew, setIsNew] = useState<boolean>(false)
     const { register, handleSubmit, control, formState: { errors } } = useForm();
     const onClose = () => {
-        setShow(false)
+        setShow('')
     }
     const onSubmit = (data: any) => {
         console.log(data);

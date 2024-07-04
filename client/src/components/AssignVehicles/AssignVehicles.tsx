@@ -11,8 +11,11 @@ import {
 import { SubmitHandler, useForm, useFieldArray } from 'react-hook-form';
 import SaveCancelButtons from '../../components/save-cancel-buttons/SaveCancelButtons';
 import { useState } from 'react';
+import useToast from '../../hooks/useToast.hook';
+import AuthApiService from '../../services/api-services';
+import { IAssignApiBody } from '../../types/apimodal/apimodal';
 
-export default function AssignVehicles({ setAssign }: AssignVehiclesProps) {
+export default function AssignVehicles({ setAssign, itemId, parent, apiUrl }: AssignVehiclesProps) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const {
@@ -42,11 +45,33 @@ export default function AssignVehicles({ setAssign }: AssignVehiclesProps) {
       label: 'Kl 47 k 3300',
     },
   ];
+  const { toastError, toastLoading, toastSuccess } = useToast()
 
-  const onSubmit: SubmitHandler<IassignFormInput> = (data: any) => {
-    console.log(data, 'The data');
+  const onSubmit: SubmitHandler<IassignFormInput> = async (data: any) => {
+    const id = toastLoading('Loading...')
+    // creating the body
+    const Vehicles = data?.vehicle?.map((item: any) => (
+      {
+        regNum: item?.regNum?.value,
+        amount: item?.amount,
+        [parent]: itemId
+      }
+    ))
+    try {
+      const data = await AuthApiService.postApi<IAssignApiBody, any>(`inventory/assign-vehicle${apiUrl}`, { Vehicles })
+      console.log(data)
+      if (data?.status === "error") {
+        toastError(id, data?.message)
+        setAssign(false)
+        return
+      }
+      setAssign(false);
+      toastSuccess(id, 'Vehicle added successfully')
+    } catch (error) {
+      setAssign(false);
+      toastError(id, 'Something went wrong')
+    }
 
-    setAssign(false);
   };
 
   const handleAddField = () => {
@@ -68,7 +93,6 @@ export default function AssignVehicles({ setAssign }: AssignVehiclesProps) {
       setErrorMsg('Cannot remove the last field.');
     }
   };
-  const handleFormSubmit = handleSubmit(onSubmit);
   return (
     <div className='flex flex-col gap-6'>
       <form
@@ -123,7 +147,6 @@ export default function AssignVehicles({ setAssign }: AssignVehiclesProps) {
         </div>
         <SaveCancelButtons
           onCancelClick={() => setAssign(false)}
-          onSaveClick={handleFormSubmit}
           type='submit'
           hideReset
         />

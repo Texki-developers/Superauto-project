@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import AddAndSearchItem from '../../components/addAndSearchItem/AddAndSearchItem';
 import Header from '../../components/header/Header';
 import ModalWrapper from '../../components/modalWrapper';
@@ -9,6 +9,8 @@ import { IDeliveryService } from '../../types/deliveryServices/deliveryServices'
 import { useForm } from 'react-hook-form';
 import useAccountApi from '../../hooks/useAccountApi.hook';
 import { IAccountApiBody, ICategory } from '../../types/apimodal/apimodal.d';
+import AssignVehicles from '../../components/AssignVehicles/AssignVehicles';
+import addProduct from '../../assets/icons/addCart.svg';
 
 const defaultValues: IDeliveryService = {
   name: '', // Default value for name
@@ -17,6 +19,9 @@ const defaultValues: IDeliveryService = {
 
 const DeliveryServices = () => {
   const [showDeliveryServicesPopup, setShowDeliveryServicesPopup] = useState(false);
+
+  const [assignId, setAssignId] = useState(0)
+  const [showAssignVehiclePopup, setAssignVehiclePopup] = useState(false);
   const onAddItemClick = () => {
     setShowDeliveryServicesPopup(true);
   };
@@ -37,6 +42,28 @@ const DeliveryServices = () => {
     setShowDeliveryServicesPopup(false);
     accountApi(body, 'Customer creation Failed', 'Customer Successfully Created')
   };
+  const onActionClick = (id: number) => {
+    setAssignId(id)
+    setAssignVehiclePopup(true)
+  }
+  const columnData = useMemo(() => {
+    return [
+      ...ColumnData,
+      {
+        name: 'Action',
+        key: 'id',
+        columnData: (id: string) => (
+          <div className='flex gap-2 *:h-[20px] *:w-[20px]'>
+            <img
+              onClick={() => onActionClick(parseInt(id))}
+              src={addProduct}
+              alt=''
+            />
+          </div>
+        ),
+      },
+    ];
+  }, []);
   return (
     <>
       {showDeliveryServicesPopup && (
@@ -49,6 +76,16 @@ const DeliveryServices = () => {
           </form>
         </ModalWrapper>
       )}
+      {showAssignVehiclePopup && (
+        <ModalWrapper
+          onClose={() => {
+            setAssignVehiclePopup(false);
+          }}
+          title='Assign Vehicle'
+        >
+          <AssignVehicles apiUrl='/delivery-service' setAssign={setAssignVehiclePopup} parent='serviceId' itemId={4} />
+        </ModalWrapper>
+      )}
       <div className='table-wrapper'>
         <Header />
         <section className='pt-[50px]'>
@@ -58,7 +95,7 @@ const DeliveryServices = () => {
           />
         </section>
         <section className='pt-5 pb-2'>
-          <Table data={dummyData} columnData={ColumnData} />
+          <Table data={dummyData} columnData={columnData} />
         </section>
       </div>
     </>
