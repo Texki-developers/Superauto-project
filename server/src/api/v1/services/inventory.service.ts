@@ -7,7 +7,7 @@ import {
   IServiceTransactionAttributes,
   ITransactionParams,
 } from '../../../types/db.type';
-import { IassignVehicle, IInventoryBody } from '../../../types/request.type';
+import { IassignVehicle, IInventoryBody, IsellVehicleBody } from '../../../types/request.type';
 import { E_LEDGERS_BASIC, E_VOUCHERS } from '../../../utils/constants/constants';
 import messages from '../../../utils/constants/messages';
 import { uploadFile } from '../../../utils/fileUpload/fileUpload';
@@ -87,7 +87,7 @@ class InventoryService {
           await performTransaction(dbTransaction);
         }
 
-        return resolve({ message: messages.success.ACCOUNT_CREATED });
+        return resolve({ message: 'Vehicle Added Successfully'});
       } catch (error) {
         console.log(error, 'EROR');
         reject({ message: 'Failed to add Vehicle to inventory...' + error });
@@ -167,7 +167,7 @@ class InventoryService {
   assignVehiclesToDeliveryService(body: IassignVehicle[]) {
     return new Promise(async (resolve, reject) => {
       try {
-        const expenseVoucher = '';
+        const expenseVoucher = await getVoucher(E_LEDGERS_BASIC.DIRECT_EXPENSE);
         const transactions: ITransactionParams[] = [];
         const dsTransactions: IDsTransactionAttributes[] = [];
         const dbTransaction = await db.transaction();
@@ -277,20 +277,54 @@ class InventoryService {
     });
   }
 
-  sellVehicle(data: any) {
+  sellVehicle(data: IsellVehicleBody) {
     return new Promise(async (resolve, reject) => {
       try {
-        const changeStatus = await inventoryQueries.changeStatusOfVehicle(data);
+        const dbTransaction = await db.transaction();
+        const salesId = await accountsQueries.findAccount(E_LEDGERS_BASIC.SALE)
+        const cashId = await accountsQueries.findAccount(E_LEDGERS_BASIC.CASH)
+        let transactions:ITransactionParams[] = []
+      
+        if(salesId && cashId){
+           transactions = [
+            {
+              amount:data.sales_rate,
+              credit_account: salesId,
+              debit_account:  data.account_id,
+              description:''
+            },
+            {
+              amount:data.sales_rate,
+              credit_account: data.account_id,
+              debit_account:  cashId,
+              description:''
+            }
+        ]
+        }
+      
 
+        const generateResult = await accountsQueries.generateTransaction(transactions, { transaction: dbTransaction });
+        const changeStatus = await inventoryQueries.changeStatusOfVehicle(data.sold_vehicle_id,{ transaction: dbTransaction });
+        const saleResult = await inventoryQueries.addDatatoSales({account_id:data.account_id,
+        sold_date:data.sales_date,
+        due_date:data.due_date,
+        exchange_vehicle_id:data.exchange_vehicle_id,
+        sold_rate:data.sales_rate,
+        sold_vehicle:data.sold_vehicle_id,
+        payment_mode:data.payment_mode,
+        is_finance:data.is_finance,
+        finance_amount:data.finance_amount,
+        finance_service_charge:data.finance_charge,
+        is_exchange:data.is_exchange,
+        },{ transaction: dbTransaction })
 
-        // const saleResult = await inventoryQueries.addDatatoSales({account_id:data.});
-
+        await performTransaction(dbTransaction);
+        
         resolve({
           message: 'vehicle sale success',
-          data: changeStatus[1][0].inventory_id,
         });
       } catch (error) {
-        reject({ mesage: `Failed to sell vehicle Error: ${error}` });
+        reject({ message: `Failed to sell vehicle Error: ${error}` });
       }
     });
   }

@@ -73,7 +73,7 @@ interface IServiceTransactionAttributes {
 }
 
 interface ISalesAttributes {
-  sales_id: number;
+  sales_id?: number;
   account_id: number;
   sold_vehicle: number;
   sold_rate: number;
@@ -82,7 +82,7 @@ interface ISalesAttributes {
   is_finance: boolean;
   finance_amount: number;
   finance_service_charge: number;
-  is_exchange: number;
+  is_exchange: boolean;
   exchange_vehicle_id: number;
   due_date: Date;
 }

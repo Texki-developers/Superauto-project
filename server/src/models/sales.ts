@@ -21,7 +21,7 @@ import { ISalesAttributes } from '../types/db.type';
     public is_finance!: boolean;
     public finance_amount!: number;
     public finance_service_charge!: number;
-    public is_exchange!: number;
+    public is_exchange!: boolean;
     public exchange_vehicle_id!: number;
     public due_date!: Date;
   
@@ -66,7 +66,7 @@ import { ISalesAttributes } from '../types/db.type';
       allowNull: true
     },
     is_exchange: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BOOLEAN,
       allowNull: false
     },
     exchange_vehicle_id: {
