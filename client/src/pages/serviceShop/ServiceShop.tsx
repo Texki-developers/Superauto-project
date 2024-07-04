@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import AddAndSearchItem from '../../components/addAndSearchItem/AddAndSearchItem';
 import Header from '../../components/header/Header';
 import ModalWrapper from '../../components/modalWrapper';
@@ -10,6 +10,7 @@ import { useForm } from 'react-hook-form';
 import { IServiceShop } from '../../types/serviceShop/serviceShop';
 import { IAccountApiBody, ICategory } from '../../types/apimodal/apimodal.d';
 import useAccountApi from '../../hooks/useAccountApi.hook';
+import addProduct from '../../assets/icons/addCart.svg';
 
 const defaultValues: IServiceShop = {
   name: '', // Default value for name
@@ -19,6 +20,8 @@ const defaultValues: IServiceShop = {
 const ServiceShop = () => {
   const [showServiceShopPopup, setShowServiceShopPopup] = useState(false);
   const [showAssignVehiclePopup, setAssignVehiclePopup] = useState(false);
+  const [assignId, setAssignId] = useState(0)
+
   const onAddItemClick = () => {
     setShowServiceShopPopup(true);
   };
@@ -39,7 +42,28 @@ const ServiceShop = () => {
     accountApi(body, 'Service Shop creation Failed', 'Service Shop Successfully Created', () => { reset() })
 
   };
-
+  const onActionClick = (id: number) => {
+    setAssignId(id)
+    setAssignVehiclePopup(true)
+  }
+  const columnData = useMemo(() => {
+    return [
+      ...ColumnData,
+      {
+        name: 'Action',
+        key: 'id',
+        columnData: (id: string) => (
+          <div className='flex gap-2 *:h-[20px] *:w-[20px]'>
+            <img
+              onClick={() => onActionClick(parseInt(id))}
+              src={addProduct}
+              alt=''
+            />
+          </div>
+        ),
+      },
+    ];
+  }, []);
   return (
     <>
       {showServiceShopPopup && (
@@ -60,7 +84,7 @@ const ServiceShop = () => {
           }}
           title='Assign Vehicle'
         >
-          <AssignVehicles setAssign={setAssignVehiclePopup} />
+          <AssignVehicles apiUrl='/service' setAssign={setAssignVehiclePopup} parent='serviceId' itemId={assignId} />
         </ModalWrapper>
       )}
       <div className='table-wrapper'>
@@ -72,7 +96,7 @@ const ServiceShop = () => {
           />
         </section>
         <section className='pt-5 pb-2'>
-          <Table data={dummyData} columnData={ColumnData} />
+          <Table data={dummyData} columnData={columnData} />
         </section>
       </div>
     </>

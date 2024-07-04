@@ -2,22 +2,56 @@ import { useForm } from "react-hook-form";
 import InputBox from "../formComponents/inputBox/InputBox"
 import ModalWrapper from "../modalWrapper"
 import SaveCancelButtons from "../save-cancel-buttons/SaveCancelButtons"
-import CreateSelectInput from "../formComponents/creatableSelect/CreatableSelect";
-import { SetStateAction, useState } from "react";
+import { SetStateAction } from "react";
 import SelectInput from "../formComponents/selectInput/SelectInput";
+import AuthApiService from "../../services/api-services";
+import { IExpenseFormData } from "../../types/expenseForm/expenseForm";
+import useToast from "../../hooks/useToast.hook";
 
 interface IProps {
     setShow: React.Dispatch<SetStateAction<string>>
 }
-const ReceiptForm = ({ setShow }: IProps) => {
-    const [isNew, setIsNew] = useState<boolean>(false)
-    const { register, handleSubmit, control, formState: { errors } } = useForm();
+
+
+const ExpenseForm = ({ setShow }: IProps) => {
+    const defaultValues: IExpenseFormData = {
+        expenseTo: '14', // Assuming the value '14' corresponds to one of the options
+        description: "This is description",
+        date: "2024-07-03T01:25:38.835Z",
+        amount: 1000
+    };
+
+    const { register, handleSubmit, control, formState: { errors } } = useForm<IExpenseFormData>({
+        defaultValues
+    });
+
     const onClose = () => {
         setShow("")
     }
-    const onSubmit = (data: any) => {
-        console.log(data);
+
+    const { toastError, toastLoading, toastSuccess } = useToast()
+    const onSubmit = async (data: IExpenseFormData) => {
+        const body = {
+            expenseTo: data.expenseTo,
+            description: data.description,
+            date: data.date,
+            amount: data.amount
+        };
+        const id = toastLoading('Loading...')
+        try {
+            const data = await AuthApiService.postApi<IExpenseFormData, any>('accounts/book/other-expense', body);
+            if (data?.status === 'error') {
+                toastError(id, data?.message)
+                setShow("")
+                return
+            }
+            toastSuccess(id, "Expense Added successfully")
+            setShow("")
+        } catch (error) {
+            toastError(id, "Something went wrong")
+        }
     }
+
     const options = [
         {
             value: 'Cash',
@@ -31,41 +65,22 @@ const ReceiptForm = ({ setShow }: IProps) => {
             value: 'Bank Transfer',
             label: 'Bank Transfer'
         }
-    ]
+    ];
+
     return (
-        <ModalWrapper onClose={onClose} title="Add Receipt">
+        <ModalWrapper onClose={onClose} title="Add Expense">
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="grid grid-cols-2 gap-2">
 
-                    <CreateSelectInput
-                        label='Payment From'
-                        required
-                        options={options}
-                        control={control}
-                        setIsNew={setIsNew}
-                        placeholder='Payment From'
-                        error={errors}
-                        name='paymentFrom'
-                    />
                     <SelectInput
-                        label='Payment To'
+                        label='Expense To'
                         required
                         control={control}
                         options={options}
                         placeholder='Payee'
                         error={errors}
-                        name='paymentTo'
+                        name='expenseTo'
                     />
-                    {
-                        isNew && <InputBox
-                            label='Phone Number'
-                            required
-                            register={register}
-                            placeholder='Phone Number'
-                            error={errors}
-                            name='Phone Number'
-                        />
-                    }
                     <InputBox
                         label='Description'
                         register={register}
@@ -100,7 +115,7 @@ const ReceiptForm = ({ setShow }: IProps) => {
                 />
             </form>
         </ModalWrapper>
-    )
+    );
 }
 
-export default ReceiptForm
+export default ExpenseForm;
