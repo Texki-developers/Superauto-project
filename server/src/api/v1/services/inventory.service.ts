@@ -19,7 +19,7 @@ import inventoryQueries from '../queries/inventory.queries';
 class InventoryService {
   addVehicle = (data: IInventoryBody) => {
     return new Promise(async (resolve, reject) => {
-      const allowedExtension = ['pdf', 'jpg'];
+      const allowedExtension = ['pdf', 'jpg','jpeg','png'];
       const fileType = 'doc';
       try {
         const docs = [data.rc_book, data.proof_doc, data.insurance_doc];
@@ -138,7 +138,7 @@ class InventoryService {
           })
         );
 
-        console.log(transactions, 'TRANS');
+      
 
         const TransactionResult = await accountsQueries.generateTransaction(transactions, {
           transaction: dbTransaction,
@@ -281,9 +281,9 @@ class InventoryService {
     return new Promise(async (resolve, reject) => {
       try {
         const changeStatus = await inventoryQueries.changeStatusOfVehicle(data);
-        console.log(changeStatus, 'change');
 
-        const saleResult = await inventoryQueries.addDatatoSales(data);
+
+        // const saleResult = await inventoryQueries.addDatatoSales({account_id:data.});
 
         resolve({
           message: 'vehicle sale success',
@@ -294,6 +294,8 @@ class InventoryService {
       }
     });
   }
+
+
 }
 
 export default new InventoryService();

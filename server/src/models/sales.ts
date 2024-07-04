@@ -4,26 +4,14 @@ import {
     Optional
   } from 'sequelize';
   import { db } from '../config/database';
+import { ISalesAttributes } from '../types/db.type';
   
   // Define the interface for model attributes
-  interface SalesAttributes {
-    sales_id: number;
-    account_id: number;
-    sold_vehicle: number;
-    sold_rate: number;
-    sold_date: Date;
-    payment_mode: string;
-    is_finance: boolean;
-    finance_amount: number;
-    finance_service_charge: number;
-    is_exchange: number;
-    exchange_vehicle_id: number;
-    due_date: Date;
-  }
+ 
   
-  interface SalesCreationAttributes extends Optional<SalesAttributes, 'sales_id'> {}
+  interface SalesCreationAttributes extends Optional<ISalesAttributes, 'sales_id'> {}
   
-  class Sales extends Model<SalesAttributes, SalesCreationAttributes> implements SalesAttributes {
+  class Sales extends Model<ISalesAttributes, SalesCreationAttributes> implements ISalesAttributes {
     public sales_id!: number;
     public account_id!: number;
     public sold_vehicle!: number;

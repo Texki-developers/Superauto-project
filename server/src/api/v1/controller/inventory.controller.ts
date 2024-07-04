@@ -54,7 +54,6 @@ class InventoryController {
       payment_mode: body.paymentMode,
       finance_amount: body.financeAmound,
       finance_charge: body.financeCharge,
-      registration_number: body.regNum,
       sold_vehicle_id:body.soldVehicleId,
       is_finance:body.isFinance,
       is_exchange:body.is_exchange,
@@ -76,7 +75,7 @@ class InventoryController {
 
   assignVehiclesToFinance(req: Request, res: Response) {
     const { Vehicles }: IassignVehicleBody = req.body;
-    
+
     inventoryService
       .assignVehiclesToFinance(Vehicles)
       .then((data: any) => {

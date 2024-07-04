@@ -9,6 +9,7 @@ import {
   IDsTransactionAttributes,
   IFinancerTransactionAttributes,
   IInventoryAttributes,
+  ISalesAttributes,
   IServiceTransactionAttributes,
   ITransactionParams,
 } from '../../../types/db.type';
@@ -71,17 +72,18 @@ class InventoryQueries {
 
   async changeStatusOfVehicle (data:any,options?:any){
   console.log(data)
+
     return await Inventory.update({sale_status:true},{
       where:{
-        registration_number:data.registration_number
+        registration_number:data.soldVehicleId
       },
       returning:true
     })
   }
 
 
-  async addDatatoSales(data:any,options?:any){
-    return await Sales.create(data)
+  async addDatatoSales(data:ISalesAttributes,options?:any){
+    return await Sales.create(data,options)
   }
 }
 
