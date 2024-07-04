@@ -17,10 +17,10 @@ export default class AuthApiService {
       );
       console.log(response);
       return response.data;
-    } catch (error: any) {
-      console.error('Error posting to API:', error.message);
+    } catch (error) {
+      console.error('Error posting to API:', error);
       return {
-        message: error?.response?.data?.message ?? 'Something went wrong',
+        message: 'Something went wrong',
         status: 'error',
       };
     }
@@ -37,10 +37,10 @@ export default class AuthApiService {
         },
       });
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error posting to API:', error);
       return {
-        message: error?.response?.data?.message ?? 'Something went wrong',
+        message: 'Something went wrong',
         status: 'error',
       };
     }

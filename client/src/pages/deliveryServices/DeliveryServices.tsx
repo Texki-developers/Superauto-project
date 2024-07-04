@@ -83,7 +83,7 @@ const DeliveryServices = () => {
           }}
           title='Assign Vehicle'
         >
-          <AssignVehicles apiUrl='/delivery-service' setAssign={setAssignVehiclePopup} parent='serviceId' itemId={4} />
+          <AssignVehicles apiUrl='/delivery-service' setAssign={setAssignVehiclePopup} parent='serviceId' itemId={2} />
         </ModalWrapper>
       )}
       <div className='table-wrapper'>

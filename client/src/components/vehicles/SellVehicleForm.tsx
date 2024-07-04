@@ -1,4 +1,4 @@
-import React, { SetStateAction, useState } from 'react';
+import React, { SetStateAction } from 'react';
 import { Control, FieldErrors, UseFormRegister } from 'react-hook-form';
 import Button from "../../components/button.tsx/Button";
 import InputBox from "../../components/formComponents/inputBox/InputBox";
@@ -15,18 +15,9 @@ interface IProps {
   control: Control<IVehicleSellFormValues>;
   errors: FieldErrors<IVehicleSellFormValues>;
   reset: (values?: IVehicleSellFormValues) => void;
-  setValue: (
-    name: keyof IVehicleSellFormValues,
-    value: IVehicleSellFormValues[keyof IVehicleSellFormValues],
-    options?: {
-      shouldValidate?: boolean;
-      shouldDirty?: boolean;
-    }
-  ) => void; // SetValue function for setting form values
 }
 
-const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, control, errors, setValue }: IProps) => {
-  const [showFinance, setShowFinance] = useState<any>(false)
+const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, control, errors }: IProps) => {
   const options = [
     { value: 'chocolate', label: 'Chocolate' },
     { value: 'strawberry', label: 'Strawberry' },
@@ -93,15 +84,9 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
 
               <div className="flex gap-2">
                 <h1 className='primary-heading'>Finance Details</h1>
-                <CheckBox checked={showFinance} onChange={(e) => {
-                  if (!e.target.checked) {
-                    setValue('financeAmount', '')
-                    setValue('financeServiceCharge', '')
-                  }
-                  setShowFinance(e.target.checked)
-                }} error={errors} name='Finance' label="" />
+                <CheckBox register={register} error={errors} name='Finance' label="" />
               </div>
-              {showFinance && <div className="grid grid-cols-[2fr_1fr]">
+              <div className="grid grid-cols-[2fr_1fr]">
                 <div className='grid grid-cols-2 gap-4'>
                   <InputBox
                     name='financeAmount'
@@ -110,19 +95,17 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
                     type='number'
                     register={register}
                     error={errors}
-                    required
                   />
                   <InputBox
                     name='financeServiceCharge'
                     label='Finance Service Charge'
                     placeholder='Value'
-                    required
                     type='number'
                     register={register}
                     error={errors}
                   />
                 </div>
-              </div>}
+              </div>
 
               <div className="flex justify-between">
                 <h1 className='primary-heading'>Exchange Details</h1>
@@ -194,7 +177,6 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
                   className='bg-gray-300 font-semibold text-black-400'
                   w='100px'
                   text='Reset'
-                  type='button'
                   onClick={() => reset()}
                 />
                 <div className='save-cancel-btn flex gap-3'>
@@ -203,7 +185,6 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
                     w='150px'
                     className='bg-failureRed'
                     text='Cancel'
-                    type='button'
                   />
                   <Button
                     bg='primary'

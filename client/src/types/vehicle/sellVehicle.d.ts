@@ -17,20 +17,3 @@ export interface IVehicleNewFormValues {
   registrationNumber: string;
   value: string;
 }
-
-
-interface ISellVehicleApiBody {
-  accountId: string;
-  soldRate: string;
-  soldDate: string;
-  paymentMode: string;
-  financeAmound: string;
-  financeCharge: string;
-  regNum: string;
-  soldVehicleId: string;
-  isFinance: boolean;
-  is_exchange: boolean;
-  rate: string;
-  amount: string;
-  due_date: string;
-}
