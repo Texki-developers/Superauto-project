@@ -1,3 +1,4 @@
+import { Op } from 'sequelize';
 import { pool } from '../../../config1/dbConfig';
 import Accounts from '../../../models/accounts';
 import Employee from '../../../models/employee';
@@ -35,11 +36,11 @@ class AccountQueries {
 
   async generateTransaction(data: ITransactionParams[], options?: any) {
     try {
-      const TransactionResult = await Transaction.bulkCreate(data, {returning: true, ...options});
+      const TransactionResult = await Transaction.bulkCreate(data, { returning: true, ...options });
       return returnDataValues(TransactionResult);
     } catch (error) {
       console.log(error);
-      
+
       throw new Error('Failed To Generate Transaction');
     }
   }
@@ -49,23 +50,29 @@ class AccountQueries {
     return result?.account_id;
   }
 
-  async getVoucher(type: string){
-    const result = await Voucher.findOne({where: {voucher_name: type}})
-    await Voucher.update({last_invoice_number: (result?.last_invoice_number as number) + 1},{where: {voucher_name: type}})
-    
+  async getVoucher(type: string) {
+    const result = await Voucher.findOne({ where: { voucher_name: type } });
+    await Voucher.update(
+      { last_invoice_number: (result?.last_invoice_number as number) + 1 },
+      { where: { voucher_name: type } }
+    );
+
     return {
       prefix: result?.prefix,
-      last_invoice_number: result?.last_invoice_number
+      last_invoice_number: result?.last_invoice_number,
     };
   }
 
-  async addOtherExpense(data: {
-    transaction_id: number;
-    amount: number;
-    due_date: Date;
-  }, options?:any){
-    const result = await OtherExpense.create(data, {returning: true, ...options})
-    return result
+  async addOtherExpense(
+    data: {
+      transaction_id: number;
+      amount: number;
+      due_date: Date;
+    },
+    options?: any
+  ) {
+    const result = await OtherExpense.create(data, { returning: true, ...options });
+    return result;
   }
 
   // async addPaymadentData(data: {date: Date, transaction_id: number, description: string}, options?:any){
@@ -73,8 +80,14 @@ class AccountQueries {
   //   return result;
   // }
 
-  async addRecieptData(data: {date: Date, transaction_id: number, description: string}, options?:any){
-    const result = await Receipt.create(data,{returning: true, ...options})
+  async addRecieptData(data: { date: Date; transaction_id: number; description: string }, options?: any) {
+    const result = await Receipt.create(data, { returning: true, ...options });
+    return result;
+  }
+
+  async FindServiceShops(category:string) {
+    const result = await Accounts.findAll({ where: { category: {[Op.eq]: category.trim()}, } });
+
     return result;
   }
 }

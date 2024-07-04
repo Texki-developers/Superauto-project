@@ -1,3 +1,4 @@
+import { FindOptions } from 'sequelize';
 import { db } from '../../../config/database';
 import { IfileReturn } from '../../../types/base.type';
 import {
@@ -19,7 +20,7 @@ import inventoryQueries from '../queries/inventory.queries';
 class InventoryService {
   addVehicle = (data: IInventoryBody) => {
     return new Promise(async (resolve, reject) => {
-      const allowedExtension = ['pdf', 'jpg','jpeg','png'];
+      const allowedExtension = ['pdf', 'jpg', 'jpeg', 'png'];
       const fileType = 'doc';
       try {
         const docs = [data.rc_book, data.proof_doc, data.insurance_doc];
@@ -87,7 +88,7 @@ class InventoryService {
           await performTransaction(dbTransaction);
         }
 
-        return resolve({ message: 'Vehicle Added Successfully'});
+        return resolve({ message: 'Vehicle Added Successfully' });
       } catch (error) {
         console.log(error, 'EROR');
         reject({ message: 'Failed to add Vehicle to inventory...' + error });
@@ -137,8 +138,6 @@ class InventoryService {
             }
           })
         );
-
-      
 
         const TransactionResult = await accountsQueries.generateTransaction(transactions, {
           transaction: dbTransaction,
@@ -258,7 +257,7 @@ class InventoryService {
         );
 
         const generateResult = await accountsQueries.generateTransaction(transactions, { transaction: dbTransaction });
-            console.log(generateResult,"GENERATED RESUKT")
+        console.log(generateResult, 'GENERATED RESUKT');
         serviceTransaction.forEach((item, index) => {
           serviceTransaction[index].transaction_id = generateResult[index].transaction_id;
         });
@@ -281,45 +280,48 @@ class InventoryService {
     return new Promise(async (resolve, reject) => {
       try {
         const dbTransaction = await db.transaction();
-        const salesId = await accountsQueries.findAccount(E_LEDGERS_BASIC.SALE)
-        const cashId = await accountsQueries.findAccount(E_LEDGERS_BASIC.CASH)
-        let transactions:ITransactionParams[] = []
-      
-        if(salesId && cashId){
-           transactions = [
+        const salesId = await accountsQueries.findAccount(E_LEDGERS_BASIC.SALE);
+        const cashId = await accountsQueries.findAccount(E_LEDGERS_BASIC.CASH);
+        let transactions: ITransactionParams[] = [];
+
+        if (salesId && cashId) {
+          transactions = [
             {
-              amount:data.sales_rate,
+              amount: data.sales_rate,
               credit_account: salesId,
-              debit_account:  data.account_id,
-              description:''
+              debit_account: data.account_id,
+              description: '',
             },
             {
-              amount:data.sales_rate,
+              amount: data.sales_rate,
               credit_account: data.account_id,
-              debit_account:  cashId,
-              description:''
-            }
-        ]
+              debit_account: cashId,
+              description: '',
+            },
+          ];
         }
-      
 
-        const generateResult = await accountsQueries.generateTransaction(transactions, { transaction: dbTransaction });
-        const changeStatus = await inventoryQueries.changeStatusOfVehicle(data.sold_vehicle_id,{ transaction: dbTransaction });
-        const saleResult = await inventoryQueries.addDatatoSales({account_id:data.account_id,
-        sold_date:data.sales_date,
-        due_date:data.due_date,
-        exchange_vehicle_id:data.exchange_vehicle_id,
-        sold_rate:data.sales_rate,
-        sold_vehicle:data.sold_vehicle_id,
-        payment_mode:data.payment_mode,
-        is_finance:data.is_finance,
-        finance_amount:data.finance_amount,
-        finance_service_charge:data.finance_charge,
-        is_exchange:data.is_exchange,
-        },{ transaction: dbTransaction })
+        await accountsQueries.generateTransaction(transactions, { transaction: dbTransaction });
+        await inventoryQueries.changeStatusOfVehicle(data.sold_vehicle_id, { transaction: dbTransaction });
+        await inventoryQueries.addDatatoSales(
+          {
+            account_id: data.account_id,
+            sold_date: data.sales_date,
+            due_date: data.due_date,
+            exchange_vehicle_id: data.exchange_vehicle_id,
+            sold_rate: data.sales_rate,
+            sold_vehicle: data.sold_vehicle_id,
+            payment_mode: data.payment_mode,
+            is_finance: data.is_finance,
+            finance_amount: data.finance_amount,
+            finance_service_charge: data.finance_charge,
+            is_exchange: data.is_exchange,
+          },
+          { transaction: dbTransaction }
+        );
 
         await performTransaction(dbTransaction);
-        
+
         resolve({
           message: 'vehicle sale success',
         });
@@ -329,7 +331,46 @@ class InventoryService {
     });
   }
 
+  listVehicles() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const vehicles = await inventoryQueries.getAllVehicles();
+        console.log(vehicles, 'vehicles');
+        return resolve(vehicles);
+      } catch (err) {
+        reject({ message: `Failed to List vehicles: ${err}` });
+      }
+    });
+  }
 
+  listVehicleRegNumber() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const attributes = ['inventory_id', 'account_id', 'registration_number'];
+
+        const options: FindOptions = {
+          where: { sale_status: false },
+        };
+
+        options.attributes = attributes;
+        const vehicles = await inventoryQueries.getAllVehicles(options);
+        console.log(vehicles, 'vehicles');
+        return resolve(vehicles);
+      } catch (err) {
+        reject({ message: `Failed to List vehicles: ${err}` });
+      }
+    });
+  }
+
+  exchangeVehicle() {
+    return new Promise(async (resolve, reject) => {
+      try {
+          
+      } catch (err) {
+        reject({ message: `Failed to Exchange vehicle: ${err}` });
+      }
+    });
+  }
 }
 
 export default new InventoryService();

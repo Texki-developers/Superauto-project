@@ -1,3 +1,4 @@
+import { FindOptions } from 'sequelize';
 import BrandModel from '../../../models/brand';
 import FileStore from '../../../models/documents';
 import DsTransaction from '../../../models/dsTransactions';
@@ -27,8 +28,8 @@ class InventoryQueries {
 
   async uploadBrandModel(brand: string, model: string) {
     return await BrandModel.create({
-      brand :brand,
-     model: model,
+      brand: brand,
+      model: model,
     });
   }
 
@@ -38,9 +39,8 @@ class InventoryQueries {
         registration_number: regNum,
       },
     });
-    
-    return  result?.dataValues
-  
+
+    return result?.dataValues;
   }
 
   async addTofinanceTable(data: IFinancerTransactionAttributes[], options?: any) {
@@ -70,20 +70,25 @@ class InventoryQueries {
     }
   }
 
-  async changeStatusOfVehicle (soldVehicleId:number,options?:any){
- 
-    return await Inventory.update({sale_status:true},{
-      where:{
-        inventory_id:soldVehicleId
-      },
-      returning:true,
-      ...options
-    })
+  async changeStatusOfVehicle(soldVehicleId: number, options?: any) {
+    return await Inventory.update(
+      { sale_status: true },
+      {
+        where: {
+          inventory_id: soldVehicleId,
+        },
+        returning: true,
+        ...options,
+      }
+    );
   }
 
+  async addDatatoSales(data: ISalesAttributes, options?: any) {
+    return await Sales.create(data, options);
+  }
 
-  async addDatatoSales(data:ISalesAttributes,options?:any){
-    return await Sales.create(data,options)
+  async getAllVehicles(options?:FindOptions) {
+    return await Inventory.findAll(options);
   }
 }
 

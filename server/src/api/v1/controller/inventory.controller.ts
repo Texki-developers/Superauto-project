@@ -113,6 +113,42 @@ class InventoryController {
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
       });
   }
+
+
+  listVehicle(req: Request, res: Response) {
+
+    inventoryService
+      .listVehicles()
+      .then((data: any) => {
+        responseHandler(res, 'OK',data, { message: data.message });
+      })
+      .catch((error) => {
+        responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+      });
+  }
+
+  listVehicleRegNumber(req: Request, res: Response) {
+
+    inventoryService
+      .listVehicleRegNumber()
+      .then((data: any) => {
+        responseHandler(res, 'OK',data, { message: data.message });
+      })
+      .catch((error) => {
+        responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+      });
+  }
+
+  exchangeVehicle(req:Request,res:Response){
+    inventoryService
+    .exchangeVehicle()
+    .then((data: any) => {
+      responseHandler(res, 'OK',data, { message: data.message });
+    })
+    .catch((error) => {
+      responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+    });
+  }
 }
 
 export default new InventoryController();
