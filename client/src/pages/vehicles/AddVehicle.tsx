@@ -57,7 +57,7 @@ const AddVehicle = ({ setShowAddPage }: IProps) => {
   const onSubmit = async (data: IVehicleAddFormValues) => {
     console.log(data)
     const formData = new FormData();
-    formData.append('accountId', '31');
+    formData.append('accountId', '10');
     formData.append('ownershipName', data.ownership);
     formData.append('registrationNumber', data.registrationNumber);
     formData.append('brandModel_id', 'null'); // You can update this value as needed
