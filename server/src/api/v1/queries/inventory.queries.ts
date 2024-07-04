@@ -70,14 +70,14 @@ class InventoryQueries {
     }
   }
 
-  async changeStatusOfVehicle (data:any,options?:any){
-  console.log(data)
-
+  async changeStatusOfVehicle (soldVehicleId:number,options?:any){
+ 
     return await Inventory.update({sale_status:true},{
       where:{
-        registration_number:data.soldVehicleId
+        inventory_id:soldVehicleId
       },
-      returning:true
+      returning:true,
+      ...options
     })
   }
 

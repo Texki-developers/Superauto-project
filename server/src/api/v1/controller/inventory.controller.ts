@@ -3,7 +3,7 @@ import { responseHandler } from '../../../utils/responseHandler/responseHandler'
 import inventoryService from '../services/inventory.service';
 import { IDeliveryAttributes, IInventoryAttributes } from '../../../types/db.type';
 import { getFile } from '../../../utils/getFile/getFile';
-import { IassignVehicleBody, IInventoryBody } from '../../../types/request.type';
+import { IassignVehicleBody, IInventoryBody, IsellVehicleBody } from '../../../types/request.type';
 
 class InventoryController {
   addInventory(req: Request, res: Response) {
@@ -32,6 +32,7 @@ class InventoryController {
       model: body.model,
       brand: body.brand,
       isNew: body.isNew,
+  
     };
 
     inventoryService
@@ -47,7 +48,7 @@ class InventoryController {
 
   sellVehicle(req: Request, res: Response) {
     const { body } = req;
-    const data = {
+    const data:IsellVehicleBody = {
       account_id: body.accountId,
       sales_rate: body.soldRate,
       sales_date: body.soldDate,
@@ -60,6 +61,7 @@ class InventoryController {
       rate: body.rate,
       amount: body.amount,
       due_date: body.due_date,
+      exchange_vehicle_id:body.exchangeVehicleId
     };
     
     inventoryService
