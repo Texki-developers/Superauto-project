@@ -7,5 +7,5 @@ router.post('/create/account', accountsController.createAccount);
 router.post('/book/other-expense',accountsController.bookOtherExpense)
 router.post('/book/payment',accountsController.addPayment)
 router.post('/book/reciept',accountsController.addReciept)
-
+router.get('/list/category/:category',accountsController.getbyCategory)
 export default router;

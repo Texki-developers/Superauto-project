@@ -63,7 +63,7 @@ class AccountController {
       })
   }
 
-  addPayment = (req: Request, res: Response) => {
+  addPayment (req: Request, res: Response)  {
     const {body} = req;
 
     const data:IPaymentBody = {
@@ -77,6 +77,21 @@ class AccountController {
     accountsService.addPayment(data)
       .then((response:any ) => {
         responseHandler(res, 'CREATED', null, {message: response})
+      }).catch((error:any) => {
+        console.log(error);
+        responseHandler(res, 'INTERNAL_SERVER_ERROR')
+      })
+  }
+
+  getbyCategory (req: Request, res: Response)  {
+    const { category } = req.params;
+    if (typeof category !== 'string' || category.trim() === '') {
+      res.status(400).json({ error: 'Invalid category' });
+      return;
+    }
+    accountsService.getbyCategory(category)
+      .then((response:any ) => {
+        responseHandler(res, 'OK', response, {message: 'RETRIEVED'})
       }).catch((error:any) => {
         console.log(error);
         responseHandler(res, 'INTERNAL_SERVER_ERROR')

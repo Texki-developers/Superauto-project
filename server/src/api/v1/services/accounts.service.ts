@@ -99,6 +99,9 @@ class AccountService {
     });
   };
 
+
+
+
   addPayment = (data: IPaymentBody) => {
     return new Promise(async (resolve, reject) => {
       try {
@@ -123,6 +126,23 @@ class AccountService {
       }
     });
   };
+
+
+  getbyCategory(data:string) {
+    return new Promise(async (resolve, reject) => {
+      try {
+
+        const categoryResult = await accountsQueries.FindServiceShops(data);
+       console.log(categoryResult,"SErVICE")
+        return resolve(categoryResult)
+      } catch (err) {
+        console.log(err)
+        reject({ message: `Failed to List vehicles: ${err}` });
+      }
+    });
+  }
+
+
 }
 
 export default new AccountService();
