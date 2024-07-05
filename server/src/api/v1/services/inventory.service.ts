@@ -407,8 +407,6 @@ class InventoryService {
 
   exchangeVehicle(data: IInventoryBody) {
     return new Promise(async (resolve, reject) => {
-  
-      console.log(data,"ENTERING HERE>...")
       try {
         const purchaseResult = await accountsQueries.findAccount('Purchase');
         const cashResult = await accountsQueries.findAccount('Cash');
@@ -419,14 +417,15 @@ class InventoryService {
         const fileType = 'doc';
 
         console.log(data.is_sales_return,"SALES RETURN")
-        if (data.is_sales_return === true) {
-          console.log('entering.... sales return')
+        if (data.is_sales_return) {
+          console.log('entering.... sales return',data)
           const generatedTransaction: ITransactionParams[] = [];
           await inventoryQueries.addDataInToSalesReturn(
             {
               inventory_id: data.inventory_id,
               sold_price: data.sold_price,
               sale_status: data.sale_status,
+              purchase_rate:data.purchase_rate
             },
             { transaction: dbTransaction }
           );

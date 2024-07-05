@@ -162,9 +162,10 @@ class InventoryController {
       model: body.model,
       brand: body.brand,
       isNew: body.isNew,
-      is_sales_return : body.SalesReturn,
+      is_sales_return : Boolean(body.salesReturn),
       inventory_id:body.inventoryId,
-      is_delivery:body.isDelivery
+      is_delivery:body.isDelivery,
+      sold_price:body.soldPrice
     };
 
     inventoryService

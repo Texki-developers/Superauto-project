@@ -16,6 +16,7 @@ import {
 } from '../../../types/db.type';
 import { IInventoryBody } from '../../../types/request.type';
 import returnDataValues from '../../../utils/commonUtils/returnDataValues';
+import SaleReturn from '../../../models/salesReturn';
 
 class InventoryQueries {
   async addVehicle(data: IInventoryAttributes, options?: any):Promise<IInventoryAttributes> {
@@ -100,7 +101,7 @@ class InventoryQueries {
 
  async addDataInToSalesReturn (data:any,options?:any){
 
-  return await Inventory.create(data,options)
+  return await SaleReturn.create(data,options)
  }
 
  async listBrandModel (){
