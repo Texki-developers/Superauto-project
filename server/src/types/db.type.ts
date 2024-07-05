@@ -41,7 +41,7 @@ interface ITransactionParams {
 }
 
 interface IDeliveryAttributes {
-  delivery_service: string;
+  delivery_service: number;
   delivery_amount: number;
 }
 
@@ -87,6 +87,14 @@ interface ISalesAttributes {
   due_date: Date;
 }
 
+interface ISaleReturnAttributes {
+  sl_id: number;
+  inventory_id: number;
+  sold_price: number;
+  sale_status: boolean;
+  purchase_rate: number;
+}
+
 export {
   IAccountAttributes,
   IEmployeeAttributes,
@@ -96,5 +104,6 @@ export {
   IFinancerTransactionAttributes,
   IDsTransactionAttributes,
   IServiceTransactionAttributes,
-  ISalesAttributes
+  ISalesAttributes,
+  ISaleReturnAttributes
 };

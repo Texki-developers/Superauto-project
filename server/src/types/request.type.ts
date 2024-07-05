@@ -7,6 +7,9 @@ interface IInventoryBody extends IInventoryAttributes,IDeliveryAttributes {
     isNew :boolean,
     brand:string,
     model:string
+    is_sales_return?:boolean
+    is_delivery:boolean
+
 }
 
 
@@ -61,7 +64,6 @@ interface IsellVehicleBody {
     amount: number;
     due_date: Date;
 
-  
 }
 
 export type {
