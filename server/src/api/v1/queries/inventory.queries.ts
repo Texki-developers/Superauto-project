@@ -99,6 +99,7 @@ class InventoryQueries {
   }
 
  async addDataInToSalesReturn (data:any,options?:any){
+
   return await Inventory.create(data,options)
  }
 
