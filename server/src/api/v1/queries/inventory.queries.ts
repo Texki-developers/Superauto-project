@@ -18,8 +18,15 @@ import { IInventoryBody } from '../../../types/request.type';
 import returnDataValues from '../../../utils/commonUtils/returnDataValues';
 
 class InventoryQueries {
-  async addVehicle(data: IInventoryAttributes, options?: any) {
-    return await Inventory.create(data, options);
+  async addVehicle(data: IInventoryAttributes, options?: any):Promise<IInventoryAttributes> {
+    const result = await Inventory.create(data, { returning: true, ...options })
+
+    if (result && result.dataValues) {
+      return result.dataValues as IInventoryAttributes;
+    } else {
+      throw new Error('Failed to create vehicle');
+    }
+
   }
 
   async uploadManyDocs(docs: { location: string; name: string }[]) {
@@ -90,6 +97,14 @@ class InventoryQueries {
   async getAllVehicles(options?:FindOptions) {
     return await Inventory.findAll(options);
   }
+
+ async addDataInToSalesReturn (data:any,options?:any){
+  return await Inventory.create(data,options)
+ }
+
+ async listBrandModel (){
+    return await BrandModel.findAll()
+ }
 }
 
 export default new InventoryQueries();

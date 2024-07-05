@@ -36,6 +36,7 @@ class AccountQueries {
 
   async generateTransaction(data: ITransactionParams[], options?: any) {
     try {
+      console.log(data,"TRAN")
       const TransactionResult = await Transaction.bulkCreate(data, { returning: true, ...options });
       return returnDataValues(TransactionResult);
     } catch (error) {

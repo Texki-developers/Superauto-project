@@ -12,6 +12,7 @@ router.post('/sell/vehicle', inventoryController.sellVehicle)
 router.post('/assign-vehicle/finance',inventoryController.assignVehiclesToFinance)
 router.post('/assign-vehicle/delivery-service',inventoryController.assignVehiclesToDeliveryService)
 router.post('/assign-vehicle/service',inventoryController.assignVehiclesToService)
+router.get('/model-brand/vehicle', inventoryController.getBrandModel);
 
 
 export default router;

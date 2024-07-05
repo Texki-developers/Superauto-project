@@ -41,7 +41,7 @@ interface ITransactionParams {
 }
 
 interface IDeliveryAttributes {
-  delivery_service: string;
+  delivery_service: number;
   delivery_amount: number;
 }
 

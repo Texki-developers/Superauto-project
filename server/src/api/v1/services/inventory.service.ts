@@ -47,6 +47,8 @@ class InventoryService {
           brandID = data?.brand_model_id;
         }
 
+       
+
         const insertInventoryData: IInventoryAttributes = {
           account_id: data.account_id,
           brand_model_id: brandID || 0,
@@ -56,8 +58,8 @@ class InventoryService {
           insurance_date: data.insurance_date,
           sale_status: data.sale_status,
           rc_book: uploadDocs?.[0]?.file_id ?? null,
-          insurance_doc: uploadDocs?.[3]?.file_id ?? null,
-          proof_doc: uploadDocs?.[2]?.file_id ?? null,
+          insurance_doc: uploadDocs?.[2]?.file_id ?? null,
+          proof_doc: uploadDocs?.[1]?.file_id ?? null,
           date_of_purchase: data.date_of_purchase,
           sold_price: data.sold_price,
           registration_number: data.registration_number,
@@ -66,8 +68,49 @@ class InventoryService {
         const purchaseResult = await accountsQueries.findAccount('Purchase');
         const cashResult = await accountsQueries.findAccount('Cash');
         if (purchaseResult && cashResult && brandID) {
-          await inventoryQueries.addVehicle(insertInventoryData, { transaction: dbTransaction });
+        const addInventoryresult =  await inventoryQueries.addVehicle(insertInventoryData, { transaction: dbTransaction });
+   
+          if (data.is_delivery) {
+            const directExpense = await accountsQueries.findAccount(E_LEDGERS_BASIC.DIRECT_EXPENSE);
+            const expenseVoucher = await getVoucher('Expense');
+            const deliveryTransaction: ITransactionParams[] = [];
+            const dsTransactions :IDsTransactionAttributes[]=[]
 
+            if (directExpense) {
+              deliveryTransaction.push({
+                amount: data.delivery_amount,
+                credit_account: data.delivery_service,
+                debit_account: directExpense,
+                voucher_id: expenseVoucher,
+              });
+       
+
+                if(addInventoryresult?.inventory_id){
+                  dsTransactions.push({
+                    ds_id: data.delivery_service,
+                    vehicle_id: addInventoryresult.inventory_id,
+                    transaction_id: 0,
+                  });
+                }
+                console.log(deliveryTransaction,"TRANSCA")
+              const resultTransaction = await accountsQueries.generateTransaction(deliveryTransaction, {
+                transaction: dbTransaction,
+              });
+      
+              dsTransactions.forEach((item, index) => {
+                dsTransactions[index].transaction_id = resultTransaction[index].transaction_id;
+              });
+      
+             await inventoryQueries.addTodeliveryServiceTable(dsTransactions, { transaction: dbTransaction });
+      
+  
+            }else{
+              throw new Error('Delivery Expense Is not Found Try again...');
+            }
+
+         
+          }
+          
           await accountsQueries.generateTransaction(
             [
               {
@@ -166,7 +209,7 @@ class InventoryService {
   assignVehiclesToDeliveryService(body: IassignVehicle[]) {
     return new Promise(async (resolve, reject) => {
       try {
-        const expenseVoucher = await getVoucher(E_LEDGERS_BASIC.DIRECT_EXPENSE);
+        const expenseVoucher = await getVoucher('Expense');
         const transactions: ITransactionParams[] = [];
         const dsTransactions: IDsTransactionAttributes[] = [];
         const dbTransaction = await db.transaction();
@@ -362,12 +405,131 @@ class InventoryService {
     });
   }
 
-  exchangeVehicle() {
+  exchangeVehicle(data: IInventoryBody) {
+    return new Promise(async (resolve, reject) => {
+      const dbTransaction = await db.transaction();
+      const allowedExtension = ['pdf', 'jpg', 'jpeg', 'png'];
+      const fileType = 'doc';
+
+      try {
+        const purchaseResult = await accountsQueries.findAccount('Purchase');
+        const cashResult = await accountsQueries.findAccount('Cash');
+        const purchaseVoucher = await getVoucher(E_VOUCHERS.Purchase);
+        const paymentVoucher = await getVoucher(E_VOUCHERS.Payments);
+        if (data.is_sales_return) {
+          const generatedTransaction: ITransactionParams[] = [];
+          await inventoryQueries.addDataInToSalesReturn(
+            {
+              inventory_id: data.inventory_id,
+              sold_price: data.sold_price,
+              sale_status: data.sale_status,
+            },
+            { transaction: dbTransaction }
+          );
+
+          if (purchaseResult && cashResult) {
+            generatedTransaction.push(
+              {
+                amount: data.sold_price || 0,
+                credit_account: data.account_id,
+                debit_account: purchaseResult,
+                voucher_id: purchaseVoucher,
+                description: '',
+              },
+              {
+                amount: data.sold_price || 0,
+                credit_account: cashResult,
+                debit_account: data.account_id,
+                description: '',
+                voucher_id: paymentVoucher,
+              }
+            );
+          }
+
+          await accountsQueries.generateTransaction(generatedTransaction, {
+            transaction: dbTransaction,
+          });
+
+          await performTransaction(dbTransaction);
+          return resolve({ message: 'exchanged sales return Vehicle' });
+        } else {
+          const docs = [data.rc_book, data.proof_doc, data.insurance_doc];
+          console.log(docs, 'THE DC');
+          const dbTransaction = await db.transaction();
+
+          const docsResult: any = await Promise.all(docs.map((file) => uploadFile(file, fileType, allowedExtension)));
+          console.log(docsResult, 'Doc result');
+          let uploadDocs;
+
+          let brandID;
+          if (docsResult && docsResult.length > 0) {
+            uploadDocs = await inventoryQueries.uploadManyDocs(docsResult);
+          }
+
+          if (data.isNew) {
+            const brandResult = await inventoryQueries.uploadBrandModel(data.brand, data.model);
+            if (brandResult) {
+              brandID = brandResult.brand_model_id;
+            }
+          } else {
+            brandID = data?.brand_model_id;
+          }
+
+          const insertInventoryData: IInventoryAttributes = {
+            account_id: data.account_id,
+            brand_model_id: brandID || 0,
+            year_of_manufacture: data.year_of_manufacture,
+            ownership_name: data.ownership_name,
+            purchase_rate: data.purchase_rate,
+            insurance_date: data.insurance_date,
+            sale_status: data.sale_status,
+            rc_book: uploadDocs?.[0]?.file_id ?? null,
+            insurance_doc: uploadDocs?.[2]?.file_id ?? null,
+            proof_doc: uploadDocs?.[1]?.file_id ?? null,
+            date_of_purchase: data.date_of_purchase,
+            sold_price: data.sold_price,
+            registration_number: data.registration_number,
+          };
+
+          if (purchaseResult && cashResult && brandID) {
+            await inventoryQueries.addVehicle(insertInventoryData, { transaction: dbTransaction });
+
+            await accountsQueries.generateTransaction(
+              [
+                {
+                  amount: data.purchase_rate,
+                  credit_account: data.account_id,
+                  debit_account: purchaseResult,
+                  voucher_id: purchaseVoucher,
+                },
+                {
+                  amount: data.purchase_rate,
+                  credit_account: cashResult,
+                  debit_account: data.account_id,
+                  voucher_id: paymentVoucher,
+                },
+              ],
+              { transaction: dbTransaction }
+            );
+            await performTransaction(dbTransaction);
+          }
+          return resolve({ message: 'Vehicle Added Successfully' });
+        }
+      } catch (error) {
+        console.log(error, 'EROR');
+        reject({ message: `Failed to Exchange Vehicle ${error}` });
+      }
+    });
+  }
+
+  listBrandModel() {
     return new Promise(async (resolve, reject) => {
       try {
-          
+        const Brands = await inventoryQueries.listBrandModel();
+
+        return resolve(Brands);
       } catch (err) {
-        reject({ message: `Failed to Exchange vehicle: ${err}` });
+        reject({ message: `Failed to List Brands: ${err}` });
       }
     });
   }
