@@ -10,11 +10,9 @@ import { useForm } from 'react-hook-form';
 import useAccountApi from '../../hooks/useAccountApi.hook';
 import { IAccountApiBody, ICategory } from '../../types/apimodal/apimodal.d';
 import { ITableColumn } from '../../types/table/table';
-import useGetApis from '../../hooks/useGetApi.hook';
-// @ts-ignore
-import { useQuery } from '@tanstack/react-query';
 import DeleteIcon from '../../assets/icons/delete.svg';
 import EditIcon from '../../assets/icons/edit.svg';
+import useGetCategoryApi from '../../hooks/useGetCategoryApi.hook';
 
 const defaultValues: IEmployee = {
   name: '', // Default value for name
@@ -45,9 +43,7 @@ const Employees = () => {
   const onAddItemClick = () => {
     setShowEmployeesPopup(true);
   };
-  const { callApi } = useGetApis()
-  const fetchEmployees = () => callApi(`accounts/list/category/${ICategory.EMPLOYEE}`);
-  const { data, isPending, refetch } = useQuery({ queryKey: ['employees'], queryFn: fetchEmployees })
+  const { data, isPending, refetch } = useGetCategoryApi(ICategory.EMPLOYEE)
   const onActionClick = (type: string, id: string) => {
     console.log(type, id)
   }
@@ -99,7 +95,7 @@ const Employees = () => {
                 />
               </section>
               <section className='pt-5 pb-2'>
-                <Table data={data} columnData={columnData} />
+                <Table data={data?.data} columnData={columnData} />
               </section>
             </div>
           </>

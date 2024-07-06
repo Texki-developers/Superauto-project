@@ -1,4 +1,4 @@
-import { SetStateAction } from 'react';
+import { SetStateAction, useEffect } from 'react';
 import Header from '../../components/header/Header';
 import AddvehicleForm from '../../components/vehicles/AddVehicleForm';
 import { useForm } from 'react-hook-form';
@@ -53,8 +53,12 @@ const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
   const { toastError, toastLoading, toastSuccess } = useToast()
 
   const { callApi } = useGetApis()
-  const fetchBrandModal = (): Promise<IBranAndModel[] | undefined> => callApi('inventory/model-brand/vehicle')
+  const url = `inventory/model-brand/vehicle`
+  const fetchBrandModal = (): Promise<{ data: IBranAndModel[] } | undefined> => callApi(url)
   const { data: brandData, isPending: brandLoading } = useQuery({ queryKey: ['brand/model-brand'], queryFn: fetchBrandModal })
+  useEffect(() => {
+
+  }, [])
   const onCancelClick = () => {
     setShowAddPage(false);
   };
@@ -64,7 +68,6 @@ const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
     { name: 'Add Vehicles' },
   ];
   const onSubmit = async (data: IVehicleAddFormValues) => {
-    console.log(data)
     const formData = new FormData();
     formData.append('accountId', '10');
     formData.append('ownershipName', data.ownership);
@@ -87,8 +90,8 @@ const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
     data?.partyPhoneNumber?.length > 0 && data?.party.__isNew__ && formData.append('partyPhoneNumber', data?.partyPhoneNumber)
     const id = toastLoading('Loading...');
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const data = await AuthApiService.postApiFormData<FormData, any>('inventory/add/vehicle', formData,)
-      console.log(data)
       if (data?.status === "error") {
         toastError(id, data?.message)
         return
@@ -106,7 +109,7 @@ const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
       <Header breadCrumbData={breadCrumbData} />
       <div className='pt-5'>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <AddvehicleForm brands={brandData} brandLoading={brandLoading} reset={reset} setValue={setValue} watch={watch} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
+          <AddvehicleForm brands={brandData?.data} brandLoading={brandLoading} reset={reset} setValue={setValue} watch={watch} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
         </form>
       </div>
     </div>

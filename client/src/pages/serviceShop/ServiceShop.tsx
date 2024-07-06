@@ -11,12 +11,10 @@ import { IServiceShop } from '../../types/serviceShop/serviceShop';
 import { IAccountApiBody, ICategory } from '../../types/apimodal/apimodal.d';
 import useAccountApi from '../../hooks/useAccountApi.hook';
 import { ITableColumn } from '../../types/table/table';
-import useGetApis from '../../hooks/useGetApi.hook';
-// @ts-ignore
-import { useQuery } from '@tanstack/react-query';
 import addProduct from '../../assets/icons/vehicle.png';
 import DeleteIcon from '../../assets/icons/delete.svg';
 import EditIcon from '../../assets/icons/edit.svg';
+import useGetCategoryApi from '../../hooks/useGetCategoryApi.hook';
 
 const defaultValues: IServiceShop = {
   name: '', // Default value for name
@@ -48,10 +46,7 @@ const ServiceShop = () => {
     await accountApi(body, 'Service Shop creation Failed', 'Service Shop Successfully Created', () => { reset() })
     refetch()
   };
-  const { callApi } = useGetApis()
-  const fetchServiceShop = () => callApi(`accounts/list/category/${ICategory.SERVICE_SHOP}`);
-  const { data, isPending, refetch } = useQuery({ queryKey: ['serviceShop'], queryFn: fetchServiceShop })
-  console.log(data)
+  const { data, isPending, refetch } = useGetCategoryApi(ICategory.SERVICE_SHOP)
   const onActionClick = (type: string, id: string) => {
     if (type === 'assign') {
       setAssignId(Number(id))
@@ -122,7 +117,7 @@ const ServiceShop = () => {
                 />
               </section>
               <section className='pt-5 pb-2'>
-                <Table data={data} columnData={columnData} />
+                <Table data={data?.data} columnData={columnData} />
               </section>
             </div>
           </>
