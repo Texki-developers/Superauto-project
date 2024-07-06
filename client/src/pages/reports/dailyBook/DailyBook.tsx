@@ -2,8 +2,8 @@ import DateFilter from "../../../components/filterComponent/dateFilter/DateFilte
 import SelectFilter from "../../../components/filterComponent/selectFilter/Select"
 import Header from "../../../components/header/Header"
 import Table from "../../../components/table/Table"
-import { dummyData } from "../../employees/employees.data"
 import { ColumnData } from "../../vehicles/vehicle.data"
+import { dummyData } from "../dummyData.data"
 
 const DailyBook = () => {
     const breadCrumbData = [

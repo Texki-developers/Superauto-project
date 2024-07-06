@@ -3,15 +3,19 @@ import AddAndSearchItem from '../../components/addAndSearchItem/AddAndSearchItem
 import Header from '../../components/header/Header';
 import ModalWrapper from '../../components/modalWrapper';
 import AddDeliveryServices from './AddDeliveryServices';
-import { ColumnData, dummyData } from './deliveryServices.data';
+import { ColumnData } from './deliveryServices.data';
 import Table from '../../components/table/Table';
 import { IDeliveryService } from '../../types/deliveryServices/deliveryServices';
 import { useForm } from 'react-hook-form';
 import useAccountApi from '../../hooks/useAccountApi.hook';
 import { IAccountApiBody, ICategory } from '../../types/apimodal/apimodal.d';
 import AssignVehicles from '../../components/AssignVehicles/AssignVehicles';
-import addProduct from '../../assets/icons/addCart.svg';
-
+import addProduct from '../../assets/icons/vehicle.png';
+import useGetApis from '../../hooks/useGetApi.hook';
+// @ts-ignore
+import { useQuery } from '@tanstack/react-query';
+import DeleteIcon from '../../assets/icons/delete.svg';
+import EditIcon from '../../assets/icons/edit.svg';
 const defaultValues: IDeliveryService = {
   name: '', // Default value for name
   phoneNumber: '', // Default value for phoneNumber
@@ -32,19 +36,25 @@ const DeliveryServices = () => {
     setShowDeliveryServicesPopup(false);
   }, [])
   const accountApi = useAccountApi()
-  const onSubmit = (data: IDeliveryService) => {
+  const onSubmit = async (data: IDeliveryService) => {
     const body: IAccountApiBody = {
       "name": data?.name,
       "contactInfo": data?.phoneNumber,
       category: ICategory.DELIVERY_SERVICE
     }
-    console.log(data);
     setShowDeliveryServicesPopup(false);
-    accountApi(body, 'Customer creation Failed', 'Customer Successfully Created')
+    await accountApi(body, 'Customer creation Failed', 'Customer Successfully Created')
+    refetch()
   };
-  const onActionClick = (id: number) => {
-    setAssignId(id)
-    setAssignVehiclePopup(true)
+  const { callApi } = useGetApis()
+  const fetchDelivery = () => callApi(`accounts/list/category/${ICategory.DELIVERY_SERVICE}`);
+  const { data, isPending, refetch } = useQuery({ queryKey: ['delivery'], queryFn: fetchDelivery })
+
+  const onActionClick = (type: string, id: string) => {
+    if (type === 'assign') {
+      setAssignId(Number(id))
+      setAssignVehiclePopup(true)
+    }
   }
   const columnData = useMemo(() => {
     return [
@@ -55,8 +65,18 @@ const DeliveryServices = () => {
         columnData: (id: string) => (
           <div className='flex gap-2 *:h-[20px] *:w-[20px]'>
             <img
-              onClick={() => onActionClick(parseInt(id))}
+              onClick={() => onActionClick('assign', id)}
               src={addProduct}
+              alt=''
+            />
+            <img
+              onClick={() => onActionClick('edit', id)}
+              src={EditIcon}
+              alt=''
+            />
+            <img
+              onClick={() => onActionClick('delete', id)}
+              src={DeleteIcon}
               alt=''
             />
           </div>
@@ -66,38 +86,42 @@ const DeliveryServices = () => {
   }, []);
   return (
     <>
-      {showDeliveryServicesPopup && (
-        <ModalWrapper
-          onClose={onCancelClick}
-          title='Add Delivery Services'
-        >
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <AddDeliveryServices reset={reset} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
-          </form>
-        </ModalWrapper>
-      )}
-      {showAssignVehiclePopup && (
-        <ModalWrapper
-          onClose={() => {
-            setAssignVehiclePopup(false);
-          }}
-          title='Assign Vehicle'
-        >
-          <AssignVehicles apiUrl='/delivery-service' setAssign={setAssignVehiclePopup} parent='serviceId' itemId={4} />
-        </ModalWrapper>
-      )}
-      <div className='table-wrapper'>
-        <Header />
-        <section className='pt-[50px]'>
-          <AddAndSearchItem
-            addButtonText='Add Delivery Services'
-            onAddButtonClick={onAddItemClick}
-          />
-        </section>
-        <section className='pt-5 pb-2'>
-          <Table data={dummyData} columnData={columnData} />
-        </section>
-      </div>
+      {isPending ? <p>Loading...</p>
+        : <>
+          {showDeliveryServicesPopup && (
+            <ModalWrapper
+              onClose={onCancelClick}
+              title='Add Delivery Services'
+            >
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <AddDeliveryServices reset={reset} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
+              </form>
+            </ModalWrapper>
+          )}
+          {showAssignVehiclePopup && (
+            <ModalWrapper
+              onClose={() => {
+                setAssignVehiclePopup(false);
+              }}
+              title='Assign Vehicle'
+            >
+              <AssignVehicles apiUrl='/delivery-service' setAssign={setAssignVehiclePopup} parent='serviceId' itemId={4} />
+            </ModalWrapper>
+          )}
+          <div className='table-wrapper'>
+            <Header />
+            <section className='pt-[50px]'>
+              <AddAndSearchItem
+                addButtonText='Add Delivery Services'
+                onAddButtonClick={onAddItemClick}
+              />
+            </section>
+            <section className='pt-5 pb-2'>
+              <Table data={data} columnData={columnData} />
+            </section>
+          </div>
+        </>
+      }
     </>
   );
 };
