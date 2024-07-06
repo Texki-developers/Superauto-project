@@ -48,7 +48,7 @@ const SellVehicle = ({ setShowSellPage }: IProps) => {
 
     // Create the API body by transforming the form data
     const apiBody = {
-      accountId: "", // Leave this empty for now
+      accountId: "2", // Leave this empty for now
       soldRate: `${data?.saleRate} `,
       soldDate: data?.salesDate,
       paymentMode: data?.paymentType.label,

@@ -5,8 +5,10 @@ import CloseIcon from '../../../assets/icons/close-icon';
 import SalesReturnForm from "./SalesReturnForm";
 import Tabs from "../../../components/exchangeVehicleComponent/Tabs";
 import { useForm } from "react-hook-form";
-import { IVehicleAddFormValues } from "../../../types/vehicle/addVehicle";
+import { IBranAndModel, IVehicleAddFormValues } from "../../../types/vehicle/addVehicle";
 import { IVehicleNewFormValues } from "../../../types/vehicle/sellVehicle";
+import useGetApis from "../../../hooks/useGetApi.hook";
+import { useQuery } from "@tanstack/react-query";
 
 
 const tabs = ['Sales Return', 'New Vehicle']
@@ -15,22 +17,36 @@ interface IProps {
     showPopup: React.Dispatch<SetStateAction<boolean>>;
 }
 const defaultValues: IVehicleAddFormValues = {
-    party: '',
+    party: {
+        value: '',
+        label: '',
+    },
     registrationNumber: '',
-    model: '',
+    model: {
+        label: '',
+        value: '',
+    },
     purchaseRate: '',
     balance: '',
     purchaseDate: '',
-    insurance: '',
-    proof: '',
-    rcBook: '',
+    insurance: null,
+    proof: null,
+    rcBook: null,
     ownership: '',
-    brand: '',
-    yearOfManufacture: 2024,
+    brand: {
+        value: '',
+        label: '',
+    },
+    yearOfManufacture: '2024',
     purchaseAmount: '',
     insuranceDate: '',
-    deliveryService: '',
+    deliveryService: {
+        value: '',
+        label: '',
+    },
     deliveryAmount: '',
+    partyPhoneNumber: '',
+    deliveryServicePhoneNumber: ''
 };
 const defaultValuesNew: IVehicleNewFormValues = {
     registrationNumber: '',
@@ -40,6 +56,11 @@ const ExchangeVehicle = ({ showPopup }: IProps) => {
     const { register, handleSubmit, reset, watch, setValue, formState: { errors }, control } = useForm({
         defaultValues
     })
+
+    const { callApi } = useGetApis()
+    const url = `inventory/model-brand/vehicle`
+    const fetchBrandModal = (): Promise<{ data: IBranAndModel[] } | undefined> => callApi(url)
+    const { data: brandData, isPending: brandLoading } = useQuery({ queryKey: ['brand/model-brand'], queryFn: fetchBrandModal })
 
     const { register: registerNew, handleSubmit: handleSubmitNew, reset: resetNew, formState: { errors: errorsNew }, control: controlNew } = useForm({
         defaultValues: defaultValuesNew
@@ -72,7 +93,7 @@ const ExchangeVehicle = ({ showPopup }: IProps) => {
                     {
                         selectedTab === 0 ?
                             <form onSubmit={handleSubmit(onSalesSubmit)}>
-                                <AddvehicleForm reset={reset} setValue={setValue} watch={watch} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
+                                <AddvehicleForm hideDeliveryServices brands={brandData?.data} brandLoading={brandLoading} reset={reset} setValue={setValue} watch={watch} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
                             </form> :
                             <form onSubmit={handleSubmitNew(onExchangeValue)}>
                                 <SalesReturnForm reset={resetNew} register={registerNew} errors={errorsNew} control={controlNew} onCancelClick={onCancelClick} />

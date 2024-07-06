@@ -26,7 +26,7 @@ interface IProps {
 }
 
 const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, control, errors, setValue }: IProps) => {
-  const [showFinance, setShowFinance] = useState<any>(false)
+  const [showFinance, setShowFinance] = useState<boolean>(false)
   const options = [
     { value: 'chocolate', label: 'Chocolate' },
     { value: 'strawberry', label: 'Strawberry' },

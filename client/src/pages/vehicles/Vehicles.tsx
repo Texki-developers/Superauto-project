@@ -27,7 +27,9 @@ const Vehicles = () => {
   const fetchVehicles = () => callApi(url);
   const { data, isPending, refetch } = useQuery({ queryKey: [url], queryFn: fetchVehicles })
   console.log(data)
-
+  const onSearchData = (query: string) => {
+    console.log(query)
+  }
   const onActionClick = (type: 'add' | 'edit' | 'delete', id: string) => {
     type === 'add' && setShowSellPage(true);
     console.log(id)
@@ -78,6 +80,7 @@ const Vehicles = () => {
                 <Header />
                 <div className='pt-[50px]'>
                   <AddAndSearchItem
+                    onSearch={onSearchData}
                     addButtonText='Add Vehicle'
                     onAddButtonClick={onAddButtonClick}
                   />

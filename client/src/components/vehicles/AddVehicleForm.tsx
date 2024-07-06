@@ -2,11 +2,9 @@ import { Control, FieldErrors, UseFormRegister } from 'react-hook-form';
 import Button from '../button.tsx/Button';
 import DragAndDrop from '../formComponents/dragAndDrop/DragAndDrop';
 import InputBox from '../formComponents/inputBox/InputBox';
-import SelectInput from '../formComponents/selectInput/SelectInput';
-import { DataItem, IBranAndModel, IVehicleAddFormValues } from '../../types/vehicle/addVehicle';
+import { IBranAndModel, IVehicleAddFormValues } from '../../types/vehicle/addVehicle';
 import CreateSelectInput from '../formComponents/creatableSelect/CreatableSelect';
 import { useEffect, useState } from 'react';
-import { Value } from 'sass';
 
 interface IProps {
   onCancelClick: () => void;
@@ -23,13 +21,16 @@ interface IProps {
       shouldDirty?: boolean;
     }
   ) => void; // SetValue function for setting form values
-  brands: IBranAndModel[] | undefined;
-  brandLoading: boolean
+  brands?: IBranAndModel[] | undefined;
+  brandLoading?: boolean
+  hideDeliveryServices?: boolean
 }
 
-const AddvehicleForm = ({ onCancelClick, register, reset, control, errors, watch, setValue, brands, brandLoading }: IProps) => {
+const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, control, errors, watch, setValue, brands, brandLoading }: IProps) => {
   const [isNewParty, setIsNewParty] = useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [modelsData, setModelsData] = useState<any>([])
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [brandData, setBrandData] = useState<any>([])
   const [isNewDelivery, setIsNewDelivery] = useState(false)
   const options = [
@@ -39,6 +40,7 @@ const AddvehicleForm = ({ onCancelClick, register, reset, control, errors, watch
   ];
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const brand: any = watch('brand')
     if (brands && brands?.length > 0) {
       const models = brands?.filter(item => {
@@ -190,7 +192,7 @@ const AddvehicleForm = ({ onCancelClick, register, reset, control, errors, watch
               </div>
             </div>
           </div>
-          <div>
+          {!hideDeliveryServices && <div>
             <h1 className='primary-heading'>Delivery Services</h1>
             <div className='grid grid-cols-2 gap-3 pt-1'>
               <CreateSelectInput
@@ -223,7 +225,7 @@ const AddvehicleForm = ({ onCancelClick, register, reset, control, errors, watch
                 error={errors}
               />
             </div>
-          </div>
+          </div>}
         </div>
         <div className='documents'>
           <h1 className='primary-heading'>Documents</h1>
@@ -248,11 +250,12 @@ const AddvehicleForm = ({ onCancelClick, register, reset, control, errors, watch
               onClick={() => {
                 onCancelClick();
               }}
+              type='button'
               w='150px'
               className='bg-failureRed'
               text='Cancel'
             />
-            <Button bg='primary' w='150px' text='Save' />
+            <Button bg='primary' type='submit' w='150px' text='Save' />
           </div>
         </div>
       </div>
