@@ -18,3 +18,26 @@ table {
     }
   }
 }
+
+.pagination {
+  ul {
+    display: flex;
+    gap: 10px;
+    li > a {
+      padding: 5px 10px;
+      text-align: center;
+      cursor: pointer;
+      background: #eeee;
+      border-radius: 5px;
+    }
+    .break > a {
+      background: none;
+    }
+    .selected > a{
+      @apply bg-primary-300 text-white-100;
+    }
+    .disabled > a {
+      @apply cursor-not-allowed text-gray-500;
+    }
+  }
+}

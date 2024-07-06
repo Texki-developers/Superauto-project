@@ -21,7 +21,6 @@ const generateRoutes = (sidebarItems: ISidebarItem[]) => {
     return data
   });
 };
-console.log(generateRoutes(sidebarData))
 export const router = createBrowserRouter([
   {
     path: '/',
