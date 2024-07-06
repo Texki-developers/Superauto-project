@@ -122,7 +122,7 @@ class AccountQueries {
       console.log(whereCondition,"where condition")
     const accounts = await Accounts.findAll({
       where: whereCondition,
-      attributes: ['account_id', 'name', 'contact_info','category'], 
+      attributes: ['account_id', 'name'], 
     });
     return accounts
   }
