@@ -16,6 +16,10 @@ import getVoucher from '../../../utils/getVoucher/getVoucher';
 import { performTransaction } from '../../../utils/PerformTransaction/PerformTransaction';
 import accountsQueries from '../queries/accounts.queries';
 import inventoryQueries from '../queries/inventory.queries';
+import Accounts from '../../../models/accounts';
+import BrandModel from '../../../models/brand';
+import FileStore from '../../../models/documents';
+import SaleReturn from '../../../models/salesReturn';
 
 class InventoryService {
   addVehicle = (data: IInventoryBody) => {
@@ -47,8 +51,6 @@ class InventoryService {
           brandID = data?.brand_model_id;
         }
 
-       
-
         const insertInventoryData: IInventoryAttributes = {
           account_id: data.account_id,
           brand_model_id: brandID || 0,
@@ -68,13 +70,15 @@ class InventoryService {
         const purchaseResult = await accountsQueries.findAccount('Purchase');
         const cashResult = await accountsQueries.findAccount('Cash');
         if (purchaseResult && cashResult && brandID) {
-        const addInventoryresult =  await inventoryQueries.addVehicle(insertInventoryData, { transaction: dbTransaction });
-   
+          const addInventoryresult = await inventoryQueries.addVehicle(insertInventoryData, {
+            transaction: dbTransaction,
+          });
+
           if (data.is_delivery) {
             const directExpense = await accountsQueries.findAccount(E_LEDGERS_BASIC.DIRECT_EXPENSE);
             const expenseVoucher = await getVoucher('Expense');
             const deliveryTransaction: ITransactionParams[] = [];
-            const dsTransactions :IDsTransactionAttributes[]=[]
+            const dsTransactions: IDsTransactionAttributes[] = [];
 
             if (directExpense) {
               deliveryTransaction.push({
@@ -83,34 +87,29 @@ class InventoryService {
                 debit_account: directExpense,
                 voucher_id: expenseVoucher,
               });
-       
 
-                if(addInventoryresult?.inventory_id){
-                  dsTransactions.push({
-                    ds_id: data.delivery_service,
-                    vehicle_id: addInventoryresult.inventory_id,
-                    transaction_id: 0,
-                  });
-                }
-                console.log(deliveryTransaction,"TRANSCA")
+              if (addInventoryresult?.inventory_id) {
+                dsTransactions.push({
+                  ds_id: data.delivery_service,
+                  vehicle_id: addInventoryresult.inventory_id,
+                  transaction_id: 0,
+                });
+              }
+              console.log(deliveryTransaction, 'TRANSCA');
               const resultTransaction = await accountsQueries.generateTransaction(deliveryTransaction, {
                 transaction: dbTransaction,
               });
-      
+
               dsTransactions.forEach((item, index) => {
                 dsTransactions[index].transaction_id = resultTransaction[index].transaction_id;
               });
-      
-             await inventoryQueries.addTodeliveryServiceTable(dsTransactions, { transaction: dbTransaction });
-      
-  
-            }else{
+
+              await inventoryQueries.addTodeliveryServiceTable(dsTransactions, { transaction: dbTransaction });
+            } else {
               throw new Error('Delivery Expense Is not Found Try again...');
             }
-
-         
           }
-          
+
           await accountsQueries.generateTransaction(
             [
               {
@@ -377,7 +376,32 @@ class InventoryService {
   listVehicles() {
     return new Promise(async (resolve, reject) => {
       try {
-        const vehicles = await inventoryQueries.getAllVehicles();
+        const options: FindOptions = {
+          include: [
+            {
+              model: Accounts,
+              required: false,
+              attributes: ['name', 'contact_info', 'head'],
+            },
+            {
+              model: BrandModel,
+              required: false,
+              attributes: ['brand', 'model'],
+            },
+            { model: FileStore, as: 'rcBook', attributes: ['file_id', 'name'] },
+            { model: FileStore, as: 'insuranceDoc', attributes: ['file_id', 'name'] },
+            { model: FileStore, as: 'proofDoc', attributes: ['file_id', 'name'] },
+          ],
+          attributes: [
+            'inventory_id',
+            'account_id',
+            'brand_model_id',
+            'ownership_name',
+            'insurance_date',
+            'date_of_purchase',
+          ],
+        };
+        const vehicles = await inventoryQueries.getAllVehicles(options);
         return resolve(vehicles);
       } catch (err) {
         reject({ message: `Failed to List vehicles: ${err}` });
@@ -388,14 +412,21 @@ class InventoryService {
   listVehicleRegNumber() {
     return new Promise(async (resolve, reject) => {
       try {
-        const attributes = ['inventory_id', 'account_id', 'registration_number'];
-
+        const attributes = ['inventory_id', 'account_id', 'registration_number', 'sale_status'];
         const options: FindOptions = {
           where: { sale_status: false },
+          include: [
+            {
+              model: SaleReturn,
+              foreignKey: 'inventory_id',
+              where: { sale_status: false },
+              attributes: ['inventory_id', 'sale_status'],
+            },
+          ],
         };
 
         options.attributes = attributes;
-        const vehicles = await inventoryQueries.ListvehicleWithRegno(options);
+        const vehicles = await inventoryQueries.getAllVehicles(options);
         console.log(vehicles, 'vehicles');
         return resolve(vehicles);
       } catch (err) {
@@ -415,16 +446,16 @@ class InventoryService {
         const allowedExtension = ['pdf', 'jpg', 'jpeg', 'png'];
         const fileType = 'doc';
 
-        console.log(data.is_sales_return,"SALES RETURN")
+        console.log(data.is_sales_return, 'SALES RETURN');
         if (data.is_sales_return) {
-          console.log('entering.... sales return',data)
+          console.log('entering.... sales return', data);
           const generatedTransaction: ITransactionParams[] = [];
           await inventoryQueries.addDataInToSalesReturn(
             {
               inventory_id: data.inventory_id,
               sold_price: data.sold_price,
               sale_status: data.sale_status,
-              purchase_rate:data.purchase_rate
+              purchase_rate: data.purchase_rate,
             },
             { transaction: dbTransaction }
           );
@@ -455,7 +486,6 @@ class InventoryService {
           await performTransaction(dbTransaction);
           return resolve({ message: 'exchanged sales return Vehicle' });
         } else {
-      
           const docs = [data.rc_book, data.proof_doc, data.insurance_doc];
           console.log(docs, 'THE DC');
           const dbTransaction = await db.transaction();
@@ -477,7 +507,7 @@ class InventoryService {
           } else {
             brandID = data?.brand_model_id;
           }
-    
+
           const insertInventoryData: IInventoryAttributes = {
             account_id: data.account_id,
             brand_model_id: brandID || 0,
@@ -495,48 +525,44 @@ class InventoryService {
           };
 
           if (purchaseResult && cashResult && brandID) {
-           const addInventoryresult = await inventoryQueries.addVehicle(insertInventoryData, { transaction: dbTransaction });
-
+            const addInventoryresult = await inventoryQueries.addVehicle(insertInventoryData, {
+              transaction: dbTransaction,
+            });
             if (data.is_delivery) {
               const directExpense = await accountsQueries.findAccount(E_LEDGERS_BASIC.DIRECT_EXPENSE);
               const expenseVoucher = await getVoucher('Expense');
               const deliveryTransaction: ITransactionParams[] = [];
-              const dsTransactions :IDsTransactionAttributes[]=[]
-  
+              const dsTransactions: IDsTransactionAttributes[] = [];
+
               if (directExpense) {
                 deliveryTransaction.push({
                   amount: data.delivery_amount,
                   credit_account: data.delivery_service,
                   debit_account: directExpense,
                   voucher_id: expenseVoucher,
-                  description:''
+                  description: '',
                 });
 
-                  if(addInventoryresult?.inventory_id){
-                    dsTransactions.push({
-                      ds_id: data.delivery_service,
-                      vehicle_id: addInventoryresult.inventory_id,
-                      transaction_id: 0,
-                    
-                    });
-                  }
-                  console.log(deliveryTransaction,"TRANSCA")
+                if (addInventoryresult?.inventory_id) {
+                  dsTransactions.push({
+                    ds_id: data.delivery_service,
+                    vehicle_id: addInventoryresult.inventory_id,
+                    transaction_id: 0,
+                  });
+                }
+                console.log(deliveryTransaction, 'TRANSCA');
                 const resultTransaction = await accountsQueries.generateTransaction(deliveryTransaction, {
                   transaction: dbTransaction,
                 });
-        
+
                 dsTransactions.forEach((item, index) => {
                   dsTransactions[index].transaction_id = resultTransaction[index].transaction_id;
                 });
-                console.log(dsTransactions,deliveryTransaction,"DATA")
-               await inventoryQueries.addTodeliveryServiceTable(dsTransactions, { transaction: dbTransaction });
-        
-
-              }else{
+                console.log(dsTransactions, deliveryTransaction, 'DATA');
+                await inventoryQueries.addTodeliveryServiceTable(dsTransactions, { transaction: dbTransaction });
+              } else {
                 throw new Error('Delivery Expense Is not Found Try again...');
               }
-  
-           
             }
             await accountsQueries.generateTransaction(
               [
@@ -572,6 +598,18 @@ class InventoryService {
         const Brands = await inventoryQueries.listBrandModel();
 
         return resolve(Brands);
+      } catch (err) {
+        reject({ message: `Failed to List Brands: ${err}` });
+      }
+    });
+  }
+
+  editGetApi(inventoryId: number) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const editGetApi = await inventoryQueries.getVehiclebyId(inventoryId);
+
+        return resolve(editGetApi);
       } catch (err) {
         reject({ message: `Failed to List Brands: ${err}` });
       }

@@ -190,6 +190,19 @@ class InventoryController {
       responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
     });
   }
+
+  editGetApi(req: Request, res: Response){
+
+    const {inventoryId} = req.query
+    inventoryService
+    .editGetApi(Number(inventoryId))
+    .then((data: any) => {
+      responseHandler(res, 'OK', data, { message: data.message });
+    })
+    .catch((error) => {
+      responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+    });
+  }
 }
 
 export default new InventoryController();

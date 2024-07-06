@@ -14,21 +14,18 @@ import {
   IServiceTransactionAttributes,
   ITransactionParams,
 } from '../../../types/db.type';
-import { IInventoryBody } from '../../../types/request.type';
-import returnDataValues from '../../../utils/commonUtils/returnDataValues';
 import SaleReturn from '../../../models/salesReturn';
-import Accounts from '../../../models/accounts';
+
 
 class InventoryQueries {
-  async addVehicle(data: IInventoryAttributes, options?: any):Promise<IInventoryAttributes> {
-    const result = await Inventory.create(data, { returning: true, ...options })
+  async addVehicle(data: IInventoryAttributes, options?: any): Promise<IInventoryAttributes> {
+    const result = await Inventory.create(data, { returning: true, ...options });
 
     if (result && result.dataValues) {
       return result.dataValues as IInventoryAttributes;
     } else {
       throw new Error('Failed to create vehicle');
     }
-
   }
 
   async uploadManyDocs(docs: { location: string; name: string }[]) {
@@ -96,51 +93,56 @@ class InventoryQueries {
     return await Sales.create(data, options);
   }
 
-  async getAllVehicles(options?:any) {
-    return await Inventory.findAll({...options,
-      include:[
-  
-        {
-          model: Accounts,
-          required: false,
-          attributes:  ['name', 'contact_info',"head"], 
-
-          
-        },
-        {
-          model:BrandModel,
-          required:false,
-          attributes: ["brand","model"]
-        },
-        { model: FileStore, as: 'rcBook', attributes: ['file_id', 'name'], },
-      { model: FileStore, as: 'insuranceDoc', attributes: ['file_id', 'name'] },
-      { model: FileStore, as: 'proofDoc', attributes: ['file_id', 'name'] },
-      
-    ],
-    attributes: [
-      "inventory_id","account_id","brand_model_id","ownership_name","insurance_date","date_of_purchase"
-    ]
-  });
+  async getAllVehicles(options?: FindOptions) {
+    return await Inventory.findAll(options);
   }
 
- async addDataInToSalesReturn (data:any,options?:any){
+  async addDataInToSalesReturn(data: any, options?: any) {
+    return await SaleReturn.create(data, options);
+  }
 
-  return await SaleReturn.create(data,options)
- }
+ 
 
-
- async ListvehicleWithRegno  (options:any){
-  return await Inventory.findAll(options)
- }
-
- async listBrandModel (){
+  async listBrandModel() {
     return await BrandModel.findAll({
+      attributes: {
+        exclude: ['createdAt', 'updatedAt'],
+      },
+    });
+  }
 
-      attributes:{
-        exclude:["createdAt","updatedAt"]
-      }
-    })
- }
+  async getVehiclebyId(inventory_id: number) {
+    return await Inventory.findOne({
+      where: {
+        inventory_id: inventory_id,
+      },
+      include: [
+        // {
+        //   model: Accounts,
+        //   required: false,
+        //   attributes: ['name', 'contact_info', 'head'],
+        // },
+        {
+          model: BrandModel,
+          required: false,
+          attributes: ['brand', 'model'],
+        },
+        { model: FileStore, as: 'rcBook', attributes: ['file_id', 'name',"location"] },
+        { model: FileStore, as: 'insuranceDoc', attributes: ['file_id', 'name',"location"] },
+        { model: FileStore, as: 'proofDoc', attributes: ['file_id', 'name',"location"] },
+      ],
+      attributes: [
+        'inventory_id',
+        'account_id',
+        'brand_model_id',
+        'ownership_name',
+        'insurance_date',
+        'date_of_purchase',
+        "purchase_rate",
+        "year_of_manufacture",
+      ],
+    });
+  }
 }
 
 export default new InventoryQueries();
