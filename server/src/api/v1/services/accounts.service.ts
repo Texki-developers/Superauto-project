@@ -7,6 +7,7 @@ import authQueries from '../queries/accounts.queries';
 import { db } from '../../../config/database';
 import { performTransaction } from '../../../utils/PerformTransaction/PerformTransaction';
 import getVoucher from '../../../utils/getVoucher/getVoucher';
+import { Op } from 'sequelize';
 
 class AccountService {
   createAccount = (data: IAccountBody) => {
@@ -123,7 +124,23 @@ class AccountService {
   getbyCategory(data: string) {
     return new Promise(async (resolve, reject) => {
       try {
-        const categoryResult = await accountsQueries.FindServiceShops(data);
+
+        let option: any;
+        if (data === E_ACCOUNT_CATEGORIES.BROKER || data === 'CUSTOMER') {
+          option = {
+            category: {
+              [Op.or]: [E_ACCOUNT_CATEGORIES.BROKER, 'CUSTOMER'],
+            },
+          };
+        } else {
+          option = {
+            category: {
+              [Op.eq]: data.trim(),
+            },
+          };
+        }
+  
+        const categoryResult = await accountsQueries.FindServiceShops(option);
         return resolve(categoryResult);
       } catch (err) {
         console.log(err);

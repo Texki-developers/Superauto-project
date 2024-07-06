@@ -86,21 +86,17 @@ class AccountQueries {
     return result;
   }
 
-  async FindServiceShops(category: string) {
+  async FindServiceShops(category: any) {
     const result = await Accounts.findAll({
-      where: { category: { [Op.eq]: category.trim() } },
+      where: category,
       include: [
         {
           model: Employee,
           required: false,
-          attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-          },
+          attributes: ['salary'],
         },
       ],
-      attributes: {
-        exclude: ['createdAt', 'updatedAt'],
-      },
+      attributes: ['account_id', 'name', 'contact_info', 'category'],
     });
 
     return result;
