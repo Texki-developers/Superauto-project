@@ -87,7 +87,18 @@ class AccountQueries {
   }
 
   async FindServiceShops(category:string) {
-    const result = await Accounts.findAll({ where: { category: {[Op.eq]: category.trim()}, } });
+    const result = await Accounts.findAll({ where: { category: {[Op.eq]: category.trim()}, },include: [
+      {
+        model: PrimaryLedger,
+        required: false,
+      },
+    ],
+    attributes: {
+      exclude: ['createdAt', 'updatedAt'], 
+     
+    },
+  
+  });
 
     return result;
   }

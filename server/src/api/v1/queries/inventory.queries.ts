@@ -17,6 +17,7 @@ import {
 import { IInventoryBody } from '../../../types/request.type';
 import returnDataValues from '../../../utils/commonUtils/returnDataValues';
 import SaleReturn from '../../../models/salesReturn';
+import Accounts from '../../../models/accounts';
 
 class InventoryQueries {
   async addVehicle(data: IInventoryAttributes, options?: any):Promise<IInventoryAttributes> {
@@ -95,13 +96,46 @@ class InventoryQueries {
     return await Sales.create(data, options);
   }
 
-  async getAllVehicles(options?:FindOptions) {
-    return await Inventory.findAll(options);
+  async getAllVehicles(options?:any) {
+    return await Inventory.findAll({...options,
+      include:[
+  
+        {
+          model: Accounts,
+          required: false,
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'], 
+           
+          }
+        },
+        {
+          model:BrandModel,
+          required:false,
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'], 
+           
+          }
+        },
+        { model: FileStore, as: 'rcBook', attributes: ['file_id', 'name', 'location'], },
+      { model: FileStore, as: 'insuranceDoc', attributes: ['file_id', 'name', 'location'] },
+      { model: FileStore, as: 'proofDoc', attributes: ['file_id', 'name', 'location'] },
+      
+    ],
+    attributes: {
+      exclude: ['createdAt', 'updatedAt'], 
+     
+    }
+  });
   }
 
  async addDataInToSalesReturn (data:any,options?:any){
 
   return await SaleReturn.create(data,options)
+ }
+
+
+ async ListvehicleWithRegno  (options:any){
+  return await Inventory.findAll(options)
  }
 
  async listBrandModel (){
