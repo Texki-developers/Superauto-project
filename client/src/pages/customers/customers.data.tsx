@@ -1,6 +1,6 @@
 // @ts-ignore
 import moment from "moment"
-import { ICategory } from "../../types/apimodal/apimodal";
+import { ICategory } from "../../types/apimodal/apimodal.d";
 
 export const ColumnData = [
   {

@@ -39,7 +39,7 @@ const Table = (props: ITableProps) => {
           </tr>
         </thead>
         <tbody className='h-full oveflow-auto'>
-          {props?.data?.map((item: any, i: number) => {
+          {props?.data?.length > 0 && props?.data?.map((item: any, i: number) => {
             return (
               <tr key={i} >
                 {props?.columnData?.map((keyItem) => (
@@ -63,7 +63,7 @@ const Table = (props: ITableProps) => {
           <p className='text-[12px] leading-none'>Per Page</p>
           <select value={itemsPerPage} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => { setItemsPerPage(e.target.value) }} className='rounded border border-black-200 bg-gray-200 p-1 text-[12px]'>
             {
-              totalItemsPerPage.map((item) => (
+              totalItemsPerPage?.map((item) => (
                 <option key={uuidv4()} value={item}>
                   {item}
                 </option>
