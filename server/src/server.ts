@@ -9,7 +9,13 @@ const server = http.createServer(app)
   
 
 server.listen(PORT, () => {
-    console.log(`Server started on the port ${PORT}`)
-    // Connecting Database
-    connectDB()
+    try{
+        console.log(`Server started on the port ${PORT}`)
+        // Connecting Database
+        connectDB()
+    }
+    catch(err){
+        console.log(err,"ERROR")
+    }
+   
 })
