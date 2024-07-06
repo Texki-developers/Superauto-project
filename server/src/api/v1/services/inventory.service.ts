@@ -324,6 +324,7 @@ class InventoryService {
         const dbTransaction = await db.transaction();
         const salesId = await accountsQueries.findAccount(E_LEDGERS_BASIC.SALE);
         const cashId = await accountsQueries.findAccount(E_LEDGERS_BASIC.CASH);
+
         let transactions: ITransactionParams[] = [];
 
         if (salesId && cashId) {
@@ -332,12 +333,14 @@ class InventoryService {
               amount: data.sales_rate,
               credit_account: salesId,
               debit_account: data.account_id,
+              voucher_id: await getVoucher(E_VOUCHERS.Sale),
               description: '',
             },
             {
               amount: data.sales_rate,
               credit_account: data.account_id,
               debit_account: cashId,
+              voucher_id: await getVoucher(E_VOUCHERS.Sale),
               description: '',
             },
           ];
@@ -382,7 +385,7 @@ class InventoryService {
               model: Accounts,
               required: false,
               attributes: ['name', 'contact_info', 'head'],
-            }
+            },
           ],
           attributes: [
             'inventory_id',

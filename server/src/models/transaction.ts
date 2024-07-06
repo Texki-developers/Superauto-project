@@ -4,6 +4,7 @@ import {
     Optional
   } from 'sequelize';
   import { db } from '../config/database';
+import Accounts from './accounts';
   
   // Define the interface for model attributes
   interface TransactionAttributes {
@@ -43,11 +44,19 @@ import {
     },
     credit_account: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references:{
+        model:Accounts,
+        key:'account_id'
+      }
     },
     debit_account: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references:{
+        model:Accounts,
+        key:'account_id'
+      }
     },
     voucher_id: {
       type: DataTypes.STRING,
