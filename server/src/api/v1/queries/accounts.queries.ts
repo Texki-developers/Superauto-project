@@ -93,6 +93,9 @@ class AccountQueries {
         {
           model: Employee,
           required: false,
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
         },
       ],
       attributes: {
