@@ -394,6 +394,7 @@ class InventoryService {
             'ownership_name',
             'insurance_date',
             'date_of_purchase',
+            'registration_number'
           ],
           limit: perPage,
           offset: (page - 1) * perPage,
@@ -409,7 +410,7 @@ class InventoryService {
   listVehicleRegNumber() {
     return new Promise(async (resolve, reject) => {
       try {
-        const attributes = ['inventory_id', 'account_id', 'registration_number', 'sale_status'];
+        const attributes = ['inventory_id', 'account_id', 'registration_number', 'sale_status',];
         const options: FindOptions = {
           where: { sale_status: false },
           include: [
@@ -420,11 +421,9 @@ class InventoryService {
               attributes: ['inventory_id', 'sale_status'],
             },
           ],
+          attributes:attributes
         };
-
-        options.attributes = attributes;
         const vehicles = await inventoryQueries.getAllVehicles(options);
-        console.log(vehicles, 'vehicles');
         return resolve(vehicles);
       } catch (err) {
         reject({ message: `Failed to List vehicles: ${err}` });
