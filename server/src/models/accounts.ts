@@ -2,6 +2,7 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import { db } from '../config/database';
 import PrimaryLedger from './primaryLedger';
 import { IAccountAttributes } from '../types/db.type';
+import Employee from './employee';
 
 interface AccountCreationAttributes extends Optional<IAccountAttributes, 'account_id'> {}
 
@@ -46,8 +47,7 @@ Accounts.init(
     timestamps: true,
   }
 );
-
 Accounts.belongsTo(PrimaryLedger, { foreignKey: 'head' });
 PrimaryLedger.hasMany(Accounts, { foreignKey: 'head' });
-
+Accounts.hasMany(Employee,{foreignKey: 'account_id'})
 export default Accounts;

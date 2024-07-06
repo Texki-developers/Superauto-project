@@ -36,7 +36,7 @@ class AccountQueries {
 
   async generateTransaction(data: ITransactionParams[], options?: any) {
     try {
-      console.log(data,"TRAN")
+      console.log(data, 'TRAN');
       const TransactionResult = await Transaction.bulkCreate(data, { returning: true, ...options });
       return returnDataValues(TransactionResult);
     } catch (error) {
@@ -86,22 +86,19 @@ class AccountQueries {
     return result;
   }
 
-  async FindServiceShops(category:string) {
-    const result = await Accounts.findAll({ where: { category: {[Op.eq]: category.trim()}, },include: [
-      {
-        model: PrimaryLedger,
-        required: false,
-        attributes:{
-          exclude:['createdAt', 'updatedAt',"pl_id"],
-        }
+  async FindServiceShops(category: string) {
+    const result = await Accounts.findAll({
+      where: { category: { [Op.eq]: category.trim() } },
+      include: [
+        {
+          model: Employee,
+          required: false,
+        },
+      ],
+      attributes: {
+        exclude: ['createdAt', 'updatedAt'],
       },
-      
-    ],
-    attributes: {
-      exclude: ['createdAt', 'updatedAt'], 
-    },
-  
-  });
+    });
 
     return result;
   }

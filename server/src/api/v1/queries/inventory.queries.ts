@@ -100,9 +100,7 @@ class InventoryQueries {
   async addDataInToSalesReturn(data: any, options?: any) {
     return await SaleReturn.create(data, options);
   }
-
- 
-
+  
   async listBrandModel() {
     return await BrandModel.findAll({
       attributes: {
