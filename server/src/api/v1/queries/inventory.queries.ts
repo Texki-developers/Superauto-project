@@ -103,28 +103,23 @@ class InventoryQueries {
         {
           model: Accounts,
           required: false,
-          attributes: {
-            exclude: ['createdAt', 'updatedAt'], 
-           
-          }
+          attributes:  ['name', 'contact_info',"head"], 
+
+          
         },
         {
           model:BrandModel,
           required:false,
-          attributes: {
-            exclude: ['createdAt', 'updatedAt'], 
-           
-          }
+          attributes: ["brand","model"]
         },
-        { model: FileStore, as: 'rcBook', attributes: ['file_id', 'name', 'location'], },
-      { model: FileStore, as: 'insuranceDoc', attributes: ['file_id', 'name', 'location'] },
-      { model: FileStore, as: 'proofDoc', attributes: ['file_id', 'name', 'location'] },
+        { model: FileStore, as: 'rcBook', attributes: ['file_id', 'name'], },
+      { model: FileStore, as: 'insuranceDoc', attributes: ['file_id', 'name'] },
+      { model: FileStore, as: 'proofDoc', attributes: ['file_id', 'name'] },
       
     ],
-    attributes: {
-      exclude: ['createdAt', 'updatedAt'], 
-     
-    }
+    attributes: [
+      "inventory_id","account_id","brand_model_id","ownership_name","insurance_date","date_of_purchase"
+    ]
   });
   }
 
@@ -139,7 +134,12 @@ class InventoryQueries {
  }
 
  async listBrandModel (){
-    return await BrandModel.findAll()
+    return await BrandModel.findAll({
+
+      attributes:{
+        exclude:["createdAt","updatedAt"]
+      }
+    })
  }
 }
 
