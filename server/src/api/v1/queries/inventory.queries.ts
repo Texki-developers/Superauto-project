@@ -94,10 +94,13 @@ class InventoryQueries {
 
   async getAllVehicles(options?: FindOptions) {
     const { rows: accounts, count: totalCount } = await Inventory.findAndCountAll(options);
+    
     const result = {
       accounts: accounts,
-      totalCount: totalCount,
-      currentLength: accounts.length,
+      meta:{
+        totalCount: totalCount,
+        perPage: accounts.length,
+      }
     };
     return result;
   }

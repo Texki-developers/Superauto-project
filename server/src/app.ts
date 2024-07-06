@@ -30,7 +30,7 @@ app.use(express.json({ limit: '50mb' }));
 ///THE ROUTES
 app.use('/api/v1/accounts', accountRoutes);
 app.use('/api/v1/inventory', inventoryRoutes);
-app.use('/api/v1/Reports', reportRoutes);
+app.use('/api/v1/reports', reportRoutes);
 ///THE ROUTES
 
 app.use('*/images', express.static('./public/uploads'));

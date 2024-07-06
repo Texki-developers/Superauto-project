@@ -119,7 +119,7 @@ class InventoryController {
     inventoryService
       .listVehicles(page, perPage)
       .then((data: any) => {
-        responseHandler(res, 'OK', data, { message: data.message });
+        responseHandler(res, 'OK', data.accounts, { message: data.message ,meta:data});
       })
       .catch((error) => {
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
@@ -130,7 +130,7 @@ class InventoryController {
     inventoryService
       .listVehicleRegNumber()
       .then((data: any) => {
-        responseHandler(res, 'OK', data, { message: data.message });
+        responseHandler(res, 'OK', data.accounts, { message: data.message });
       })
       .catch((error) => {
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
