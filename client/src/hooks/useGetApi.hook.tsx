@@ -4,8 +4,7 @@ const useGetApis = () => {
   const callApi = async (url: string) => {
     try {
       const response: any = await AuthApiService.getApi(url)
-      console.log(response.data)
-      return response.data
+      return response
     } catch (error: any) {
       toast.error(error.data?.response.message ?? 'Something went wrong')
     }

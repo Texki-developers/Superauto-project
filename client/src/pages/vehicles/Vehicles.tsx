@@ -11,6 +11,8 @@ import SellVehicle from './SellVehicle';
 import { useQuery } from '@tanstack/react-query';
 import { ITableColumn } from '../../types/table/table';
 import useGetApis from '../../hooks/useGetApi.hook';
+import { useSearchParams } from 'react-router-dom';
+import Loading from '../../components/loading/Loading';
 
 
 const Vehicles = () => {
@@ -19,9 +21,11 @@ const Vehicles = () => {
   const onAddButtonClick = () => {
     setShowAddPage(true);
   };
+  const [searchParams] = useSearchParams()
   const { callApi } = useGetApis()
-  const fetchVehicles = () => callApi('inventory/list/vehicle');
-  const { data, isPending, refetch } = useQuery({ queryKey: ['getVehicles'], queryFn: fetchVehicles })
+  const url = `inventory/list/vehicle?page=${searchParams.get('page') ?? 1}&perPage=${searchParams.get('perPage') ?? 10}`
+  const fetchVehicles = () => callApi(url);
+  const { data, isPending, refetch } = useQuery({ queryKey: [url], queryFn: fetchVehicles })
   console.log(data)
 
   const onActionClick = (type: 'add' | 'edit' | 'delete', id: string) => {
@@ -59,31 +63,32 @@ const Vehicles = () => {
   return (
     <>
       {
-        isPending ? <h2>Loading...</h2> : <main className='table-wrapper'>
-
-          {showAddPage ? (
-            <AddVehicle setShowAddPage={setShowAddPage} refetch={refetch} />
-          ) :
-            showSellPage ? (
-              <SellVehicle setShowSellPage={setShowSellPage} />
-            ) :
-              (
-                <>
-                  <Header />
-                  <div className='pt-[50px]'>
-                    <AddAndSearchItem
-                      addButtonText='Add Vehicle'
-                      onAddButtonClick={onAddButtonClick}
-                    />
-                  </div>
-                  <section className='pt-5 pb-2'>
-                    <Table data={data} columnData={columnData} />
-                  </section>
-                </>
-              )
-          }
-        </main >
+        isPending && <Loading />
       }
+      <main className='table-wrapper'>
+
+        {showAddPage ? (
+          <AddVehicle setShowAddPage={setShowAddPage} refetch={refetch} />
+        ) :
+          showSellPage ? (
+            <SellVehicle setShowSellPage={setShowSellPage} />
+          ) :
+            (
+              <>
+                <Header />
+                <div className='pt-[50px]'>
+                  <AddAndSearchItem
+                    addButtonText='Add Vehicle'
+                    onAddButtonClick={onAddButtonClick}
+                  />
+                </div>
+                <section className='pt-5 pb-2'>
+                  <Table meta={{ perPage: 10, totalCount: 100 }} data={data?.data} columnData={columnData} />
+                </section>
+              </>
+            )
+        }
+      </main >
     </>
   );
 };

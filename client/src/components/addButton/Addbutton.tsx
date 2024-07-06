@@ -27,7 +27,7 @@ const Addbutton = () => {
                 getForm(showForm, setShowForm)
 
             }
-            <div className=" shadow-[0px_0px_5px_#00000044] cursor-pointer group addIcon grid place-items-center absolute w-14 h-14 right-3 bottom-3 rounded-full bg-primary-300">
+            <div className=" shadow-[0px_0px_5px_#00000044] cursor-pointer group addIcon grid place-items-center fixed w-14 h-14 right-3 bottom-3 rounded-full bg-primary-300">
                 <img alt='AddIcon' className='w-5' src={AddIcon} />
                 <div className="group-hover:grid hidden absolute bottom-[100%]  right-2 p-2 gap-2 ">
                     <Button onClick={() => setShowForm('expense')} className='!w-[180px]' icon={<img

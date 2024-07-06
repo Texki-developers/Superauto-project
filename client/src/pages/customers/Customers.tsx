@@ -10,12 +10,9 @@ import Table from '../../components/table/Table';
 import { IAccountApiBody, ICategory } from '../../types/apimodal/apimodal.d';
 import useAccountApi from '../../hooks/useAccountApi.hook';
 import { ITableColumn } from '../../types/table/table';
-import addProduct from '../../assets/icons/addCart.svg';
 import DeleteIcon from '../../assets/icons/delete.svg';
 import EditIcon from '../../assets/icons/edit.svg';
-import useGetApis from '../../hooks/useGetApi.hook';
-// @ts-ignore
-import { useQuery } from '@tanstack/react-query';
+import useGetCategoryApi from '../../hooks/useGetCategoryApi.hook';
 
 const defaultValues: ICustomer = {
   name: '', // Default value for name
@@ -45,9 +42,7 @@ const Customers = () => {
     await accountApi(body, 'Customer creation Failed', 'Customer Successfully Created', () => { reset() })
     refetch()
   };
-  const { callApi } = useGetApis()
-  const fetchCustomers = () => callApi(`accounts/list/category/${ICategory.CUSTOMER}`);
-  const { data, isPending, refetch } = useQuery({ queryKey: ['customers'], queryFn: fetchCustomers })
+  const { data, isPending, refetch } = useGetCategoryApi(ICategory.CUSTOMER)
   const onActionClick = (type: string, id: string) => {
     console.log(type, id)
   }
@@ -98,7 +93,7 @@ const Customers = () => {
                 />
               </section>
               <section className='pt-5 pb-2'>
-                <Table data={data} columnData={columnData} />
+                <Table meta={data?.meta} data={data.data} columnData={columnData} />
               </section>
             </div>
           </>

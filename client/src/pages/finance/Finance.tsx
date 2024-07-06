@@ -11,10 +11,9 @@ import AddFinance from './AddFinance';
 import { IFinance } from '../../types/finance/finance';
 import { IAccountApiBody, ICategory } from '../../types/apimodal/apimodal.d';
 import useAccountApi from '../../hooks/useAccountApi.hook';
-import useGetApis from '../../hooks/useGetApi.hook';
-import { useQuery } from '@tanstack/react-query';
 import DeleteIcon from '../../assets/icons/delete.svg';
 import EditIcon from '../../assets/icons/edit.svg';
+import useGetCategoryApi from '../../hooks/useGetCategoryApi.hook';
 
 const defaultValues: IFinance = {
   name: '', // Default value for name
@@ -28,10 +27,7 @@ const Finance = () => {
   const onAddItemClick = () => {
     setShowAddFinancerPopup(true);
   };
-  const { callApi } = useGetApis()
-  const fetchFinance = () => callApi(`accounts/list/category/${ICategory.FINANCER}`);
-  const { data, isPending, refetch } = useQuery({ queryKey: ['getFinance'], queryFn: fetchFinance })
-
+  const { data, isPending, refetch } = useGetCategoryApi(ICategory.FINANCER)
   const { register, handleSubmit, reset, formState: { errors }, control } = useForm({
     defaultValues
   })
@@ -102,7 +98,7 @@ const Finance = () => {
               />
             </section>
             <section className='pb-2 pt-5'>
-              <Table data={data} columnData={columnData} />
+              <Table data={data?.data} columnData={columnData} />
             </section>
           </div>
 

@@ -40,7 +40,7 @@ const AddvehicleForm = ({ onCancelClick, register, reset, control, errors, watch
 
   useEffect(() => {
     const brand: any = watch('brand')
-    if (brand) {
+    if (brands && brands?.length > 0) {
       const models = brands?.filter(item => {
         console.log(item, brand)
         return item.brand === brand.value
@@ -51,7 +51,7 @@ const AddvehicleForm = ({ onCancelClick, register, reset, control, errors, watch
   }, [watch('brand')])
 
   useEffect(() => {
-    if (brands) {
+    if (brands && brands?.length > 0) {
       const brandOptions = brands?.map((item: IBranAndModel) => (
         {
           label: item.brand,
