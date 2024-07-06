@@ -91,11 +91,14 @@ class AccountQueries {
       {
         model: PrimaryLedger,
         required: false,
+        attributes:{
+          exclude:['createdAt', 'updatedAt',"pl_id"],
+        }
       },
+      
     ],
     attributes: {
       exclude: ['createdAt', 'updatedAt'], 
-     
     },
   
   });

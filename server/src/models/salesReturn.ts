@@ -5,6 +5,7 @@ import {
   } from 'sequelize';
   import { db } from '../config/database';
 import { ISaleReturnAttributes } from '../types/db.type';
+import Inventory from './inventory';
   
   // Define the interface for model attributes
 
@@ -28,7 +29,11 @@ import { ISaleReturnAttributes } from '../types/db.type';
     },
     inventory_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references:{
+        model:Inventory,
+        key:'inventory_id'
+      }
     },
     sold_price: {
       type: DataTypes.INTEGER,
