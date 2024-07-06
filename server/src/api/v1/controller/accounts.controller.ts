@@ -111,6 +111,20 @@ class AccountController {
       })
   }
 
+  getCategorySearch (req: Request, res: Response)  {
+    const { search } = req.query;
+    const {category} = req.params
+  const searchString: string = search as string;
+  const categoryString: string = category as string;
+    accountsService.getCategorySearch(searchString,categoryString)
+      .then((response:any ) => {
+        responseHandler(res, 'OK', response, {message: 'RETRIEVED'})
+      }).catch((error:any) => {
+        console.log(error);
+        responseHandler(res, 'INTERNAL_SERVER_ERROR')
+      })
+  }
+
 }
 
 export default new AccountController();

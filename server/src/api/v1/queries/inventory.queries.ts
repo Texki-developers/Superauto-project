@@ -16,7 +16,6 @@ import {
 } from '../../../types/db.type';
 import SaleReturn from '../../../models/salesReturn';
 
-
 class InventoryQueries {
   async addVehicle(data: IInventoryAttributes, options?: any): Promise<IInventoryAttributes> {
     const result = await Inventory.create(data, { returning: true, ...options });
@@ -100,13 +99,13 @@ class InventoryQueries {
       totalCount: totalCount,
       currentLength: accounts.length,
     };
-    return result
+    return result;
   }
 
   async addDataInToSalesReturn(data: any, options?: any) {
     return await SaleReturn.create(data, options);
   }
-  
+
   async listBrandModel() {
     return await BrandModel.findAll({
       attributes: {
@@ -131,9 +130,9 @@ class InventoryQueries {
           required: false,
           attributes: ['brand', 'model'],
         },
-        { model: FileStore, as: 'rcBook', attributes: ['file_id', 'name',"location"] },
-        { model: FileStore, as: 'insuranceDoc', attributes: ['file_id', 'name',"location"] },
-        { model: FileStore, as: 'proofDoc', attributes: ['file_id', 'name',"location"] },
+        { model: FileStore, as: 'rcBook', attributes: ['file_id', 'name', 'location'] },
+        { model: FileStore, as: 'insuranceDoc', attributes: ['file_id', 'name', 'location'] },
+        { model: FileStore, as: 'proofDoc', attributes: ['file_id', 'name', 'location'] },
       ],
       attributes: [
         'inventory_id',
@@ -142,8 +141,8 @@ class InventoryQueries {
         'ownership_name',
         'insurance_date',
         'date_of_purchase',
-        "purchase_rate",
-        "year_of_manufacture",
+        'purchase_rate',
+        'year_of_manufacture',
       ],
     });
   }

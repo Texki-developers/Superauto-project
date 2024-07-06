@@ -1,4 +1,4 @@
-import { Transaction } from 'sequelize';
+import { Sequelize, Transaction } from 'sequelize';
 import { IAccountAttributes, IEmployeeAttributes } from '../../../types/db.type';
 import { IAccountBody, IOtherExpenseBody, IPaymentBody, IRecieptBody } from '../../../types/request.type';
 import { E_ACCOUNT_CATEGORIES, E_LEDGERS_BASIC, E_PRIMARY_LEDGERS } from '../../../utils/constants/constants';
@@ -146,7 +146,7 @@ class AccountService {
             offset: (page - 1) * perPage,
           };
         }
-  
+
         const categoryResult = await accountsQueries.findAccountsByCategory(option);
         return resolve(categoryResult);
       } catch (err) {
@@ -155,26 +155,58 @@ class AccountService {
       }
     });
   }
-  
 
   getFinancerDetails(data: number) {
     return new Promise(async (resolve, reject) => {
       try {
-
         let option = {
-          where:{
-            account_id : data,
-            category:'FINANCER'
-          }
-        }
+          where: {
+            account_id: data,
+            category: 'FINANCER',
+          },
+        };
 
-        const getFinanceResult = await accountsQueries.getAccountsByid(option)
-          return resolve(getFinanceResult)
+        const getFinanceResult = await accountsQueries.getAccountsByid(option);
+        return resolve(getFinanceResult);
       } catch (err) {
         console.log(err);
         reject({ message: `Failed to List Financers..: ${err}` });
       }
-    })
+    });
+  }
+
+  getCategorySearch(search: string, category: string) {
+    console.log(search,category,"QUERY AP")
+    return new Promise(async (resolve, reject) => {
+      try {
+        let whereCondition: any = {};
+        if (category === E_ACCOUNT_CATEGORIES.BROKER || category === 'CUSTOMER') {
+          whereCondition.category = {
+            [Op.or]: [E_ACCOUNT_CATEGORIES.BROKER, 'CUSTOMER'],
+          };
+        } else {
+          whereCondition.category = {
+            [Op.eq]: category.trim(),
+          };
+        }
+
+        if (search.trim() !== '') {
+          whereCondition[Op.or] = [
+            { name: { [Op.iLike]: `%${search}%` } },
+            { contact_info: { [Op.iLike]: `%${search}%` } },
+            Sequelize.literal(`to_char("createdAt", 'YYYY-MM-DD HH24:MI:SS') ILIKE '%${search}%'`),
+          ];
+        }
+ 
+
+       const result =  await accountsQueries.SearchCategory(whereCondition)
+
+       return resolve (result)
+      } catch (err) {
+        console.log(err);
+        reject({ message: `Failed to List Financers..: ${err}` });
+      }
+    });
   }
 }
 

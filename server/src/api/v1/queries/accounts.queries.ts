@@ -1,4 +1,4 @@
-import { Op } from 'sequelize';
+import { Op, where } from 'sequelize';
 import { pool } from '../../../config1/dbConfig';
 import Accounts from '../../../models/accounts';
 import Employee from '../../../models/employee';
@@ -115,6 +115,16 @@ class AccountQueries {
     });
 
     return result;
+  }
+
+
+  async SearchCategory(whereCondition:any){
+      console.log(whereCondition,"where condition")
+    const accounts = await Accounts.findAll({
+      where: whereCondition,
+      attributes: ['account_id', 'name', 'contact_info','category'], 
+    });
+    return accounts
   }
 
 
