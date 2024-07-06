@@ -85,11 +85,24 @@ class AccountController {
 
   getbyCategory (req: Request, res: Response)  {
     const { category } = req.params;
+    const {page,perPage} = req.query
     if (typeof category !== 'string' || category.trim() === '') {
       res.status(400).json({ error: 'Invalid category' });
       return;
     }
-    accountsService.getbyCategory(category)
+    accountsService.getbyCategory(category,Number(page),Number(perPage))
+      .then((response:any ) => {
+        responseHandler(res, 'OK', response, {message: 'RETRIEVED'})
+      }).catch((error:any) => {
+        console.log(error);
+        responseHandler(res, 'INTERNAL_SERVER_ERROR')
+      })
+  }
+
+  getFinancerDetails (req: Request, res: Response)  {
+    const { id } = req.params;
+    console.log(id,"THE ID")
+    accountsService.getFinancerDetails(Number(id))
       .then((response:any ) => {
         responseHandler(res, 'OK', response, {message: 'RETRIEVED'})
       }).catch((error:any) => {

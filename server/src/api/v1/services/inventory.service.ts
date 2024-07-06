@@ -373,7 +373,7 @@ class InventoryService {
     });
   }
 
-  listVehicles() {
+  listVehicles(page = 1, perPage = 10) {
     return new Promise(async (resolve, reject) => {
       try {
         const options: FindOptions = {
@@ -392,6 +392,8 @@ class InventoryService {
             'insurance_date',
             'date_of_purchase',
           ],
+          limit: perPage,
+          offset: (page - 1) * perPage,
         };
         const vehicles = await inventoryQueries.getAllVehicles(options);
         return resolve(vehicles);
