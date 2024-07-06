@@ -47,4 +47,7 @@ Accounts.init(
   }
 );
 
+Accounts.belongsTo(PrimaryLedger, { foreignKey: 'head' });
+PrimaryLedger.hasMany(Accounts, { foreignKey: 'head' });
+
 export default Accounts;

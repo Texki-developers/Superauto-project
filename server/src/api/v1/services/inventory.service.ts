@@ -378,7 +378,6 @@ class InventoryService {
     return new Promise(async (resolve, reject) => {
       try {
         const vehicles = await inventoryQueries.getAllVehicles();
-        console.log(vehicles, 'vehicles');
         return resolve(vehicles);
       } catch (err) {
         reject({ message: `Failed to List vehicles: ${err}` });
@@ -396,7 +395,7 @@ class InventoryService {
         };
 
         options.attributes = attributes;
-        const vehicles = await inventoryQueries.getAllVehicles(options);
+        const vehicles = await inventoryQueries.ListvehicleWithRegno(options);
         console.log(vehicles, 'vehicles');
         return resolve(vehicles);
       } catch (err) {
@@ -512,8 +511,7 @@ class InventoryService {
                   voucher_id: expenseVoucher,
                   description:''
                 });
-         
-  
+
                   if(addInventoryresult?.inventory_id){
                     dsTransactions.push({
                       ds_id: data.delivery_service,
