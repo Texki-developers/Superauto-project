@@ -1,14 +1,21 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import AddAndSearchItem from '../../components/addAndSearchItem/AddAndSearchItem';
 import Header from '../../components/header/Header';
 import ModalWrapper from '../../components/modalWrapper';
 import AddCustomers from './AddCustomers';
-import { ColumnData, dummyData } from './customers.data';
+import { ColumnData } from './customers.data';
 import { ICustomer } from '../../types/customers/customers';
 import { useForm } from 'react-hook-form';
 import Table from '../../components/table/Table';
 import { IAccountApiBody, ICategory } from '../../types/apimodal/apimodal.d';
 import useAccountApi from '../../hooks/useAccountApi.hook';
+import { ITableColumn } from '../../types/table/table';
+import addProduct from '../../assets/icons/addCart.svg';
+import DeleteIcon from '../../assets/icons/delete.svg';
+import EditIcon from '../../assets/icons/edit.svg';
+import useGetApis from '../../hooks/useGetApi.hook';
+// @ts-ignore
+import { useQuery } from '@tanstack/react-query';
 
 const defaultValues: ICustomer = {
   name: '', // Default value for name
@@ -35,33 +42,67 @@ const Customers = () => {
       category: data?.isBroker ? ICategory.BROKER : ICategory.CUSTOMER
     }
     setShowCustomersPopup(false);
-    accountApi(body, 'Customer creation Failed', 'Customer Successfully Created', () => { reset() })
+    await accountApi(body, 'Customer creation Failed', 'Customer Successfully Created', () => { reset() })
+    refetch()
   };
+  const { callApi } = useGetApis()
+  const fetchCustomers = () => callApi(`accounts/list/category/${ICategory.CUSTOMER}`);
+  const { data, isPending, refetch } = useQuery({ queryKey: ['customers'], queryFn: fetchCustomers })
+  const onActionClick = (type: string, id: string) => {
+    console.log(type, id)
+  }
+  const columnData: ITableColumn[] = useMemo(() => {
+    return [
+      ...ColumnData,
+      {
+        name: 'Action',
+        key: 'id',
+        columnData: (id: string) => (
+          <div className='flex gap-2 *:h-[20px] *:w-[20px]'>
+            <img
+              onClick={() => onActionClick('edit', id)}
+              src={EditIcon}
+              alt=''
+            />
+            <img
+              onClick={() => onActionClick('delete', id)}
+              src={DeleteIcon}
+              alt=''
+            />
+          </div>
+        ),
+      },
+    ];
+  }, []);
   return (
     <>
-      {showCustomersPopup && (
-        <ModalWrapper
-          onClose={onCancelClick}
-          title='Add Customer'
-        >
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <AddCustomers reset={reset} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
-          </form>
-        </ModalWrapper>
-      )}
-      <div className='table-wrapper'>
-        <Header />
-        <section className='pt-[50px]'>
-          <AddAndSearchItem
-            addButtonText='Add Customer'
-            onAddButtonClick={onAddItemClick}
-          />
-        </section>
-        <section className='pt-5 pb-2'>
-          <Table data={dummyData} columnData={ColumnData} />
-        </section>
-      </div>
-    </>
+      {
+        isPending ? <p>Loading</p> :
+          <>
+            {showCustomersPopup && (
+              <ModalWrapper
+                onClose={onCancelClick}
+                title='Add Customer'
+              >
+                <form onSubmit={handleSubmit(onSubmit)}>
+                  <AddCustomers reset={reset} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
+                </form>
+              </ModalWrapper>
+            )}
+            <div className='table-wrapper'>
+              <Header />
+              <section className='pt-[50px]'>
+                <AddAndSearchItem
+                  addButtonText='Add Customer'
+                  onAddButtonClick={onAddItemClick}
+                />
+              </section>
+              <section className='pt-5 pb-2'>
+                <Table data={data} columnData={columnData} />
+              </section>
+            </div>
+          </>
+      }</>
   );
 };
 

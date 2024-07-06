@@ -45,4 +45,17 @@ export default class AuthApiService {
       };
     }
   }
+
+  static async getApi<T>(url: string): Promise<T | IApiError> {
+    try {
+      const response = await AuthApiService.instance.get(url);
+      return response.data;
+    } catch (error: any) {
+      console.error('Error posting to API:', error.message);
+      return {
+        message: error?.response?.data?.message ?? 'Something went wrong',
+        status: 'error',
+      };
+    }
+  }
 }

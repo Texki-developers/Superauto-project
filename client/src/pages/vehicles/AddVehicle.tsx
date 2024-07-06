@@ -8,6 +8,7 @@ import useToast from '../../hooks/useToast.hook';
 
 interface IProps {
   setShowAddPage: React.Dispatch<SetStateAction<boolean>>;
+  refetch: () => void;
 }
 
 const defaultValues: IVehicleAddFormValues = {
@@ -41,7 +42,7 @@ const defaultValues: IVehicleAddFormValues = {
   deliveryAmount: '',
 };
 
-const AddVehicle = ({ setShowAddPage }: IProps) => {
+const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
   const { register, handleSubmit, reset, watch, setValue, formState: { errors }, control } = useForm({
     defaultValues
   })
@@ -82,11 +83,12 @@ const AddVehicle = ({ setShowAddPage }: IProps) => {
         toastError(id, data?.message)
         return
       }
-      setShowAddPage(false)
       toastSuccess(id, 'Vehicle added successfully')
     } catch (error) {
-      setShowAddPage(false)
       toastError(id, 'Something went wrong')
+    } finally {
+      setShowAddPage(false)
+      refetch()
     }
   }
   return (

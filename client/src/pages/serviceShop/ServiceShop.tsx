@@ -3,14 +3,20 @@ import AddAndSearchItem from '../../components/addAndSearchItem/AddAndSearchItem
 import Header from '../../components/header/Header';
 import ModalWrapper from '../../components/modalWrapper';
 import AddServiceShop from './AddServiceShop';
-import { ColumnData, dummyData } from './serviceShop.data';
+import { ColumnData } from './serviceShop.data';
 import Table from '../../components/table/Table';
 import AssignVehicles from '../../components/AssignVehicles/AssignVehicles';
 import { useForm } from 'react-hook-form';
 import { IServiceShop } from '../../types/serviceShop/serviceShop';
 import { IAccountApiBody, ICategory } from '../../types/apimodal/apimodal.d';
 import useAccountApi from '../../hooks/useAccountApi.hook';
-import addProduct from '../../assets/icons/addCart.svg';
+import { ITableColumn } from '../../types/table/table';
+import useGetApis from '../../hooks/useGetApi.hook';
+// @ts-ignore
+import { useQuery } from '@tanstack/react-query';
+import addProduct from '../../assets/icons/vehicle.png';
+import DeleteIcon from '../../assets/icons/delete.svg';
+import EditIcon from '../../assets/icons/edit.svg';
 
 const defaultValues: IServiceShop = {
   name: '', // Default value for name
@@ -32,21 +38,27 @@ const ServiceShop = () => {
     setShowServiceShopPopup(false);
   }, [])
   const accountApi = useAccountApi()
-  const onSubmit = (data: IServiceShop) => {
+  const onSubmit = async (data: IServiceShop) => {
     const body: IAccountApiBody = {
       "name": data?.name,
       "contactInfo": data?.phoneNumber,
       category: ICategory.SERVICE_SHOP
     }
     setShowServiceShopPopup(false);
-    accountApi(body, 'Service Shop creation Failed', 'Service Shop Successfully Created', () => { reset() })
-
+    await accountApi(body, 'Service Shop creation Failed', 'Service Shop Successfully Created', () => { reset() })
+    refetch()
   };
-  const onActionClick = (id: number) => {
-    setAssignId(id)
-    setAssignVehiclePopup(true)
+  const { callApi } = useGetApis()
+  const fetchServiceShop = () => callApi(`accounts/list/category/${ICategory.SERVICE_SHOP}`);
+  const { data, isPending, refetch } = useQuery({ queryKey: ['serviceShop'], queryFn: fetchServiceShop })
+  console.log(data)
+  const onActionClick = (type: string, id: string) => {
+    if (type === 'assign') {
+      setAssignId(Number(id))
+      setAssignVehiclePopup(true)
+    }
   }
-  const columnData = useMemo(() => {
+  const columnData: ITableColumn[] = useMemo(() => {
     return [
       ...ColumnData,
       {
@@ -55,8 +67,18 @@ const ServiceShop = () => {
         columnData: (id: string) => (
           <div className='flex gap-2 *:h-[20px] *:w-[20px]'>
             <img
-              onClick={() => onActionClick(parseInt(id))}
+              onClick={() => onActionClick('assign', id)}
               src={addProduct}
+              alt=''
+            />
+            <img
+              onClick={() => onActionClick('edit', id)}
+              src={EditIcon}
+              alt=''
+            />
+            <img
+              onClick={() => onActionClick('delete', id)}
+              src={DeleteIcon}
               alt=''
             />
           </div>
@@ -66,39 +88,45 @@ const ServiceShop = () => {
   }, []);
   return (
     <>
-      {showServiceShopPopup && (
-        <ModalWrapper
-          onClose={onCancelClick}
-          title='Add Service Shop'
-        >
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <AddServiceShop reset={reset} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
-          </form>
-        </ModalWrapper>
-      )}
+      {
+        isPending ? <p>Loading...</p> :
+          <>
 
-      {showAssignVehiclePopup && (
-        <ModalWrapper
-          onClose={() => {
-            setAssignVehiclePopup(false);
-          }}
-          title='Assign Vehicle'
-        >
-          <AssignVehicles apiUrl='/service' setAssign={setAssignVehiclePopup} parent='serviceId' itemId={assignId} />
-        </ModalWrapper>
-      )}
-      <div className='table-wrapper'>
-        <Header />
-        <section className='pt-[50px]'>
-          <AddAndSearchItem
-            addButtonText='Add Service Shop'
-            onAddButtonClick={onAddItemClick}
-          />
-        </section>
-        <section className='pt-5 pb-2'>
-          <Table data={dummyData} columnData={columnData} />
-        </section>
-      </div>
+            {showServiceShopPopup && (
+              <ModalWrapper
+                onClose={onCancelClick}
+                title='Add Service Shop'
+              >
+                <form onSubmit={handleSubmit(onSubmit)}>
+                  <AddServiceShop reset={reset} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
+                </form>
+              </ModalWrapper>
+            )}
+
+            {showAssignVehiclePopup && (
+              <ModalWrapper
+                onClose={() => {
+                  setAssignVehiclePopup(false);
+                }}
+                title='Assign Vehicle'
+              >
+                <AssignVehicles apiUrl='/service' setAssign={setAssignVehiclePopup} parent='serviceId' itemId={assignId} />
+              </ModalWrapper>
+            )}
+            <div className='table-wrapper'>
+              <Header />
+              <section className='pt-[50px]'>
+                <AddAndSearchItem
+                  addButtonText='Add Service Shop'
+                  onAddButtonClick={onAddItemClick}
+                />
+              </section>
+              <section className='pt-5 pb-2'>
+                <Table data={data} columnData={columnData} />
+              </section>
+            </div>
+          </>
+      }
     </>
   );
 };
