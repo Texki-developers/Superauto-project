@@ -7,6 +7,7 @@ import authQueries from '../queries/accounts.queries';
 import { db } from '../../../config/database';
 import { performTransaction } from '../../../utils/PerformTransaction/PerformTransaction';
 import getVoucher from '../../../utils/getVoucher/getVoucher';
+import { Op } from 'sequelize';
 
 class AccountService {
   createAccount = (data: IAccountBody) => {
@@ -120,16 +121,60 @@ class AccountService {
     });
   };
 
-  getbyCategory(data: string) {
+  async getbyCategory(data: string, page = 1, perPage = 10) {
     return new Promise(async (resolve, reject) => {
       try {
-        const categoryResult = await accountsQueries.FindServiceShops(data);
+        let option: any;
+        if (data === E_ACCOUNT_CATEGORIES.BROKER || data === 'CUSTOMER') {
+          option = {
+            where: {
+              category: {
+                [Op.or]: [E_ACCOUNT_CATEGORIES.BROKER, 'CUSTOMER'],
+              },
+            },
+            limit: perPage,
+            offset: (page - 1) * perPage,
+          };
+        } else {
+          option = {
+            where: {
+              category: {
+                [Op.eq]: data.trim(),
+              },
+            },
+            limit: perPage,
+            offset: (page - 1) * perPage,
+          };
+        }
+  
+        const categoryResult = await accountsQueries.findAccountsByCategory(option);
         return resolve(categoryResult);
       } catch (err) {
-        console.log(err);
-        reject({ message: `Failed to List vehicles: ${err}` });
+        console.error(err);
+        reject({ message: `Failed to list ${data}: ${err}` });
       }
     });
+  }
+  
+
+  getFinancerDetails(data: number) {
+    return new Promise(async (resolve, reject) => {
+      try {
+
+        let option = {
+          where:{
+            account_id : data,
+            category:'FINANCER'
+          }
+        }
+
+        const getFinanceResult = await accountsQueries.getAccountsByid(option)
+          return resolve(getFinanceResult)
+      } catch (err) {
+        console.log(err);
+        reject({ message: `Failed to List Financers..: ${err}` });
+      }
+    })
   }
 }
 

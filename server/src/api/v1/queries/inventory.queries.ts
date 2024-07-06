@@ -94,7 +94,13 @@ class InventoryQueries {
   }
 
   async getAllVehicles(options?: FindOptions) {
-    return await Inventory.findAll(options);
+    const { rows: accounts, count: totalCount } = await Inventory.findAndCountAll(options);
+    const result = {
+      accounts: accounts,
+      totalCount: totalCount,
+      currentLength: accounts.length,
+    };
+    return result
   }
 
   async addDataInToSalesReturn(data: any, options?: any) {

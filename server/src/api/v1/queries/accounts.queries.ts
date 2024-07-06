@@ -86,25 +86,38 @@ class AccountQueries {
     return result;
   }
 
-  async FindServiceShops(category: string) {
-    const result = await Accounts.findAll({
-      where: { category: { [Op.eq]: category.trim() } },
+  async findAccountsByCategory(category: any) {
+    const { rows: accounts, count: totalCount } = await Accounts.findAndCountAll({
+       ...category,
       include: [
         {
           model: Employee,
           required: false,
-          attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-          },
+          attributes: ['salary'],
         },
       ],
-      attributes: {
-        exclude: ['createdAt', 'updatedAt'],
-      },
+      attributes: ['account_id', 'name', 'contact_info', 'category'],
+    });
+
+    const result = {
+      accounts: accounts,
+      totalCount: totalCount,
+      currentLength: accounts.length,
+    };
+
+    return result
+  }
+
+  async getAccountsByid(option:any){
+    const result = await Accounts.findAll({
+      where:option.where,
+      attributes: ['account_id', 'name', 'contact_info', 'category'],
     });
 
     return result;
   }
+
+
 }
 
 export default new AccountQueries();

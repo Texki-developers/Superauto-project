@@ -32,7 +32,7 @@ class InventoryController {
       model: body.model,
       brand: body.brand,
       isNew: body.isNew,
-      is_delivery:body.isDelivery
+      is_delivery: body.isDelivery,
     };
 
     inventoryService
@@ -115,8 +115,9 @@ class InventoryController {
   }
 
   listVehicle(req: Request, res: Response) {
+    const { page, perPage } = req.body;
     inventoryService
-      .listVehicles()
+      .listVehicles(page, perPage)
       .then((data: any) => {
         responseHandler(res, 'OK', data, { message: data.message });
       })
@@ -162,10 +163,10 @@ class InventoryController {
       model: body.model,
       brand: body.brand,
       isNew: body.isNew,
-      is_sales_return : Boolean(body.salesReturn),
-      inventory_id:body.inventoryId,
-      is_delivery:body.isDelivery,
-      sold_price:body.soldPrice
+      is_sales_return: Boolean(body.salesReturn),
+      inventory_id: body.inventoryId,
+      is_delivery: body.isDelivery,
+      sold_price: body.soldPrice,
     };
 
     inventoryService
@@ -178,30 +179,27 @@ class InventoryController {
       });
   }
 
-
-
-  getBrandModel(req: Request, res: Response){
+  getBrandModel(req: Request, res: Response) {
     inventoryService
-    .listBrandModel()
-    .then((data: any) => {
-      responseHandler(res, 'OK', data, { message: data.message });
-    })
-    .catch((error) => {
-      responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
-    });
+      .listBrandModel()
+      .then((data: any) => {
+        responseHandler(res, 'OK', data, { message: data.message });
+      })
+      .catch((error) => {
+        responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+      });
   }
 
-  editGetApi(req: Request, res: Response){
-
-    const {inventoryId} = req.query
+  editGetApi(req: Request, res: Response) {
+    const { inventoryId } = req.query;
     inventoryService
-    .editGetApi(Number(inventoryId))
-    .then((data: any) => {
-      responseHandler(res, 'OK', data, { message: data.message });
-    })
-    .catch((error) => {
-      responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
-    });
+      .editGetApi(Number(inventoryId))
+      .then((data: any) => {
+        responseHandler(res, 'OK', data, { message: data.message });
+      })
+      .catch((error) => {
+        responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+      });
   }
 }
 
