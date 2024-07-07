@@ -136,42 +136,7 @@ class AccountService {
     });
   };
 
-  async getbyCategory(data: string, page = 1, perPage = 10) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        let option: any;
-        if (data === E_ACCOUNT_CATEGORIES.BROKER || data === 'CUSTOMER') {
-          option = {
-            where: {
-              category: {
-                [Op.or]: [E_ACCOUNT_CATEGORIES.BROKER, 'CUSTOMER'],
-              },
-            },
-            limit: perPage,
-            offset: (page - 1) * perPage,
-          };
-        } else {
-          option = {
-            where: {
-              category: {
-                [Op.eq]: data.trim(),
-              },
-            },
-            limit: perPage,
-            offset: (page - 1) * perPage,
-          };
-        }
 
-
-        const categoryResult = await accountsQueries.findAccountsByCategory(option,['account_id', 'name', 'contact_info', 'category']);
-        categoryResult.meta.perPage = perPage
-        return resolve(categoryResult);
-      } catch (err) {
-        console.error(err);
-        reject({ message: `Failed to list ${data}: ${err}` });
-      }
-    });
-  }
 
   getFinancerDetails(data: number) {
     return new Promise(async (resolve, reject) => {
@@ -192,38 +157,45 @@ class AccountService {
     });
   }
 
-  getCategorySearch(search: string, category: string) {
-    console.log(search, category, 'QUERY AP');
+  async getCategorySearch(data: string, page = 1, perPage = 10, search = '') {
     return new Promise(async (resolve, reject) => {
       try {
         let whereCondition: any = {};
-        if (category === E_ACCOUNT_CATEGORIES.BROKER || category === 'CUSTOMER') {
+        if (data === E_ACCOUNT_CATEGORIES.BROKER || data === 'CUSTOMER') {
           whereCondition.category = {
             [Op.or]: [E_ACCOUNT_CATEGORIES.BROKER, 'CUSTOMER'],
           };
         } else {
           whereCondition.category = {
-            [Op.eq]: category.trim(),
+            [Op.eq]: data.trim(),
           };
         }
-
+  
         if (search.trim() !== '') {
           whereCondition[Op.or] = [
             { name: { [Op.iLike]: `%${search}%` } },
             { contact_info: { [Op.iLike]: `%${search}%` } },
-            Sequelize.literal(`to_char("createdAt", 'YYYY-MM-DD HH24:MI:SS') ILIKE '%${search}%'`),
+            Sequelize.literal(`to_char("Accounts"."createdAt", 'YYYY-MM-DD HH24:MI:SS') ILIKE '%${search}%'`),
           ];
         }
-
-        const result = await accountsQueries.SearchCategory(whereCondition);
-
-        return resolve(result);
+  
+        const option = {
+          where: whereCondition,
+          limit: perPage,
+          offset: (page - 1) * perPage,
+        };
+  
+        const categoryResult = await accountsQueries.findAccountsByCategory(option, ['account_id', 'name', 'contact_info', 'category']);
+        categoryResult.meta.perPage = perPage;
+  
+        return resolve(categoryResult);
       } catch (err) {
-        console.log(err);
-        reject({ message: `Failed to List Financers..: ${err}` });
+        console.error(err);
+        reject({ message: `Failed to list ${data}: ${err}` });
       }
     });
   }
+  
 
   getDropDownCategoryList(category:string) {
     return new Promise(async (resolve, reject) => {
