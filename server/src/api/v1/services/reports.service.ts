@@ -1,5 +1,6 @@
 import { Op } from "sequelize";
 import reportsQueries from "../queries/reports.queries";
+import accountsQueries from "../queries/accounts.queries";
 
 class ReportsService{
 
@@ -94,11 +95,13 @@ class ReportsService{
 
 
 
-    cashbookReport(){
+    cashbookReport(query:string,fromDate:string,toDate:string){
       return new Promise(async (resolve, reject) => {
+        
         try {
-
-
+          const account  = await accountsQueries.findAccount('Cash')
+          const result = await reportsQueries.cashbookReport(query,fromDate,toDate,account||1)
+          resolve(result)
         } catch (err) {
           reject({ message: `Failed to List Brands: ${err}` });
         }

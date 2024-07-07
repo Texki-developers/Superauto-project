@@ -132,6 +132,18 @@ class AccountController {
         responseHandler(res, 'INTERNAL_SERVER_ERROR');
       });
   }
+
+  getAllAccounts(req: Request, res: Response){
+    accountsService
+    .getAllAccounts()
+    .then((response: any) => {
+      responseHandler(res, 'OK', response, { message: 'RETRIEVED' });
+    })
+    .catch((error: any) => {
+      console.log(error);
+      responseHandler(res, 'INTERNAL_SERVER_ERROR');
+    });
+  }
 }
 
 export default new AccountController();

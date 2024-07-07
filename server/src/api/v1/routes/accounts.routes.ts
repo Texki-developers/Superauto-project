@@ -10,4 +10,6 @@ router.post('/book/reciept',accountsController.addReciept)
 router.get('/list/category/:category',accountsController.getbyCategory)
 router.get('/list/financer/:id',accountsController.getFinancerDetails)
 router.get('/list/category-drop/:category',accountsController.getDropDownCategory)
+router.get('/list/getAllAccounts',accountsController.getAllAccounts)
+
 export default router;

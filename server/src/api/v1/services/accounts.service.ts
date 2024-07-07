@@ -208,6 +208,19 @@ class AccountService {
       }
     });
   }
+
+
+  getAllAccounts(){
+    return new Promise(async (resolve, reject) => {
+      try {
+        const getAllAccounts = await accountsQueries.getAllAccounts();
+        return resolve(getAllAccounts);
+      } catch (err) {
+        console.log(err);
+        reject({ message: `Failed to List accounts..: ${err}` });
+      }
+    });
+  }
 }
 
 export default new AccountService();
