@@ -27,7 +27,7 @@ class Inventory extends Model<IInventoryAttributes, InventoryCreationAttributes>
   public rc_book!: number | null;
   public insurance_doc!: number | null;
   public proof_doc!: number | null;
-  public date_of_purchase!: string | null;
+  public date_of_purchase!: Date;
   public sold_price!: number | null;
 
 }

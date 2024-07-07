@@ -109,6 +109,8 @@ class InventoryService {
                 credit_account: data.delivery_service ,
                 debit_account: directExpense,
                 voucher_id: expenseVoucher,
+                transaction_date:data.date_of_purchase,
+                description:''
               });
 
               if (addInventoryresult?.inventory_id) {
@@ -140,12 +142,16 @@ class InventoryService {
                 credit_account: data.account_id,
                 debit_account: purchaseResult,
                 voucher_id: purchaseVoucher,
+                transaction_date:data.date_of_purchase,
+                description:''
               },
               {
                 amount: data.purchase_rate,
                 credit_account: cashResult,
                 debit_account: data.account_id,
                 voucher_id: paymentVoucher,
+                transaction_date:data.date_of_purchase,
+                description:''
               },
             ],
             { transaction: dbTransaction }
@@ -184,6 +190,7 @@ class InventoryService {
                 credit_account: Vehicle.account_id,
                 debit_account: items.financerId,
                 voucher_id: customerVoucher,
+                transaction_date: new Date()
               });
               financerDetails.push({
                 financer_id: items.financerId,
@@ -199,6 +206,7 @@ class InventoryService {
                 credit_account: items.financerId,
                 debit_account: cash,
                 voucher_id: financerVoucher,
+                transaction_date: new Date()
               });
             }
           })
@@ -250,6 +258,7 @@ class InventoryService {
                 debit_account: directExpense,
                 credit_account: item.serviceId,
                 voucher_id: expenseVoucher,
+                transaction_date: new Date()
               });
 
               if (vehicle?.inventory_id) {
@@ -304,6 +313,7 @@ class InventoryService {
                 debit_account: directExpense,
                 credit_account: item.serviceId,
                 voucher_id: expenseVoucher,
+                transaction_date: new Date()
               });
 
               if (vehicle?.inventory_id) {
@@ -358,6 +368,8 @@ class InventoryService {
               debit_account: data.account_id,
               voucher_id: await getVoucher(E_VOUCHERS.Sale),
               description: '',
+              transaction_date:data.sales_date,
+  
             },
             {
               amount: data.sales_rate,
@@ -365,6 +377,7 @@ class InventoryService {
               debit_account: cashId,
               voucher_id: await getVoucher(E_VOUCHERS.Sale),
               description: '',
+              transaction_date:data.sales_date,
             },
           ];
         }
@@ -487,6 +500,7 @@ class InventoryService {
                 debit_account: purchaseResult,
                 voucher_id: purchaseVoucher,
                 description: '',
+                transaction_date: data.date_of_purchase
               },
               {
                 amount: data.sold_price || 0,
@@ -494,6 +508,7 @@ class InventoryService {
                 debit_account: data.account_id,
                 description: '',
                 voucher_id: paymentVoucher,
+                transaction_date: data.date_of_purchase
               }
             );
           }
@@ -560,6 +575,7 @@ class InventoryService {
                   debit_account: directExpense,
                   voucher_id: expenseVoucher,
                   description: '',
+                  transaction_date: data.date_of_purchase
                 });
 
                 if (addInventoryresult?.inventory_id) {
@@ -590,12 +606,14 @@ class InventoryService {
                   credit_account: data.account_id,
                   debit_account: purchaseResult,
                   voucher_id: purchaseVoucher,
+                  transaction_date: data.date_of_purchase
                 },
                 {
                   amount: data.purchase_rate,
                   credit_account: cashResult,
                   debit_account: data.account_id,
                   voucher_id: paymentVoucher,
+                  transaction_date: data.date_of_purchase
                 },
               ],
               { transaction: dbTransaction }

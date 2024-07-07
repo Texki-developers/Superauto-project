@@ -64,6 +64,7 @@ class AccountService {
               debit_account: expenseAcResult,
               description: data.description,
               voucher_id: voucher,
+              transaction_date:data.date
             },
           ],
           { transaction: dbTransaction }
@@ -100,6 +101,7 @@ class AccountService {
             debit_account: data.payment_from,
             description: data.description,
             voucher_id: voucher,
+            transaction_date:data.date
           },
         ]);
         resolve('Updated successully');
@@ -123,6 +125,7 @@ class AccountService {
             debit_account: debitAc,
             description: data.description,
             voucher_id: voucher,
+            transaction_date:data.date
           },
         ]);
         resolve('Updated successully');
@@ -159,7 +162,8 @@ class AccountService {
           };
         }
 
-        const categoryResult = await accountsQueries.findAccountsByCategory(option);
+
+        const categoryResult = await accountsQueries.findAccountsByCategory(option,['account_id', 'name', 'contact_info', 'category']);
         return resolve(categoryResult);
       } catch (err) {
         console.error(err);
@@ -220,10 +224,10 @@ class AccountService {
     });
   }
 
-  getBrokersList() {
+  getDropDownCategoryList(category:string) {
     return new Promise(async (resolve, reject) => {
       try {
-        const getFinanceResult = await accountsQueries.findAccountsByCategory({ where: { category: 'BROKER' } });
+        const getFinanceResult = await accountsQueries.findAccountsByCategory({ where: { category: category} },["account_id","name"]);
         return resolve(getFinanceResult);
       } catch (err) {
         console.log(err);
