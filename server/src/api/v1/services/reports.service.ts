@@ -79,11 +79,13 @@ class ReportsService{
 
 
 
-    ledgerReport(ledger:string,fromDate:string,toDate:string){
+    ledgerReport(ledger:number,fromDate:string,toDate:string){
       return new Promise(async (resolve, reject) => {
         try {
 
+         const result =  await reportsQueries.createLedgerReport(fromDate,toDate,ledger)
 
+          resolve(result)
         } catch (err) {
           reject({ message: `Failed to List Brands: ${err}` });
         }

@@ -50,7 +50,7 @@ class ReportsController {
     const fromDateStr = typeof fromDate === 'string' ? fromDate : '';
     const toDateStr = typeof toDate === 'string' ? toDate : '';
     reportsService
-      .ledgerReport(ledgerStr, fromDateStr, toDateStr)
+      .ledgerReport(Number(ledgerStr), fromDateStr, toDateStr)
       .then((data: any) => {
         responseHandler(res, 'OK', data, { message: data.message });
       })
