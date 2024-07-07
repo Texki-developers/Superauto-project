@@ -38,7 +38,6 @@ import { AllowNull } from 'sequelize-typescript';
     },
     sold_price: {
       type: DataTypes.INTEGER,
-      allowNull: false
     },
     sale_status: {
       type: DataTypes.BOOLEAN,

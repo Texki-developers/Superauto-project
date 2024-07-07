@@ -91,7 +91,7 @@ interface ISalesAttributes {
 interface ISaleReturnAttributes {
   sl_id: number;
   inventory_id: number;
-  sold_price: number;
+  sold_price?: number;
   sale_status: boolean;
   purchase_rate: number;
   date_of_purchase: Date;

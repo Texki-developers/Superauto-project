@@ -29,8 +29,7 @@ class InventoryService {
         const docs = [data.rc_book, data.proof_doc, data.insurance_doc];
         console.log(docs, 'THE DC');
         const dbTransaction = await db.transaction();
-        const purchaseVoucher = await getVoucher(E_VOUCHERS.Purchase);
-        const paymentVoucher = await getVoucher(E_VOUCHERS.Payments);
+  
 
         const docsResult: any = await Promise.all(docs.map((file) => uploadFile(file, fileType, allowedExtension)));
         console.log(docsResult, 'Doc result');
@@ -139,7 +138,7 @@ class InventoryService {
                 amount: data.purchase_rate,
                 credit_account: data.account_id,
                 debit_account: purchaseResult,
-                voucher_id: purchaseVoucher,
+                voucher_id: await getVoucher(E_VOUCHERS.Purchase),
                 transaction_date:data.date_of_purchase,
                 description:''
               },
@@ -147,7 +146,7 @@ class InventoryService {
                 amount: data.purchase_rate,
                 credit_account: cashResult,
                 debit_account: data.account_id,
-                voucher_id: paymentVoucher,
+                voucher_id: await getVoucher(E_VOUCHERS.Payments),
                 transaction_date:data.date_of_purchase,
                 description:''
               },
@@ -411,6 +410,7 @@ class InventoryService {
   }
 
   listVehicles(page: number, perPage: number) {
+    console.log(page,perPage,"list")
     return new Promise(async (resolve, reject) => {
       try {
         const options: FindOptions = {
@@ -434,6 +434,7 @@ class InventoryService {
           offset: (page - 1) * perPage,
         };
         const vehicles = await inventoryQueries.getAllVehicles(options);
+        vehicles.meta.perPage = perPage
         return resolve(vehicles);
       } catch (err) {
         reject({ message: `Failed to List vehicles: ${err}` });
@@ -475,7 +476,7 @@ class InventoryService {
         const dbTransaction = await db.transaction();
         const allowedExtension = ['pdf', 'jpg', 'jpeg', 'png'];
         const fileType = 'doc';
-
+        let  addInventoryresult
         console.log(data.is_sales_return, 'SALES RETURN');
         if (data.is_sales_return) {
           console.log('entering.... sales return', data);
@@ -540,6 +541,17 @@ class InventoryService {
             brandID = data?.brand_model_id;
           }
 
+
+          if (data.party_phone_number && data?.party_phone_number?.length> 0) {
+            if (data.party_name) {
+              const newAccountResult = await accountsService.accountHelper(
+                { party_name: data.party_name, party_phone_number: data.party_phone_number },
+                'CUSTOMER'
+              );
+              data.account_id = newAccountResult.account_id;
+            }
+          }
+
           const insertInventoryData: IInventoryAttributes = {
             account_id: data.account_id,
             brand_model_id: brandID || 0,
@@ -557,14 +569,26 @@ class InventoryService {
           };
 
           if (purchaseResult && cashResult && brandID) {
-            const addInventoryresult = await inventoryQueries.addVehicle(insertInventoryData, {
+             addInventoryresult = await inventoryQueries.addVehicle(insertInventoryData, {
               transaction: dbTransaction,
             });
+
             if (data.is_delivery) {
               const directExpense = await accountsQueries.findAccount(E_LEDGERS_BASIC.DIRECT_EXPENSE);
               const expenseVoucher = await getVoucher('Expense');
               const deliveryTransaction: ITransactionParams[] = [];
               const dsTransactions: IDsTransactionAttributes[] = [];
+
+              if (data.delivery_service_phone_number) {
+                if (data.delivery_name) {
+                  const newAccountResult = await accountsService.accountHelper(
+                    { party_name: data.delivery_name, party_phone_number: data.delivery_service_phone_number },
+                    E_ACCOUNT_CATEGORIES.DELIVERY_SERVICE
+                  );
+      
+                  data.delivery_service =newAccountResult.account_id
+                }
+              }
 
               if (directExpense) {
                 deliveryTransaction.push({
@@ -618,7 +642,7 @@ class InventoryService {
             );
             await performTransaction(dbTransaction);
           }
-          return resolve({ message: 'Vehicle Added Successfully for exchange' });
+          return resolve({ message: 'Vehicle Added Successfully for exchange' ,data:addInventoryresult});
         }
       } catch (error) {
         console.log(error, 'EROR');

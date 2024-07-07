@@ -34,10 +34,98 @@ class ReportsService{
       
               return resolve(Brands);
             } catch (err) {
-              reject({ message: `Failed to List Brands: ${err}` });
+              reject({ message: `Failed to List daily book : ${err}` });
             }
           });
     }
+
+    listdailyBookVoucher(){
+      return new Promise(async (resolve, reject) => {
+        try {
+          const result = await reportsQueries.listDailybookVoucher()
+
+          resolve(result)
+        } catch (err) {
+          reject({ message: `Failed to List Brands: ${err}` });
+        }
+      });
+    }
+
+
+    listLedgers (){
+      return new Promise(async (resolve, reject) => {
+        try {
+          const result = await reportsQueries.listLedgers()
+
+          resolve(result)
+
+        } catch (err) {
+          reject({ message: `Failed to List Brands: ${err}` });
+        }
+      });
+    }
+
+
+    listLedgersForLedgerReport (){
+      return new Promise(async (resolve, reject) => {
+        try {
+
+
+        } catch (err) {
+          reject({ message: `Failed to List Brands: ${err}` });
+        }
+      });
+    }
+
+
+
+    ledgerReport(ledger:string,fromDate:string,toDate:string){
+      return new Promise(async (resolve, reject) => {
+        try {
+
+
+        } catch (err) {
+          reject({ message: `Failed to List Brands: ${err}` });
+        }
+      });
+    }
+
+
+
+    cashbookReport(){
+      return new Promise(async (resolve, reject) => {
+        try {
+
+
+        } catch (err) {
+          reject({ message: `Failed to List Brands: ${err}` });
+        }
+      });
+    }
+
+    trialBalanceReport(){
+      return new Promise(async (resolve, reject) => {
+        try {
+
+
+        } catch (err) {
+          reject({ message: `Failed to List Brands: ${err}` });
+        }
+      });
+    }
+
+    balanceSheetReport(){
+      return new Promise(async (resolve, reject) => {
+        try {
+
+
+        } catch (err) {
+          reject({ message: `Failed to List Brands: ${err}` });
+        }
+      });
+    }
+
+
 }
 
 
