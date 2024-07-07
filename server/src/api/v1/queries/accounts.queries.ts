@@ -103,7 +103,7 @@ class AccountQueries {
       accounts: accounts,
       meta:{
         totalCount: totalCount,
-        currentLength: accounts.length,
+        perPage: accounts.length,
       }
     
     };

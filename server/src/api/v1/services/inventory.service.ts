@@ -17,8 +17,6 @@ import { performTransaction } from '../../../utils/PerformTransaction/PerformTra
 import accountsQueries from '../queries/accounts.queries';
 import inventoryQueries from '../queries/inventory.queries';
 import Accounts from '../../../models/accounts';
-import BrandModel from '../../../models/brand';
-import FileStore from '../../../models/documents';
 import SaleReturn from '../../../models/salesReturn';
 import accountsService from './accounts.service';
 
@@ -485,9 +483,9 @@ class InventoryService {
           await inventoryQueries.addDataInToSalesReturn(
             {
               inventory_id: data.inventory_id,
-              sold_price: data.sold_price,
-              sale_status: data.sale_status,
+              sale_status: false,
               purchase_rate: data.purchase_rate,
+              date_of_purchase: data.date_of_purchase
             },
             { transaction: dbTransaction }
           );

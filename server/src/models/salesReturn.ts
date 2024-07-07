@@ -6,6 +6,7 @@ import {
   import { db } from '../config/database';
 import { ISaleReturnAttributes } from '../types/db.type';
 import Inventory from './inventory';
+import { AllowNull } from 'sequelize-typescript';
   
   // Define the interface for model attributes
 
@@ -18,7 +19,7 @@ import Inventory from './inventory';
     public sold_price!: number;
     public sale_status!: boolean;
     public purchase_rate!: number;
-
+    public date_of_purchase !:Date;
   }
   
   SaleReturn.init({
@@ -46,6 +47,10 @@ import Inventory from './inventory';
     purchase_rate: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    date_of_purchase:{
+      type: DataTypes.DATE,
+      allowNull:false
     }
   }, {
     sequelize: db,

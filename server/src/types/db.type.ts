@@ -94,6 +94,7 @@ interface ISaleReturnAttributes {
   sold_price: number;
   sale_status: boolean;
   purchase_rate: number;
+  date_of_purchase: Date;
 }
 
 export {
