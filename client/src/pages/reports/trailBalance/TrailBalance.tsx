@@ -1,5 +1,5 @@
 import Header from '../../../components/header/Header'
-import DateFilter from '../../../components/filterComponent/dateFilter/DateFilter'
+// import DateFilter from '../../../components/filterComponent/dateFilter/DateFilter'
 import TrialTable from './components/trial-table'
 
 const TrailBalance = () => {
@@ -13,7 +13,7 @@ const TrailBalance = () => {
             <Header title="Trial Balance" breadCrumbData={breadCrumbData} />
             <div className=" py-3 flex justify-end gap-3">
                 {/* <SelectFilter placeholder="Filter" onChange={() => { }} options={[]} /> */}
-                <DateFilter />
+                {/* <DateFilter /> */}
             </div>
             <section className='pt-5 pb-2'>
                 <TrialTable />

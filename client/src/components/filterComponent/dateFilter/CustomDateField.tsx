@@ -7,16 +7,17 @@ interface IProps {
     value: string;
 }
 
-export const DateInput = ({ placeholder, onChange }: IProps) => {
+export const DateInput = ({ placeholder, onChange, value }: IProps) => {
     const [type, setType] = useState('text')
 
 
     return (
         <input
             placeholder={placeholder}
-            className="textbox-n w-[150px] outline-none border border-gray-400 rounded-md h-[38px] px-2 text-sm"
+            className="textbox-n w-[150px] outline-none border border-gray-400 rounded-md h-[40x] px-2 text-sm"
             type={type}
             onChange={onChange}
+            value={value}
             onFocus={() => { setType('date') }}
             onBlur={() => { setType('text') }} />
     );
