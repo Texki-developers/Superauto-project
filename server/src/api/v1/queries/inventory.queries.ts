@@ -75,9 +75,9 @@ class InventoryQueries {
     }
   }
 
-  async changeStatusOfVehicle(soldVehicleId: number, options?: any) {
+  async changeStatusOfVehicle(soldVehicleId: number, soldPrice: number, options?: any) {
     return await Inventory.update(
-      { sale_status: true },
+      { sale_status: true, sold_price: soldPrice },
       {
         where: {
           inventory_id: soldVehicleId,
@@ -96,10 +96,10 @@ class InventoryQueries {
     const { rows: accounts, count: totalCount } = await Inventory.findAndCountAll(options);
     const result = {
       accounts: accounts,
-      meta:{
+      meta: {
         totalCount: totalCount,
         perPage: accounts.length,
-      }
+      },
     };
     return result;
   }
