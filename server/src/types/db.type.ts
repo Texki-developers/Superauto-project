@@ -97,6 +97,27 @@ interface ISaleReturnAttributes {
   date_of_purchase: Date;
 }
 
+
+interface OpeningBalanceResult {
+  balance: number;
+}
+interface TransactionDataResult {
+  Date: Date;
+  Description: string;
+  VoucherID: string;
+  Debit: number;
+  Credit: number;
+}
+
+interface LedgerWithBalanceResult {
+  map(arg0: (entry: { Date: any; Description: any; VoucherID: any; Debit: any; Credit: any; RunningTotal: number; }) => { Date: any; Description: any; VoucherID: any; Debit: any; Credit: any; Balance: number; }): unknown;
+  Date: Date;
+  Description: string;
+  VoucherID: string;
+  Debit: number;
+  Credit: number;
+  RunningTotal: number;
+}
 export {
   IAccountAttributes,
   IEmployeeAttributes,
@@ -107,5 +128,8 @@ export {
   IDsTransactionAttributes,
   IServiceTransactionAttributes,
   ISalesAttributes,
-  ISaleReturnAttributes
+  ISaleReturnAttributes,
+  OpeningBalanceResult,
+  TransactionDataResult,
+  LedgerWithBalanceResult
 };
