@@ -1,6 +1,7 @@
 import { Op } from "sequelize";
 import Accounts from "../../../models/accounts";
 import Transaction from "../../../models/transaction";
+import Voucher from "../../../models/vouchers";
 
 class ReportQueries {
 
@@ -28,6 +29,17 @@ class ReportQueries {
           return report;
     }
 
+    async listDailybookVoucher(){
+      return await Voucher.findAll({
+
+        attributes:['prefix']
+      })
+    }
+    async listLedgers(){
+      return await Accounts.findAll({
+
+        attributes:['name',"account_id"]
+      })}
 }
 
 
