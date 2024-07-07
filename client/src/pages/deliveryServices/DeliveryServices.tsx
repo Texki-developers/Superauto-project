@@ -11,11 +11,9 @@ import useAccountApi from '../../hooks/useAccountApi.hook';
 import { IAccountApiBody, ICategory } from '../../types/apimodal/apimodal.d';
 import AssignVehicles from '../../components/AssignVehicles/AssignVehicles';
 import addProduct from '../../assets/icons/vehicle.png';
-import useGetApis from '../../hooks/useGetApi.hook';
-// @ts-ignore
-import { useQuery } from '@tanstack/react-query';
 import DeleteIcon from '../../assets/icons/delete.svg';
 import EditIcon from '../../assets/icons/edit.svg';
+import useGetCategoryApi from '../../hooks/useGetCategoryApi.hook';
 const defaultValues: IDeliveryService = {
   name: '', // Default value for name
   phoneNumber: '', // Default value for phoneNumber
@@ -24,7 +22,7 @@ const defaultValues: IDeliveryService = {
 const DeliveryServices = () => {
   const [showDeliveryServicesPopup, setShowDeliveryServicesPopup] = useState(false);
 
-  const [assignId, setAssignId] = useState(0)
+  const [, setAssignId] = useState(0)
   const [showAssignVehiclePopup, setAssignVehiclePopup] = useState(false);
   const onAddItemClick = () => {
     setShowDeliveryServicesPopup(true);
@@ -46,10 +44,7 @@ const DeliveryServices = () => {
     await accountApi(body, 'Customer creation Failed', 'Customer Successfully Created')
     refetch()
   };
-  const { callApi } = useGetApis()
-  const fetchDelivery = () => callApi(`accounts/list/category/${ICategory.DELIVERY_SERVICE}`);
-  const { data, isPending, refetch } = useQuery({ queryKey: ['delivery'], queryFn: fetchDelivery })
-
+  const { data, isPending, refetch } = useGetCategoryApi(ICategory.DELIVERY_SERVICE)
   const onActionClick = (type: string, id: string) => {
     if (type === 'assign') {
       setAssignId(Number(id))
@@ -117,7 +112,7 @@ const DeliveryServices = () => {
               />
             </section>
             <section className='pt-5 pb-2'>
-              <Table data={data} columnData={columnData} />
+              <Table data={data?.data} columnData={columnData} />
             </section>
           </div>
         </>

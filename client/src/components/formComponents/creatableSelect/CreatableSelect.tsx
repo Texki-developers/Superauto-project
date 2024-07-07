@@ -18,6 +18,7 @@ interface ISelectInputProps {
     name?: string;
     isDisabled?: boolean;
     isSearchable?: boolean;
+    isLoading?: boolean;
     control: any
     error: any
 }
@@ -47,6 +48,7 @@ export default function CreateSelectInput(props: ISelectInputProps) {
                             // @ts-expect-error
                             value={props?.value}
                             {...field}
+                            isLoading={props?.isLoading}
                             onChange={(value) => {
                                 field.onChange(value)
                                 if (value?.__isNew__) {

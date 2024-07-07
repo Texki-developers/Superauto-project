@@ -1,10 +1,12 @@
-import { SetStateAction } from 'react';
+import { SetStateAction, useEffect } from 'react';
 import Header from '../../components/header/Header';
 import AddvehicleForm from '../../components/vehicles/AddVehicleForm';
 import { useForm } from 'react-hook-form';
-import { IVehicleAddFormValues } from '../../types/vehicle/addVehicle';
+import { IBranAndModel, IVehicleAddFormValues } from '../../types/vehicle/addVehicle';
 import AuthApiService from '../../services/api-services';
 import useToast from '../../hooks/useToast.hook';
+import useGetApis from '../../hooks/useGetApi.hook';
+import { useQuery } from '@tanstack/react-query';
 
 interface IProps {
   setShowAddPage: React.Dispatch<SetStateAction<boolean>>;
@@ -40,6 +42,8 @@ const defaultValues: IVehicleAddFormValues = {
     label: '',
   },
   deliveryAmount: '',
+  partyPhoneNumber: '',
+  deliveryServicePhoneNumber: ''
 };
 
 const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
@@ -47,6 +51,14 @@ const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
     defaultValues
   })
   const { toastError, toastLoading, toastSuccess } = useToast()
+
+  const { callApi } = useGetApis()
+  const url = `inventory/model-brand/vehicle`
+  const fetchBrandModal = (): Promise<{ data: IBranAndModel[] } | undefined> => callApi(url)
+  const { data: brandData, isPending: brandLoading } = useQuery({ queryKey: ['brand/model-brand'], queryFn: fetchBrandModal })
+  useEffect(() => {
+
+  }, [])
   const onCancelClick = () => {
     setShowAddPage(false);
   };
@@ -56,7 +68,6 @@ const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
     { name: 'Add Vehicles' },
   ];
   const onSubmit = async (data: IVehicleAddFormValues) => {
-    console.log(data)
     const formData = new FormData();
     formData.append('accountId', '10');
     formData.append('ownershipName', data.ownership);
@@ -75,19 +86,21 @@ const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
     formData.append('model', data.model.value);
     formData.append('brand', data.brand.value);
     formData.append('isNew', data?.brand?.__isNew__ ? 'true' : 'false');
+    data?.deliveryServicePhoneNumber?.length > 0 && data?.deliveryService.__isNew__ && formData.append('deliveryServicePhoneNumber', data?.deliveryServicePhoneNumber)
+    data?.partyPhoneNumber?.length > 0 && data?.party.__isNew__ && formData.append('partyPhoneNumber', data?.partyPhoneNumber)
     const id = toastLoading('Loading...');
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const data = await AuthApiService.postApiFormData<FormData, any>('inventory/add/vehicle', formData,)
-      console.log(data)
       if (data?.status === "error") {
         toastError(id, data?.message)
         return
       }
       toastSuccess(id, 'Vehicle added successfully')
+      setShowAddPage(false)
     } catch (error) {
       toastError(id, 'Something went wrong')
     } finally {
-      setShowAddPage(false)
       refetch()
     }
   }
@@ -96,7 +109,7 @@ const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
       <Header breadCrumbData={breadCrumbData} />
       <div className='pt-5'>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <AddvehicleForm reset={reset} setValue={setValue} watch={watch} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
+          <AddvehicleForm brands={brandData?.data} brandLoading={brandLoading} reset={reset} setValue={setValue} watch={watch} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
         </form>
       </div>
     </div>

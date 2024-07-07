@@ -28,6 +28,7 @@ export interface IVehicleAddFormValues {
   registrationNumber: string;
   model: DataItem;
   purchaseRate: string;
+  partyPhoneNumber: string;
   balance: string;
   purchaseDate: string;
   insurance: Blob | null;
@@ -37,7 +38,14 @@ export interface IVehicleAddFormValues {
   brand: DataItem;
   yearOfManufacture: string;
   purchaseAmount: string;
+  deliveryServicePhoneNumber: string;
   insuranceDate: string;
   deliveryService: DataItem;
   deliveryAmount: string;
+}
+
+export interface IBranAndModel {
+  brand_model_id: number;
+  brand: string;
+  model: string;
 }

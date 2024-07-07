@@ -4,11 +4,16 @@ import { ITableColumn } from '../../types/table/table';
 import './style.scss';
 import ReactPaginate from 'react-paginate';
 import { v4 as uuidv4 } from 'uuid';
+import { useSearchParams } from 'react-router-dom';
 
 interface ITableProps {
   columnData: ITableColumn[];
   data: { [key: string]: any }[];
   hideFooter?: boolean
+  meta?: {
+    totalCount: number,
+    perPage: number
+  }
 }
 
 
@@ -19,15 +24,22 @@ const totalItemsPerPage = [
 ]
 
 const Table = (props: ITableProps) => {
-  const [itemOffset, setItemOffset] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState('10');
+  const [itemsPerPage, setItemsPerPage] = useState(String(props?.meta?.perPage ?? 10));
+  let [searchParams, setSearchParams] = useSearchParams();
 
   const handlePageClick = (event: {
     selected: number;
   }) => {
-    const newOffset = (event.selected * Number(itemsPerPage)) % props?.data?.length;
-    setItemOffset(newOffset);
+    if (event.selected + 1 !== Number(searchParams.get('page'))) {
+      searchParams.set("page", String(event.selected + 1))
+      setSearchParams(searchParams)
+    }
   };
+  const handlePerPageClick = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setItemsPerPage(e.target.value)
+    searchParams.set("perPage", e.target.value)
+    setSearchParams(searchParams)
+  }
   return (
     <div className='bg-white-100 w-full h-full overflow-hidden rounded-lg border border-gray-300 flex justify-between flex-col'>
       <table className='w-full'>
@@ -39,7 +51,7 @@ const Table = (props: ITableProps) => {
           </tr>
         </thead>
         <tbody className='h-full oveflow-auto'>
-          {props?.data?.map((item: any, i: number) => {
+          {props?.data?.length > 0 && props?.data?.map((item: any, i: number) => {
             return (
               <tr key={i} >
                 {props?.columnData?.map((keyItem) => (
@@ -61,9 +73,9 @@ const Table = (props: ITableProps) => {
       {!props?.hideFooter && <footer className='flex gap-5 border-t border-gray-300 p-3 align-middle'>
         <div className='perpage flex items-center gap-2'>
           <p className='text-[12px] leading-none'>Per Page</p>
-          <select value={itemsPerPage} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => { setItemsPerPage(e.target.value) }} className='rounded border border-black-200 bg-gray-200 p-1 text-[12px]'>
+          <select value={itemsPerPage} onChange={handlePerPageClick} className='rounded border border-black-200 bg-gray-200 p-1 text-[12px]'>
             {
-              totalItemsPerPage.map((item) => (
+              totalItemsPerPage?.map((item) => (
                 <option key={uuidv4()} value={item}>
                   {item}
                 </option>
@@ -77,9 +89,10 @@ const Table = (props: ITableProps) => {
             nextLabel="Next"
             onPageChange={handlePageClick}
             pageRangeDisplayed={3}
-            pageCount={20}
+            pageCount={props?.meta?.totalCount ? Math.ceil(props?.meta?.totalCount / Number(itemsPerPage)) : 0}
             previousLabel="Prev"
             renderOnZeroPageCount={null}
+            initialPage={Number(searchParams.get('page')) - 1}
           />
         </div>
       </footer>}

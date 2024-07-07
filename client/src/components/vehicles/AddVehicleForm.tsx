@@ -3,8 +3,10 @@ import Button from '../button.tsx/Button';
 import DragAndDrop from '../formComponents/dragAndDrop/DragAndDrop';
 import InputBox from '../formComponents/inputBox/InputBox';
 import SelectInput from '../formComponents/selectInput/SelectInput';
-import { IVehicleAddFormValues } from '../../types/vehicle/addVehicle';
+import { DataItem, IBranAndModel, IVehicleAddFormValues } from '../../types/vehicle/addVehicle';
 import CreateSelectInput from '../formComponents/creatableSelect/CreatableSelect';
+import { useEffect, useState } from 'react';
+import { Value } from 'sass';
 
 interface IProps {
   onCancelClick: () => void;
@@ -21,14 +23,44 @@ interface IProps {
       shouldDirty?: boolean;
     }
   ) => void; // SetValue function for setting form values
+  brands: IBranAndModel[] | undefined;
+  brandLoading: boolean
 }
 
-const AddvehicleForm = ({ onCancelClick, register, reset, control, errors, watch, setValue }: IProps) => {
+const AddvehicleForm = ({ onCancelClick, register, reset, control, errors, watch, setValue, brands, brandLoading }: IProps) => {
+  const [isNewParty, setIsNewParty] = useState(false)
+  const [modelsData, setModelsData] = useState<any>([])
+  const [brandData, setBrandData] = useState<any>([])
+  const [isNewDelivery, setIsNewDelivery] = useState(false)
   const options = [
     { value: 'chocolate', label: 'Chocolate' },
     { value: 'strawberry', label: 'Strawberry' },
     { value: 'vanilla', label: 'Vanilla' },
   ];
+
+  useEffect(() => {
+    const brand: any = watch('brand')
+    if (brands && brands?.length > 0) {
+      const models = brands?.filter(item => {
+        console.log(item, brand)
+        return item.brand === brand.value
+      }).map(item => ({ value: item?.model, label: item.model }))
+      console.log("models", models)
+      setModelsData(models)
+    }
+  }, [watch('brand')])
+
+  useEffect(() => {
+    if (brands && brands?.length > 0) {
+      const brandOptions = brands?.map((item: IBranAndModel) => (
+        {
+          label: item.brand,
+          value: item.brand
+        }
+      ))
+      setBrandData(brandOptions)
+    }
+  }, [brands])
 
   return (
     <div className='bg-white-100 grid w-full grid-rows-[1fr_80px] rounded p-5'>
@@ -38,16 +70,28 @@ const AddvehicleForm = ({ onCancelClick, register, reset, control, errors, watch
           <div className='grid grid-cols-2 gap-3'>
             <div className='first-section grid gap-3'>
               <div className='form-items grid gap-2'>
-                <SelectInput
+                <CreateSelectInput
                   name='party'
                   label='Party'
                   isSearchable
                   placeholder='Select Party Name'
                   options={options}
                   control={control}
+                  setIsNew={setIsNewParty}
                   error={errors}
                   required
                 />
+                {
+                  isNewParty &&
+                  < InputBox
+                    name='partyPhoneNumber'
+                    label='Phone Number'
+                    placeholder='Enter Phone Number'
+                    register={register}
+                    error={errors}
+                    required
+                  />
+                }
                 <InputBox
                   name='registrationNumber'
                   label='Registration Number'
@@ -60,7 +104,7 @@ const AddvehicleForm = ({ onCancelClick, register, reset, control, errors, watch
                   name='model'
                   label='Model'
                   isSearchable
-                  options={options}
+                  options={modelsData}
                   placeholder='Select Model'
                   control={control}
                   error={errors}
@@ -109,7 +153,8 @@ const AddvehicleForm = ({ onCancelClick, register, reset, control, errors, watch
                   label='Brand'
                   isSearchable
                   placeholder='Select Brand'
-                  options={options}
+                  options={brandData}
+                  isLoading={brandLoading}
                   control={control}
                   error={errors}
                   required
@@ -148,14 +193,27 @@ const AddvehicleForm = ({ onCancelClick, register, reset, control, errors, watch
           <div>
             <h1 className='primary-heading'>Delivery Services</h1>
             <div className='grid grid-cols-2 gap-3 pt-1'>
-              <SelectInput
+              <CreateSelectInput
                 name='deliveryService'
                 label='Delivery Service'
                 placeholder='Select Delivery Service'
                 options={options}
+                setIsNew={setIsNewDelivery}
                 control={control}
                 error={errors}
               />
+              {
+                isNewDelivery &&
+                <InputBox
+                  name='deliveryServicePhoneNumber'
+                  label='Phone Number'
+                  placeholder='Delivery Service Phone Number'
+                  type='number'
+                  required
+                  register={register}
+                  error={errors}
+                />
+              }
               <InputBox
                 name='deliveryAmount'
                 label='Delivery Amount'
