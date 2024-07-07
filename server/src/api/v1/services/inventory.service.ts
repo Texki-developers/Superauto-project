@@ -29,8 +29,7 @@ class InventoryService {
         const docs = [data.rc_book, data.proof_doc, data.insurance_doc];
         console.log(docs, 'THE DC');
         const dbTransaction = await db.transaction();
-        const purchaseVoucher = await getVoucher(E_VOUCHERS.Purchase);
-        const paymentVoucher = await getVoucher(E_VOUCHERS.Payments);
+  
 
         const docsResult: any = await Promise.all(docs.map((file) => uploadFile(file, fileType, allowedExtension)));
         console.log(docsResult, 'Doc result');
@@ -139,7 +138,7 @@ class InventoryService {
                 amount: data.purchase_rate,
                 credit_account: data.account_id,
                 debit_account: purchaseResult,
-                voucher_id: purchaseVoucher,
+                voucher_id: await getVoucher(E_VOUCHERS.Purchase),
                 transaction_date:data.date_of_purchase,
                 description:''
               },
@@ -147,7 +146,7 @@ class InventoryService {
                 amount: data.purchase_rate,
                 credit_account: cashResult,
                 debit_account: data.account_id,
-                voucher_id: paymentVoucher,
+                voucher_id: await getVoucher(E_VOUCHERS.Payments),
                 transaction_date:data.date_of_purchase,
                 description:''
               },
@@ -542,6 +541,17 @@ class InventoryService {
             brandID = data?.brand_model_id;
           }
 
+
+          if (data.party_phone_number && data?.party_phone_number?.length> 0) {
+            if (data.party_name) {
+              const newAccountResult = await accountsService.accountHelper(
+                { party_name: data.party_name, party_phone_number: data.party_phone_number },
+                'CUSTOMER'
+              );
+              data.account_id = newAccountResult.account_id;
+            }
+          }
+
           const insertInventoryData: IInventoryAttributes = {
             account_id: data.account_id,
             brand_model_id: brandID || 0,
@@ -568,6 +578,17 @@ class InventoryService {
               const deliveryTransaction: ITransactionParams[] = [];
               const dsTransactions: IDsTransactionAttributes[] = [];
 
+              if (data.delivery_service_phone_number) {
+                if (data.delivery_name) {
+                  const newAccountResult = await accountsService.accountHelper(
+                    { party_name: data.delivery_name, party_phone_number: data.delivery_service_phone_number },
+                    E_ACCOUNT_CATEGORIES.DELIVERY_SERVICE
+                  );
+      
+                  data.delivery_service =newAccountResult.account_id
+                }
+              }
+              
               if (directExpense) {
                 deliveryTransaction.push({
                   amount: data.delivery_amount,
