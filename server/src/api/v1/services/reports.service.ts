@@ -38,6 +38,19 @@ class ReportsService{
             }
           });
     }
+
+
+
+    ledgerReport(ledger:string,fromDate:string,toDate:string){
+      return new Promise(async (resolve, reject) => {
+        try {
+
+          
+        } catch (err) {
+          reject({ message: `Failed to List Brands: ${err}` });
+        }
+      });
+    }
 }
 
 

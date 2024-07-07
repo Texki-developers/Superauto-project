@@ -18,6 +18,22 @@ class ReportsController {
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
       });
   }
+
+  ledgerReport(req: Request, res: Response) {
+    const { ledger, fromDate, toDate } = req.query;
+
+    const ledgerStr = typeof ledger === 'string' ? ledger : '';
+    const fromDateStr = typeof fromDate === 'string' ? fromDate : '';
+    const toDateStr = typeof toDate === 'string' ? toDate : '';
+    reportsService
+      .ledgerReport(ledgerStr, fromDateStr, toDateStr)
+      .then((data: any) => {
+        responseHandler(res, 'OK', data, { message: data.message });
+      })
+      .catch((error) => {
+        responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+      });
+  }
 }
 
 export default new ReportsController();
