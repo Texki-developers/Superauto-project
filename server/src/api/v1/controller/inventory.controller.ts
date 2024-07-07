@@ -33,7 +33,11 @@ class InventoryController {
       brand: body.brand,
       isNew: body.isNew,
       is_delivery: body.isDelivery,
-    };
+      party_phone_number:body.partyPhoneNumber,
+      delivery_service_phone_number:body.deliveryServicePhoneNumber,
+      party_name:body.partyName,
+      delivery_name:body.deliveryName
+        };
 
     inventoryService
       .addVehicle(data)
@@ -115,11 +119,15 @@ class InventoryController {
   }
 
   listVehicle(req: Request, res: Response) {
-    const { page, perPage } = req.body;
+
+    let { page, perPage } = req.query;
+    const pageNum = page ? parseInt(page as string, 10) : 1;
+    const perPageNum = perPage ? parseInt(perPage as string, 10) : 10;
+  
     inventoryService
-      .listVehicles(page, perPage)
+      .listVehicles(pageNum, perPageNum)
       .then((data: any) => {
-        responseHandler(res, 'OK', data.accounts, { message: data.message ,meta:data});
+        responseHandler(res, 'OK', data.accounts, { message: data.message ,meta:data.meta});
       })
       .catch((error) => {
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
