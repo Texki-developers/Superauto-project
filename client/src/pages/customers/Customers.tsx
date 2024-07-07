@@ -33,6 +33,7 @@ const Customers = () => {
   }, [])
   const accountApi = useAccountApi()
   const onSubmit = async (data: ICustomer) => {
+    console.log(data)
     const body: IAccountApiBody = {
       "name": data?.name,
       "contactInfo": data?.phoneNumber,
@@ -88,6 +89,7 @@ const Customers = () => {
               <Header />
               <section className='pt-[50px]'>
                 <AddAndSearchItem
+                  onSearch={() => { }}
                   addButtonText='Add Customer'
                   onAddButtonClick={onAddItemClick}
                 />

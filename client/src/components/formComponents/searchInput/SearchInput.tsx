@@ -3,7 +3,7 @@ import SearchIcon from '../../../assets/header-icons/searchIcon';
 import { useSearchParams } from 'react-router-dom';
 
 interface SearchInputProps {
-  onSearch: (query: string) => void;
+  onSearch?: (query: string) => void;
 }
 
 const SearchInput: React.FC<SearchInputProps> = ({ onSearch }) => {
@@ -11,9 +11,11 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch }) => {
   const [searchParmas, setSearchParams] = useSearchParams();
   useEffect(() => {
     const handler = setTimeout(() => {
-      onSearch(query);
-      searchParmas.set("query", query)
-      setSearchParams(searchParmas)
+      if (query) {
+        searchParmas.set("query", query)
+        setSearchParams(searchParmas)
+        onSearch && onSearch(query);
+      }
     }, 300); // 300ms debounce delay
 
     return () => {

@@ -1,0 +1,6 @@
+.body-container {
+    overflow: auto;
+}
+.body-container:has(.loading-container){
+    overflow: hidden;
+}

@@ -5,7 +5,7 @@ import AddIcon from '../../assets/header-icons/add-icon.svg';
 interface IAddAndSearchItemProps {
   onAddButtonClick?: () => void;
   addButtonText: string;
-  onSearch: (search: string) => void
+  onSearch?: (search: string) => void
 }
 const AddAndSearchItem = (props: IAddAndSearchItemProps) => {
   return (

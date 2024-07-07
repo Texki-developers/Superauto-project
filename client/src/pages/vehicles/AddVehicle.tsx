@@ -69,7 +69,7 @@ const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
   ];
   const onSubmit = async (data: IVehicleAddFormValues) => {
     const formData = new FormData();
-    formData.append('accountId', '10');
+    formData.append(data?.party.__isNew__ ? 'partyName' : 'accountId', data?.party.value)
     formData.append('ownershipName', data.ownership);
     formData.append('registrationNumber', data.registrationNumber);
     formData.append('brandModel_id', 'null'); // You can update this value as needed
@@ -77,7 +77,7 @@ const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
     formData.append('purchaseRate', data.purchaseRate);
     formData.append('saleStatus', 'false');
     formData.append('insuranceDate', data.insuranceDate);
-    formData.append('deliveryService', data.deliveryService.value);
+    formData.append(data?.deliveryService.__isNew__ ? 'deliveryName' : 'deliveryService', data.deliveryService.value);
     formData.append('deliveryAmount', data.deliveryAmount);
     data.rcBook && formData.append('rcBook', data.rcBook);
     data.insurance && formData.append('insuranceDoc', data.insurance);
@@ -109,7 +109,7 @@ const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
       <Header breadCrumbData={breadCrumbData} />
       <div className='pt-5'>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <AddvehicleForm  brands={brandData?.data} brandLoading={brandLoading} reset={reset} setValue={setValue} watch={watch} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
+          <AddvehicleForm brands={brandData?.data} brandLoading={brandLoading} reset={reset} setValue={setValue} watch={watch} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
         </form>
       </div>
     </div>

@@ -25,11 +25,16 @@ const totalItemsPerPage = [
 
 const Table = (props: ITableProps) => {
   const [itemsPerPage, setItemsPerPage] = useState(String(props?.meta?.perPage ?? 10));
-  let [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const handlePageClick = (event: {
     selected: number;
   }) => {
+    console.log(event)
+    if (event.selected === 0) {
+      searchParams.set('page', '1')
+      setSearchParams(searchParams)
+    }
     if (event.selected + 1 !== Number(searchParams.get('page'))) {
       searchParams.set("page", String(event.selected + 1))
       setSearchParams(searchParams)
@@ -92,7 +97,7 @@ const Table = (props: ITableProps) => {
             pageCount={props?.meta?.totalCount ? Math.ceil(props?.meta?.totalCount / Number(itemsPerPage)) : 0}
             previousLabel="Prev"
             renderOnZeroPageCount={null}
-            initialPage={Number(searchParams.get('page')) - 1}
+            initialPage={searchParams.get('page') ? Number(searchParams.get('page')) - 1 : 0}
           />
         </div>
       </footer>}

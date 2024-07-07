@@ -10,8 +10,8 @@ interface ICheckBoxProps {
     isDisabled?: boolean;
     register?: any;
     error: any;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-    checked: boolean
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+    checked?: boolean
 }
 const CheckBox = (props: ICheckBoxProps) => {
     return (
@@ -21,6 +21,7 @@ const CheckBox = (props: ICheckBoxProps) => {
                 name={props?.name}
                 disabled={props?.isDisabled}
                 defaultValue={props?.defaultValue}
+                {...props?.register(props?.name)}
                 checked={props?.checked}
                 onChange={props?.onChange}
                 aria-invalid={props.error?.[props.name ?? ''] ? "true" : "false"}
