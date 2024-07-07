@@ -81,10 +81,10 @@ interface ISalesAttributes {
   sold_date: Date;
   payment_mode: string;
   is_finance: boolean;
-  finance_amount: number;
-  finance_service_charge: number;
+  finance_amount?: number;
+  finance_service_charge?: number;
   is_exchange: boolean;
-  exchange_vehicle_id: number;
+  exchange_vehicle_id?: number;
   due_date: Date;
 }
 

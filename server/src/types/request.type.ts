@@ -62,12 +62,12 @@ interface IsellVehicleBody {
     sales_rate: number;
     sales_date: Date;
     payment_mode: string;
-    finance_amount: number;
-    finance_charge: number;
+    finance_amount?: number;
+    finance_charge?: number;
     sold_vehicle_id: number;
     is_finance: boolean;
     is_exchange: boolean;
-    exchange_vehicle_id:number
+    exchange_vehicle_id?:number
     rate: string;
     amount: number;
     due_date: Date;

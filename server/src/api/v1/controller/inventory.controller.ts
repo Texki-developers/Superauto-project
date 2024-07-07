@@ -180,7 +180,8 @@ class InventoryController {
     inventoryService
       .exchangeVehicle(data)
       .then((data: any) => {
-        responseHandler(res, 'OK', data, { message: data.message });
+        console.log(data,"RETRUN")
+        responseHandler(res, 'OK', data, { message: data.message, });
       })
       .catch((error) => {
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
