@@ -3,7 +3,7 @@ import Creatable from 'react-select/creatable'
 import { Controller } from "react-hook-form";
 import { SetStateAction } from 'react';
 interface IOption {
-    value: string;
+    value: string | number;
     label: string;
 }
 interface ISelectInputProps {

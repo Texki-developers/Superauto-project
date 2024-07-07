@@ -85,6 +85,8 @@ const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
     formData.append('dateOfPurchase', data.purchaseDate);
     formData.append('model', data.model.value);
     formData.append('brand', data.brand.value);
+    formData.append('salesReturn', "false");
+    formData.append('isDelivery', `${!!data?.deliveryService.value}`);
     formData.append('isNew', data?.brand?.__isNew__ ? 'true' : 'false');
     data?.deliveryServicePhoneNumber?.length > 0 && data?.deliveryService.__isNew__ && formData.append('deliveryServicePhoneNumber', data?.deliveryServicePhoneNumber)
     data?.partyPhoneNumber?.length > 0 && data?.party.__isNew__ && formData.append('partyPhoneNumber', data?.partyPhoneNumber)

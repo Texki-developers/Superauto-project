@@ -41,7 +41,7 @@ const DeliveryServices = () => {
       category: ICategory.DELIVERY_SERVICE
     }
     setShowDeliveryServicesPopup(false);
-    await accountApi(body, 'Customer creation Failed', 'Customer Successfully Created')
+    await accountApi(body, 'Customer creation Failed', 'Customer Successfully Created', () => { reset() })
     refetch()
   };
   const { data, isPending, refetch } = useGetCategoryApi(ICategory.DELIVERY_SERVICE)

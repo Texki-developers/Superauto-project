@@ -6,6 +6,10 @@ import SelectInput from "../../components/formComponents/selectInput/SelectInput
 import AddButton from '../../assets/icons/addButton.svg';
 import CheckBox from "../formComponents/checkBox/CheckBox";
 import { IVehicleSellFormValues } from '../../types/vehicle/sellVehicle';
+import { ICategory } from '../../types/apimodal/apimodal.d';
+import useGetDropdownData from '../../hooks/useGetDropdownData.hook';
+import CreateSelectInput from '../formComponents/creatableSelect/CreatableSelect';
+import { paymentTypes } from '../../config/paymentTypes.data';
 
 
 interface IProps {
@@ -23,16 +27,14 @@ interface IProps {
       shouldDirty?: boolean;
     }
   ) => void; // SetValue function for setting form values
+  showFinance: boolean;
+  setShowFinance: React.Dispatch<SetStateAction<boolean>>;
 }
 
-const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, control, errors, setValue }: IProps) => {
-  const [showFinance, setShowFinance] = useState<boolean>(false)
-  const options = [
-    { value: 'chocolate', label: 'Chocolate' },
-    { value: 'strawberry', label: 'Strawberry' },
-    { value: 'vanilla', label: 'Vanilla' },
-  ];
-
+const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, control, errors, setValue, showFinance, setShowFinance }: IProps) => {
+  const [newCustomer, setNewCustomer] = useState(false)
+  const { formatedData: customers, isPending: customerPending } = useGetDropdownData(ICategory.CUSTOMER)
+  console.log(customers)
   return (
     <>
       {
@@ -41,16 +43,30 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
             <div className='col-span-2 grid gap-4'>
               <h1 className='primary-heading'>Basic Details</h1>
               <div className='grid grid-cols-3 gap-4'>
-                <SelectInput
+                <CreateSelectInput
                   name='customer'
                   label='Customer'
                   isSearchable
                   placeholder='Search customer name'
-                  options={options}
+                  options={customers}
+                  isLoading={customerPending}
                   control={control}
                   error={errors}
+                  setIsNew={setNewCustomer}
                   required
                 />
+                {
+                  newCustomer &&
+                  <InputBox
+                    name='customerPhoneNumber'
+                    label='Phone Number'
+                    placeholder='Customer Phone'
+                    register={register}
+                    error={errors}
+                    type='tel'
+                    required
+                  />
+                }
                 <InputBox
                   name='saleRate'
                   label='Sale Rate'
@@ -84,7 +100,7 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
                   label='Payment Type'
                   isSearchable
                   placeholder='Cash'
-                  options={options}
+                  options={paymentTypes}
                   control={control}
                   error={errors}
                   required
@@ -138,8 +154,8 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
                     label='Registration Number'
                     placeholder='KL55AE5570'
                     register={register}
+                    isDisabled
                     error={errors}
-                    required
                   />
                   <InputBox
                     name='rate'
@@ -147,6 +163,7 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
                     placeholder='0'
                     type='number'
                     register={register}
+                    isDisabled
                     error={errors}
                   />
                 </div>

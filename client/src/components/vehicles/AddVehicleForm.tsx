@@ -5,6 +5,8 @@ import InputBox from '../formComponents/inputBox/InputBox';
 import { IBranAndModel, IVehicleAddFormValues } from '../../types/vehicle/addVehicle';
 import CreateSelectInput from '../formComponents/creatableSelect/CreatableSelect';
 import { useEffect, useState } from 'react';
+import useGetDropdownData from '../../hooks/useGetDropdownData.hook';
+import { ICategory } from '../../types/apimodal/apimodal.d';
 
 interface IProps {
   onCancelClick: () => void;
@@ -33,11 +35,6 @@ const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [brandData, setBrandData] = useState<any>([])
   const [isNewDelivery, setIsNewDelivery] = useState(false)
-  const options = [
-    { value: 'chocolate', label: 'Chocolate' },
-    { value: 'strawberry', label: 'Strawberry' },
-    { value: 'vanilla', label: 'Vanilla' },
-  ];
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -64,6 +61,9 @@ const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, 
     }
   }, [brands])
 
+  const { formatedData: brokers, isPending: brokerPending } = useGetDropdownData(ICategory.BROKER)
+  const { formatedData: deliveryService, isPending: deliveryServicePending } = useGetDropdownData(ICategory.DELIVERY_SERVICE)
+
   return (
     <div className='bg-white-100 grid w-full grid-rows-[1fr_80px] rounded p-5'>
       <div className='grid h-full w-full grid-cols-[1fr_300px] gap-3'>
@@ -77,7 +77,8 @@ const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, 
                   label='Party'
                   isSearchable
                   placeholder='Select Party Name'
-                  options={options}
+                  options={brokers}
+                  isLoading={brokerPending}
                   control={control}
                   setIsNew={setIsNewParty}
                   error={errors}
@@ -199,9 +200,10 @@ const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, 
                 name='deliveryService'
                 label='Delivery Service'
                 placeholder='Select Delivery Service'
-                options={options}
+                options={deliveryService}
                 setIsNew={setIsNewDelivery}
                 control={control}
+                isLoading={deliveryServicePending}
                 error={errors}
               />
               {

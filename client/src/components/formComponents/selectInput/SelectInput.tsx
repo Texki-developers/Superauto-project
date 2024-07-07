@@ -2,7 +2,7 @@
 import Select from 'react-select';
 import { Controller } from "react-hook-form";
 interface IOption {
-  value: string;
+  value: string | number;
   label: string;
 }
 interface ISelectInputProps {

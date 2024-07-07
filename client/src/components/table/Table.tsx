@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ITableColumn } from '../../types/table/table';
 import './style.scss';
 import ReactPaginate from 'react-paginate';
@@ -25,9 +25,17 @@ const totalItemsPerPage = [
 ]
 
 const Table = (props: ITableProps) => {
-  const [itemsPerPage, setItemsPerPage] = useState(String(props?.meta?.perPage ?? 10));
+  console.log(props?.meta)
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [searchParams, setSearchParams] = useSearchParams();
-
+  useEffect(() => {
+    const verify: number | undefined = totalItemsPerPage?.find(item => item === props?.meta?.perPage)
+    if (props?.meta?.perPage && verify) {
+      setItemsPerPage(props?.meta?.perPage);
+    } else {
+      setItemsPerPage(10)
+    }
+  }, [props?.meta])
   const handlePageClick = (event: {
     selected: number;
   }) => {
@@ -42,7 +50,7 @@ const Table = (props: ITableProps) => {
     }
   };
   const handlePerPageClick = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setItemsPerPage(e.target.value)
+    setItemsPerPage(Number(e.target.value))
     searchParams.set("perPage", e.target.value)
     setSearchParams(searchParams)
   }
@@ -107,3 +115,10 @@ const Table = (props: ITableProps) => {
 };
 
 export default Table;
+
+Table.defaultProps = {
+  meta: {
+    totalCount: 0,
+    perPage: 10
+  }
+}

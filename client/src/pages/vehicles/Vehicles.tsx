@@ -18,6 +18,7 @@ import Loading from '../../components/loading/Loading';
 const Vehicles = () => {
   const [showAddPage, setShowAddPage] = useState<boolean>(false);
   const [showSellPage, setShowSellPage] = useState<boolean>(false);
+  const [selectedVehicle, setSelectedVehicle] = useState('')
   const onAddButtonClick = () => {
     setShowAddPage(true);
   };
@@ -26,20 +27,21 @@ const Vehicles = () => {
   const url = `inventory/list/vehicle?page=${searchParams.get('page') ?? 1}&perPage=${searchParams.get('perPage') ?? 10}`
   const fetchVehicles = () => callApi(url);
   const { data, isPending, refetch } = useQuery({ queryKey: [url], queryFn: fetchVehicles })
-  console.log(data)
   const onSearchData = (query: string) => {
     console.log(query)
   }
   const onActionClick = (type: 'add' | 'edit' | 'delete', id: string) => {
-    type === 'add' && setShowSellPage(true);
-    console.log(id)
+    if (type === 'add') {
+      setSelectedVehicle(id)
+      setShowSellPage(true);
+    }
   };
   const columnData: ITableColumn[] = useMemo(() => {
     return [
       ...ColumnData,
       {
         name: 'Action',
-        key: 'id',
+        key: 'inventory_id',
         columnData: (id: string) => (
           <div className='flex gap-2 *:h-[20px] *:w-[20px]'>
             <img
@@ -73,7 +75,7 @@ const Vehicles = () => {
           <AddVehicle setShowAddPage={setShowAddPage} refetch={refetch} />
         ) :
           showSellPage ? (
-            <SellVehicle setShowSellPage={setShowSellPage} />
+            <SellVehicle vehicleId={selectedVehicle} setShowSellPage={setShowSellPage} />
           ) :
             (
               <>
