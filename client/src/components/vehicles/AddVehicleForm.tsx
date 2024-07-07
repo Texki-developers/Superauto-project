@@ -39,6 +39,7 @@ const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const brand: any = watch('brand')
+    setValue('model', '')
     if (brands && brands?.length > 0) {
       const models = brands?.filter(item => {
         console.log(item, brand)

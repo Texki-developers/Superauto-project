@@ -75,7 +75,7 @@ const Vehicles = () => {
           <AddVehicle setShowAddPage={setShowAddPage} refetch={refetch} />
         ) :
           showSellPage ? (
-            <SellVehicle vehicleId={selectedVehicle} setShowSellPage={setShowSellPage} />
+            <SellVehicle refetch={refetch} vehicleId={selectedVehicle} setShowSellPage={setShowSellPage} />
           ) :
             (
               <>

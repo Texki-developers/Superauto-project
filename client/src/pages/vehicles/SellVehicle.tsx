@@ -11,6 +11,7 @@ import AuthApiService from '../../services/api-services';
 interface IProps {
   setShowSellPage: React.Dispatch<SetStateAction<boolean>>;
   vehicleId: string;
+  refetch: () => void;
 }
 
 const defaultValues: IVehicleSellFormValues = {
@@ -35,7 +36,7 @@ const defaultValues: IVehicleSellFormValues = {
   balance: ''
 };
 
-const SellVehicle = ({ setShowSellPage, vehicleId }: IProps) => {
+const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
   const { register, handleSubmit, reset, setValue, formState: { errors }, control } = useForm({
     defaultValues
   })
@@ -83,6 +84,7 @@ const SellVehicle = ({ setShowSellPage, vehicleId }: IProps) => {
       }
       setShowSellPage(false);
       toastSuccess(id, 'Vehicle added successfully');
+      refetch()
     } catch (error) {
       setShowSellPage(false);
       toastError(id, 'Something went wrong');

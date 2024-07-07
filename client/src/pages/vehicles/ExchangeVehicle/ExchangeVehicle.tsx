@@ -6,7 +6,7 @@ import SalesReturnForm from "./SalesReturnForm";
 import Tabs from "../../../components/exchangeVehicleComponent/Tabs";
 import { useForm } from "react-hook-form";
 import { IBranAndModel, IVehicleAddFormValues } from "../../../types/vehicle/addVehicle";
-import { IVehicleNewFormValues } from "../../../types/vehicle/sellVehicle";
+import { IExchangeVehicleDetails, IVehicleNewFormValues } from "../../../types/vehicle/sellVehicle";
 import useGetApis from "../../../hooks/useGetApi.hook";
 import { useQuery } from "@tanstack/react-query";
 import useToast from "../../../hooks/useToast.hook";
@@ -17,7 +17,7 @@ const tabs = ['Sales Return', 'New Vehicle']
 
 interface IProps {
     showPopup: React.Dispatch<SetStateAction<boolean>>;
-    setExchangeDet: React.Dispatch<SetStateAction<string>>;
+    setExchangeDet: React.Dispatch<SetStateAction<IExchangeVehicleDetails | null>>;
 }
 const defaultValues: IVehicleAddFormValues = {
     party: {
@@ -101,10 +101,14 @@ const ExchangeVehicle = ({ showPopup, setExchangeDet }: IProps) => {
         const id = toastLoading('Loading...');
         try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const data = await AuthApiService.postApiFormData<FormData, any>('inventory/exchange/vehicle', formData,)
+            const data: any = await AuthApiService.postApiFormData<FormData, any>('inventory/exchange/vehicle', formData,)
             if (data?.status === "error") {
                 toastError(id, data?.message)
                 return
+            }
+            if (data?.data?.data) {
+                const res = data?.data?.data
+                setExchangeDet({ id: res?.inventory_id, regNumb: res?.registration_number, rate: res?.purchase_rate })
             }
             toastSuccess(id, 'Vehicle added successfully')
             showPopup(false)
@@ -127,13 +131,13 @@ const ExchangeVehicle = ({ showPopup, setExchangeDet }: IProps) => {
                 toastError(id, data?.message)
                 return
             }
+            setExchangeDet({ id: data?.registrationNumber?.value, regNumb: data?.registrationNumber?.label, rate: data?.value })
             toastSuccess(id, 'Vehicle added successfully')
             showPopup(false)
         } catch (error) {
             toastError(id, 'Something went wrong')
         }
     }
-    const onCancelClick = () => { }
     return (
         <div className="">
             <ModalWrapper hideHeading onClose={onClose}>
@@ -151,11 +155,11 @@ const ExchangeVehicle = ({ showPopup, setExchangeDet }: IProps) => {
                     {
                         selectedTab === 0 ?
                             <form onSubmit={handleSubmitNew(onSalesReturn)}>
-                                <SalesReturnForm reset={resetNew} register={registerNew} errors={errorsNew} control={controlNew} onCancelClick={onCancelClick} />
+                                <SalesReturnForm reset={resetNew} register={registerNew} errors={errorsNew} control={controlNew} onCancelClick={onClose} />
                             </form>
                             :
                             <form onSubmit={handleSubmit(onNewVehicleSubmit)}>
-                                <AddvehicleForm brands={brandData?.data} brandLoading={brandLoading} reset={reset} setValue={setValue} watch={watch} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
+                                <AddvehicleForm brands={brandData?.data} brandLoading={brandLoading} reset={reset} setValue={setValue} watch={watch} register={register} control={control} errors={errors} onCancelClick={onClose} />
                             </form>
                     }
 

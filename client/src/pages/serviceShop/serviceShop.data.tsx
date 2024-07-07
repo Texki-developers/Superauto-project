@@ -1,4 +1,4 @@
-// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 import moment from "moment"
 
 export const ColumnData = [
