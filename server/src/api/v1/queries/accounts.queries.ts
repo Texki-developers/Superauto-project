@@ -14,7 +14,7 @@ import { E_ACCOUNT_CATEGORIES } from '../../../utils/constants/constants';
 
 class AccountQueries {
   async createAccount(body: { name: string; contact_info: string; category: E_ACCOUNT_CATEGORIES; head: number }) {
-    return await Accounts.create(body,{returning:true})
+    return await Accounts.create(body, { returning: true });
   }
 
   async createEmployee(body: { account_id: number; salary: number }) {
@@ -86,9 +86,9 @@ class AccountQueries {
     return result;
   }
 
-  async findAccountsByCategory(category: any,attributes:string[]) {
+  async findAccountsByCategory(category: any, attributes: string[]) {
     const { rows: accounts, count: totalCount } = await Accounts.findAndCountAll({
-       ...category,
+      ...category,
       include: [
         {
           model: Employee,
@@ -101,36 +101,38 @@ class AccountQueries {
 
     const result = {
       accounts: accounts,
-      meta:{
+      meta: {
         totalCount: totalCount,
         perPage: accounts.length,
-      }
-    
+      },
     };
 
-    return result
+    return result;
   }
 
-  async getAccountsByid(option:any){
+  async getAccountsByid(option: any) {
     const result = await Accounts.findAll({
-      where:option.where,
+      where: option.where,
       attributes: ['account_id', 'name', 'contact_info', 'category'],
     });
 
     return result;
   }
 
-
-  async SearchCategory(whereCondition:any){
-      console.log(whereCondition,"where condition")
+  async SearchCategory(whereCondition: any) {
+    console.log(whereCondition, 'where condition');
     const accounts = await Accounts.findAll({
       where: whereCondition,
-      attributes: ['account_id', 'name'], 
+      attributes: ['account_id', 'name'],
     });
-    return accounts
+    return accounts;
   }
 
-
+  async getAllAccounts() {
+    return await Accounts.findAll({
+      attributes: ['account_id', 'name'],
+    });
+  }
 }
 
 export default new AccountQueries();

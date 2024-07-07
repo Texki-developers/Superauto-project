@@ -61,13 +61,13 @@ class ReportsController {
 
 
   cashbookReport(req: Request, res: Response) {
-    const { ledger, fromDate, toDate } = req.query;
+    const { query, fromDate, toDate } = req.query;
 
-    const ledgerStr = typeof ledger === 'string' ? ledger : '';
+    const querystr = typeof query === 'string' ? query : '';
     const fromDateStr = typeof fromDate === 'string' ? fromDate : '';
     const toDateStr = typeof toDate === 'string' ? toDate : '';
     reportsService
-      .cashbookReport()
+      .cashbookReport(querystr,fromDateStr,toDateStr)
       .then((data: any) => {
         responseHandler(res, 'OK', data, { message: data.message });
       })
