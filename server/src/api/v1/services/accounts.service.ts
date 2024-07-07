@@ -164,6 +164,7 @@ class AccountService {
 
 
         const categoryResult = await accountsQueries.findAccountsByCategory(option,['account_id', 'name', 'contact_info', 'category']);
+        categoryResult.meta.perPage = perPage
         return resolve(categoryResult);
       } catch (err) {
         console.error(err);

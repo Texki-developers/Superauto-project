@@ -411,6 +411,7 @@ class InventoryService {
   }
 
   listVehicles(page: number, perPage: number) {
+    console.log(page,perPage,"list")
     return new Promise(async (resolve, reject) => {
       try {
         const options: FindOptions = {
@@ -434,6 +435,7 @@ class InventoryService {
           offset: (page - 1) * perPage,
         };
         const vehicles = await inventoryQueries.getAllVehicles(options);
+        vehicles.meta.perPage = perPage
         return resolve(vehicles);
       } catch (err) {
         reject({ message: `Failed to List vehicles: ${err}` });
