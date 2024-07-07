@@ -5,6 +5,7 @@ import Voucher from "../../../models/vouchers";
 import sequelize from 'sequelize';
 import { db } from '../../../config/database';
 import { LedgerWithBalanceResult, OpeningBalanceResult, TransactionDataResult } from '../../../types/db.type';
+import { raw } from 'express';
 
 class ReportQueries {
 
@@ -25,7 +26,7 @@ class ReportQueries {
                 attributes:["name",]
               },
             ],
-            attributes:["voucher_id","debit_account","credit_account","amount","description"],
+            attributes:["voucher_id","debit_account","credit_account","amount","description","transaction_date"],
             order: [['createdAt', 'ASC']],
           });
       
@@ -56,8 +57,8 @@ class ReportQueries {
               primary_ledger pl ON a.head = pl.pl_id
           WHERE 
               a.account_id = :accountId
-        ),
-        opening_balance AS (
+      ),
+      opening_balance AS (
           SELECT 
               COALESCE(SUM(
                   CASE 
@@ -73,8 +74,25 @@ class ReportQueries {
               transactions t
           WHERE 
               t."transaction_date" < :startDate
-        ),
-        transaction_data AS (
+      ),
+      closing_balance AS (
+          SELECT 
+              COALESCE(SUM(
+                  CASE 
+                      WHEN t.debit_account = :accountId THEN t.amount 
+                      ELSE 0 
+                  END -
+                  CASE 
+                      WHEN t.credit_account = :accountId THEN t.amount 
+                      ELSE 0 
+                  END
+              ), 0) AS balance
+          FROM 
+              transactions t
+          WHERE 
+              t."transaction_date" >= :startDate
+      ),
+      transaction_data AS (
           SELECT
               DATE(t."transaction_date") AS Date,
               t.description AS Description,
@@ -92,8 +110,8 @@ class ReportQueries {
           WHERE 
               t."transaction_date" BETWEEN :startDate AND :endDate
               AND (t.debit_account = :accountId OR t.credit_account = :accountId)
-        ),
-        combined_data AS (
+      ),
+      combined_data AS (
           SELECT 
               NULL AS Date,
               'Opening Balance' AS Description,
@@ -111,8 +129,16 @@ class ReportQueries {
               NULL AS RunningBalance
           FROM 
               transaction_data
-        ),
-        final_data AS (
+          UNION ALL
+          SELECT 
+              NULL AS Date,
+              'Closing Balance' AS Description,
+              NULL AS VoucherID,
+              0 AS Debit,
+              0 AS Credit,
+              (SELECT balance FROM closing_balance) AS RunningBalance
+      ),
+      final_data AS (
           SELECT 
               cd.Date,
               cd.Description,
@@ -130,24 +156,32 @@ class ReportQueries {
                               COALESCE(cd.Debit, 0) - COALESCE(cd.Credit, 0) + (SELECT balance FROM opening_balance)
                       END
                   ) OVER (ORDER BY COALESCE(cd.Date, '1900-01-01'), cd.VoucherID),
-                  0 
-              ) AS RunningBalance
+                  (SELECT balance FROM opening_balance) + (SELECT balance FROM closing_balance)
+              ) AS RunningBalance,
+              COALESCE(
+                  LAST_VALUE(
+                      (SELECT balance FROM opening_balance) + (SELECT balance FROM closing_balance)
+                  ) OVER (ORDER BY COALESCE(cd.Date, '1900-01-01'), cd.VoucherID ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW),
+                  0
+              ) AS ClosingBalance
           FROM 
               combined_data cd
           JOIN 
               account_type at ON at.account_id = :accountId
-        )
-        SELECT 
-            Date,
-            Description,
-            VoucherID,
-            Debit,
-            Credit,
-            RunningBalance
-        FROM 
-            final_data
-        ORDER BY 
-            COALESCE(Date, '1900-01-01'), VoucherID;
+      )
+      SELECT 
+          Date,
+          Description,
+          VoucherID,
+          Debit,
+          Credit,
+          RunningBalance,
+          ClosingBalance
+      FROM 
+          final_data
+      ORDER BY 
+          COALESCE(Date, '1900-01-01'), VoucherID;
+      
       `;
       
       const [ledgerWithBalanceResult] = await db.query(ledgerQuery, {
