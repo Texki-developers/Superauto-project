@@ -86,7 +86,7 @@ class AccountQueries {
     return result;
   }
 
-  async findAccountsByCategory(category: any) {
+  async findAccountsByCategory(category: any,attributes:string[]) {
     const { rows: accounts, count: totalCount } = await Accounts.findAndCountAll({
        ...category,
       include: [
@@ -96,7 +96,7 @@ class AccountQueries {
           attributes: ['salary'],
         },
       ],
-      attributes: ['account_id', 'name', 'contact_info', 'category'],
+      attributes: attributes,
     });
 
     const result = {

@@ -125,9 +125,10 @@ class AccountController {
       })
   }
 
-  listBrokers(req: Request, res: Response)  {
+  getDropDownCategory(req: Request, res: Response)  {
   
-    accountsService.getBrokersList()
+    const {category} = req.params
+    accountsService.getDropDownCategoryList(category)
       .then((response:any ) => {
         responseHandler(res, 'OK', response.accounts, {message: 'RETRIEVED'})
       }).catch((error:any) => {
@@ -135,6 +136,7 @@ class AccountController {
         responseHandler(res, 'INTERNAL_SERVER_ERROR')
       })
   }
+
 }
 
 export default new AccountController();
