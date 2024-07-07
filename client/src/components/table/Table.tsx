@@ -70,12 +70,12 @@ const Table = (props: ITableProps) => {
               <tr key={i} >
                 {props?.columnData?.map((keyItem) => (
                   <td key={uuidv4()}>
-                    {keyItem?.columnData ? (
+                    {keyItem?.columnData && keyItem?.key ? (
                       <span className='grid w-full place-items-center'>
-                        {keyItem?.columnData(item?.[keyItem.key])}
+                        {keyItem?.columnData(item?.[keyItem?.key])}
                       </span>
                     ) : (
-                      item?.[keyItem?.key]
+                      keyItem?.key ? item?.[keyItem?.key] : keyItem?.index ? i + 1 : ''
                     )}
                   </td>
                 ))}

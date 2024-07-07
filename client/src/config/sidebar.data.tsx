@@ -20,6 +20,9 @@ import DeliveryServices from '../pages/deliveryServices/DeliveryServices';
 import DailyBook from '../pages/reports/dailyBook/DailyBook';
 import Ledger from '../pages/reports/ledger/Ledger';
 import CashBook from '../pages/reports/cashbook/Cashbook';
+import TrailBalance from '../pages/reports/trailBalance/TrailBalance';
+import BalanceSheet from '../pages/reports/balanceSheet/BalanceSheet';
+import ProfitAndLoss from '../pages/reports/profitAndLoss/ProfitAndLoss';
 
 export const sidebarData: ISidebarItem[] = [
   {
@@ -113,6 +116,27 @@ export const sidebarData: ISidebarItem[] = [
         id: uuidv4() + 4,
         isSubMenu: false,
         element: <CashBook />,
+      },
+      {
+        name: 'Trial Balance',
+        url: '/all-reports/trial-balance',
+        id: uuidv4() + 4,
+        isSubMenu: false,
+        element: <TrailBalance />,
+      },
+      {
+        name: 'Balance Sheet',
+        url: '/all-reports/balance-sheet',
+        id: uuidv4() + 4,
+        isSubMenu: false,
+        element: <BalanceSheet />,
+      },
+      {
+        name: 'Profi & Loss',
+        url: '/all-reports/profit-loss',
+        id: uuidv4() + 4,
+        isSubMenu: false,
+        element: <ProfitAndLoss />,
       }
     ]
   },
