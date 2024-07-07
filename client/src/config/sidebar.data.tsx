@@ -7,7 +7,6 @@ import FinanceImage from '../assets/sidebar-icons/financeicon.svg';
 import ServiceShopImage from '../assets/sidebar-icons/service.svg';
 import CustomersImage from '../assets/sidebar-icons/customericon.svg';
 import EmployeesImage from '../assets/sidebar-icons/employeesicon.svg';
-import OtherExpensesImage from '../assets/sidebar-icons/otherexpensesicon.svg';
 import DeliveryImage from '../assets/sidebar-icons/deliveryicon.svg';
 import AllReportsImage from '../assets/sidebar-icons/allreportsicon.svg';
 import { ISidebarItem } from '../types/sidebar/sidebar';
@@ -17,10 +16,13 @@ import Finance from '../pages/finance/Finance';
 import ServiceShop from '../pages/serviceShop/ServiceShop';
 import Customers from '../pages/customers/Customers';
 import Employees from '../pages/employees/Employees';
-import OtherExpenses from '../pages/otherExpenses/OtherExpenses';
 import DeliveryServices from '../pages/deliveryServices/DeliveryServices';
 import DailyBook from '../pages/reports/dailyBook/DailyBook';
 import Ledger from '../pages/reports/ledger/Ledger';
+import CashBook from '../pages/reports/cashbook/Cashbook';
+import TrailBalance from '../pages/reports/trailBalance/TrailBalance';
+import BalanceSheet from '../pages/reports/balanceSheet/BalanceSheet';
+import ProfitAndLoss from '../pages/reports/profitAndLoss/ProfitAndLoss';
 
 export const sidebarData: ISidebarItem[] = [
   {
@@ -102,11 +104,39 @@ export const sidebarData: ISidebarItem[] = [
         element: <DailyBook key='dailybook' />,
       },
       {
-        name: 'Report 2',
-        url: '/all-reports/report2',
+        name: 'Ledger',
+        url: '/all-reports/ledger',
         id: uuidv4() + 3,
         isSubMenu: false,
         element: <Ledger />,
+      }
+      , {
+        name: 'Cash Book',
+        url: '/all-reports/cash-book',
+        id: uuidv4() + 4,
+        isSubMenu: false,
+        element: <CashBook />,
+      },
+      {
+        name: 'Trial Balance',
+        url: '/all-reports/trial-balance',
+        id: uuidv4() + 4,
+        isSubMenu: false,
+        element: <TrailBalance />,
+      },
+      {
+        name: 'Balance Sheet',
+        url: '/all-reports/balance-sheet',
+        id: uuidv4() + 4,
+        isSubMenu: false,
+        element: <BalanceSheet />,
+      },
+      {
+        name: 'Profi & Loss',
+        url: '/all-reports/profit-loss',
+        id: uuidv4() + 4,
+        isSubMenu: false,
+        element: <ProfitAndLoss />,
       }
     ]
   },

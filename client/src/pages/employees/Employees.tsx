@@ -95,7 +95,7 @@ const Employees = () => {
                 />
               </section>
               <section className='pt-5 pb-2'>
-                <Table data={data?.data} columnData={columnData} />
+                <Table meta={data?.meta} data={data?.data} columnData={columnData} />
               </section>
             </div>
           </>

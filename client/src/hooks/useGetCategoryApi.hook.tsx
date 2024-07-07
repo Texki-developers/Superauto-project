@@ -7,8 +7,8 @@ const useGetCategoryApi = (category: ICategory) => {
     const [searchParams] = useSearchParams()
     const { callApi } = useGetApis();
     const url = `accounts/list/category/${category}?page=${searchParams.get('page') ?? 1}&perPage=${searchParams.get('perPage') ?? 10}`
-    const fetchFinance = () => callApi(url);
-    const { data, isPending, refetch } = useQuery({ queryKey: [url], queryFn: fetchFinance })
+    const fetchData = () => callApi(url);
+    const { data, isPending, refetch } = useQuery({ queryKey: [url], queryFn: fetchData })
     return {
         data, isPending, refetch
     }

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import AddAndSearchItem from '../../components/addAndSearchItem/AddAndSearchItem';
 import Header from '../../components/header/Header';
 import AddVehicle from './AddVehicle';
@@ -18,6 +18,7 @@ import Loading from '../../components/loading/Loading';
 const Vehicles = () => {
   const [showAddPage, setShowAddPage] = useState<boolean>(false);
   const [showSellPage, setShowSellPage] = useState<boolean>(false);
+  const [selectedVehicle, setSelectedVehicle] = useState('')
   const onAddButtonClick = () => {
     setShowAddPage(true);
   };
@@ -26,18 +27,21 @@ const Vehicles = () => {
   const url = `inventory/list/vehicle?page=${searchParams.get('page') ?? 1}&perPage=${searchParams.get('perPage') ?? 10}`
   const fetchVehicles = () => callApi(url);
   const { data, isPending, refetch } = useQuery({ queryKey: [url], queryFn: fetchVehicles })
-  console.log(data)
-
+  const onSearchData = (query: string) => {
+    console.log(query)
+  }
   const onActionClick = (type: 'add' | 'edit' | 'delete', id: string) => {
-    type === 'add' && setShowSellPage(true);
-    console.log(id)
+    if (type === 'add') {
+      setSelectedVehicle(id)
+      setShowSellPage(true);
+    }
   };
   const columnData: ITableColumn[] = useMemo(() => {
     return [
       ...ColumnData,
       {
         name: 'Action',
-        key: 'id',
+        key: 'inventory_id',
         columnData: (id: string) => (
           <div className='flex gap-2 *:h-[20px] *:w-[20px]'>
             <img
@@ -71,19 +75,20 @@ const Vehicles = () => {
           <AddVehicle setShowAddPage={setShowAddPage} refetch={refetch} />
         ) :
           showSellPage ? (
-            <SellVehicle setShowSellPage={setShowSellPage} />
+            <SellVehicle refetch={refetch} vehicleId={selectedVehicle} setShowSellPage={setShowSellPage} />
           ) :
             (
               <>
                 <Header />
                 <div className='pt-[50px]'>
                   <AddAndSearchItem
+                    onSearch={onSearchData}
                     addButtonText='Add Vehicle'
                     onAddButtonClick={onAddButtonClick}
                   />
                 </div>
                 <section className='pt-5 pb-2'>
-                  <Table meta={{ perPage: 10, totalCount: 100 }} data={data?.data} columnData={columnData} />
+                  <Table meta={data?.meta} data={data?.data} columnData={columnData} />
                 </section>
               </>
             )
@@ -93,4 +98,4 @@ const Vehicles = () => {
   );
 };
 
-export default Vehicles;
+export default React.memo(Vehicles);

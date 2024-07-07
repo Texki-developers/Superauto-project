@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { SetStateAction, useState } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
 import Header from '../../components/header/Header';
 import SellVehicleForm from '../../components/vehicles/SellVehicleForm';
-import { ISellVehicleApiBody, IVehicleSellFormValues } from '../../types/vehicle/sellVehicle';
+import { IExchangeVehicleDetails, IVehicleSellFormValues } from '../../types/vehicle/sellVehicle';
 import { useForm } from 'react-hook-form';
 import ExchangeVehicle from './ExchangeVehicle/ExchangeVehicle';
 import useToast from '../../hooks/useToast.hook';
@@ -10,30 +10,40 @@ import AuthApiService from '../../services/api-services';
 
 interface IProps {
   setShowSellPage: React.Dispatch<SetStateAction<boolean>>;
+  vehicleId: string;
+  refetch: () => void;
 }
 
 const defaultValues: IVehicleSellFormValues = {
-  customer: '',  // Default values for all fields
+  customer: {
+    value: '',
+    label: '',
+  },  // Default values for all fields
   saleRate: '',
   mrp: '5454',
   salesDate: '',
-  paymentType: '',
+  paymentType: {
+    value: '',
+    label: '',
+  },
   financeAmount: '',
+  customerPhoneNumber: '',
   financeServiceCharge: '',
   registrationNumber: '',
-  rate: '',
+  rate: null,
   paymentAmount: '',
   dueDate: '',
   balance: ''
 };
 
-const SellVehicle = ({ setShowSellPage }: IProps) => {
+const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
   const { register, handleSubmit, reset, setValue, formState: { errors }, control } = useForm({
     defaultValues
   })
   const [showExchangeForm, setShowExchangeForm] = useState(false);
   const { toastError, toastLoading, toastSuccess } = useToast()
-
+  const [showFinance, setShowFinance] = useState(false);
+  const [exchangeDet, setExchangeDet] = useState<IExchangeVehicleDetails | null>(null)
   const onCancelClick = () => {
     setShowSellPage(false);
   };
@@ -42,50 +52,57 @@ const SellVehicle = ({ setShowSellPage }: IProps) => {
     { name: 'Vehicles', link: '/vehicles' },
     { name: 'Sell Vehicles' },
   ];
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: IVehicleSellFormValues) => {
     console.log(data);
     const id = toastLoading('Loading...');
 
-    // Create the API body by transforming the form data
-    const apiBody = {
-      accountId: "", // Leave this empty for now
-      soldRate: `${data?.saleRate} `,
+    const apiBody: any = {
+      soldRate: Number(data?.saleRate),
       soldDate: data?.salesDate,
       paymentMode: data?.paymentType.label,
-      financeAmound: data?.financeAmount || "0", // Use "0" if financeAmount is empty
-      financeCharge: data?.financeServiceCharge || "0", // Use "0" if financeServiceCharge is empty
-      regNum: data?.registrationNumber,
-      soldVehicleId: "",
-      isFinance: data?.financeServiceCharge && data?.financeAmount,
-      is_exchange: false,
-      rate: `${data?.rate}%`,
-      amount: data?.paymentAmount,
+      soldVehicleId: Number(vehicleId),
+      isFinance: showFinance ? true : false,
+      exchangeVehicleId: exchangeDet,
+      is_exchange: !!exchangeDet,
+      rate: Number(data?.rate),
+      amount: Number(data?.paymentAmount),
       due_date: data?.dueDate
     };
+    if (data?.customer?.__isNew__) {
+      apiBody['customerPhoneNumber'] = data?.customerPhoneNumber
+      apiBody['customerName'] = data?.customer.label;
+    } else {
+      apiBody['accountId'] = Number(data?.customer?.value)
+    }
 
     try {
-      console.log(apiBody);
-      const response = await AuthApiService.postApi<ISellVehicleApiBody, any>('inventory/sell/vehicle', apiBody);
+      console.table(apiBody);
+      const response = await AuthApiService.postApi<any, any>('inventory/sell/vehicle', apiBody);
       if (response?.status === "error") {
         toastError(id, response?.message);
         return;
       }
       setShowSellPage(false);
       toastSuccess(id, 'Vehicle added successfully');
+      refetch()
     } catch (error) {
       setShowSellPage(false);
       toastError(id, 'Something went wrong');
     }
   };
+  useEffect(() => {
+    exchangeDet?.regNumb && setValue('registrationNumber', exchangeDet.regNumb)
+    exchangeDet?.rate && setValue('rate', exchangeDet.rate)
+  }, [exchangeDet])
 
   return (
     <div>
       <Header breadCrumbData={breadCrumbData} />
       <div className='pt-5 mb-3'>
         {
-          showExchangeForm ? <ExchangeVehicle showPopup={setShowExchangeForm} /> :
+          showExchangeForm ? <ExchangeVehicle setExchangeDet={setExchangeDet} showPopup={setShowExchangeForm} /> :
             <form onSubmit={handleSubmit(onSubmit)}>
-              <SellVehicleForm setValue={setValue} setShowExchangeForm={setShowExchangeForm} register={register} reset={reset} errors={errors} control={control} onCancelClick={onCancelClick} />
+              <SellVehicleForm setShowFinance={setShowFinance} showFinance={showFinance} setValue={setValue} setShowExchangeForm={setShowExchangeForm} register={register} reset={reset} errors={errors} control={control} onCancelClick={onCancelClick} />
             </form>
         }
       </div>

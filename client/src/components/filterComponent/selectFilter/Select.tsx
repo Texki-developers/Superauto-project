@@ -7,16 +7,22 @@ interface IProps {
     placeholder?: string;
     className?: string
     defaultValue?: any
+    labelName: string
+    valueName: string
+    showAllOption?: boolean
 }
 
-const SelectFilter = ({ options, defaultValue, onChange, placeholder, className }: IProps) => {
+const SelectFilter = ({ options, showAllOption, defaultValue, labelName, valueName, onChange, placeholder, className }: IProps) => {
     return (
         <Select
             defaultValue={defaultValue}
             className={"border border-gray-300 outline-none rounded-sm min-w-[200px] " + className}
             placeholder={placeholder ?? "Filter..."}
-            options={options}
+            getOptionLabel={(opt: any) => opt[labelName]}
+            getOptionValue={(opt: any) => opt[valueName]}
             isSearchable
+            options={options?.length > 0 ? (showAllOption ? [{ prefix: 'All' }, ...options] : options) : []}
+            aria-label="name"
             onChange={onChange}
         />
     )
