@@ -476,7 +476,7 @@ class InventoryService {
         const dbTransaction = await db.transaction();
         const allowedExtension = ['pdf', 'jpg', 'jpeg', 'png'];
         const fileType = 'doc';
-
+        let  addInventoryresult
         console.log(data.is_sales_return, 'SALES RETURN');
         if (data.is_sales_return) {
           console.log('entering.... sales return', data);
@@ -569,9 +569,10 @@ class InventoryService {
           };
 
           if (purchaseResult && cashResult && brandID) {
-            const addInventoryresult = await inventoryQueries.addVehicle(insertInventoryData, {
+             addInventoryresult = await inventoryQueries.addVehicle(insertInventoryData, {
               transaction: dbTransaction,
             });
+
             if (data.is_delivery) {
               const directExpense = await accountsQueries.findAccount(E_LEDGERS_BASIC.DIRECT_EXPENSE);
               const expenseVoucher = await getVoucher('Expense');
@@ -588,7 +589,7 @@ class InventoryService {
                   data.delivery_service =newAccountResult.account_id
                 }
               }
-              
+
               if (directExpense) {
                 deliveryTransaction.push({
                   amount: data.delivery_amount,
@@ -641,7 +642,7 @@ class InventoryService {
             );
             await performTransaction(dbTransaction);
           }
-          return resolve({ message: 'Vehicle Added Successfully for exchange' });
+          return resolve({ message: 'Vehicle Added Successfully for exchange' ,data:addInventoryresult});
         }
       } catch (error) {
         console.log(error, 'EROR');
