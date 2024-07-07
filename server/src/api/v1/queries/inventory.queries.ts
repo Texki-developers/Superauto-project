@@ -94,7 +94,6 @@ class InventoryQueries {
 
   async getAllVehicles(options?: FindOptions) {
     const { rows: accounts, count: totalCount } = await Inventory.findAndCountAll(options);
-    console.log(accounts,"REUSLT")
     const result = {
       accounts: accounts,
       meta:{
@@ -102,9 +101,6 @@ class InventoryQueries {
         perPage: accounts.length,
       }
     };
-
-
-  
     return result;
   }
 

@@ -85,14 +85,15 @@ class AccountController {
 
   getbyCategory (req: Request, res: Response)  {
     const { category } = req.params;
-    const {page,perPage} = req.query
-    if (typeof category !== 'string' || category.trim() === '') {
-      res.status(400).json({ error: 'Invalid category' });
-      return;
-    }
-    accountsService.getbyCategory(category,Number(page),Number(perPage))
+   
+    let { page, perPage } = req.query;
+    const pageNum = page ? parseInt(page as string, 10) : 1;
+    const perPageNum = perPage ? parseInt(perPage as string, 10) : 10;
+  
+  
+    accountsService.getbyCategory(category,pageNum,perPageNum)
       .then((response:any ) => {
-        responseHandler(res, 'OK', response, {message: 'RETRIEVED'})
+        responseHandler(res, 'OK', response.accounts, {message: 'RETRIEVED',meta:response.meta})
       }).catch((error:any) => {
         console.log(error);
         responseHandler(res, 'INTERNAL_SERVER_ERROR')
@@ -101,7 +102,6 @@ class AccountController {
 
   getFinancerDetails (req: Request, res: Response)  {
     const { id } = req.params;
-    console.log(id,"THE ID")
     accountsService.getFinancerDetails(Number(id))
       .then((response:any ) => {
         responseHandler(res, 'OK', response, {message: 'RETRIEVED'})
@@ -125,6 +125,16 @@ class AccountController {
       })
   }
 
+  listBrokers(req: Request, res: Response)  {
+  
+    accountsService.getBrokersList()
+      .then((response:any ) => {
+        responseHandler(res, 'OK', response.accounts, {message: 'RETRIEVED'})
+      }).catch((error:any) => {
+        console.log(error);
+        responseHandler(res, 'INTERNAL_SERVER_ERROR')
+      })
+  }
 }
 
 export default new AccountController();

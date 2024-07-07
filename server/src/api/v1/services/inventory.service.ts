@@ -9,7 +9,7 @@ import {
   ITransactionParams,
 } from '../../../types/db.type';
 import { IassignVehicle, IInventoryBody, IsellVehicleBody } from '../../../types/request.type';
-import { E_LEDGERS_BASIC, E_VOUCHERS } from '../../../utils/constants/constants';
+import { E_ACCOUNT_CATEGORIES, E_LEDGERS_BASIC, E_VOUCHERS } from '../../../utils/constants/constants';
 import messages from '../../../utils/constants/messages';
 import { uploadFile } from '../../../utils/fileUpload/fileUpload';
 import getVoucher from '../../../utils/getVoucher/getVoucher';
@@ -20,6 +20,7 @@ import Accounts from '../../../models/accounts';
 import BrandModel from '../../../models/brand';
 import FileStore from '../../../models/documents';
 import SaleReturn from '../../../models/salesReturn';
+import accountsService from './accounts.service';
 
 class InventoryService {
   addVehicle = (data: IInventoryBody) => {
@@ -51,8 +52,19 @@ class InventoryService {
           brandID = data?.brand_model_id;
         }
 
+        if (data.party_phone_number && data?.party_phone_number?.length> 0) {
+          if (data.party_name) {
+            const newAccountResult = await accountsService.accountHelper(
+              { party_name: data.party_name, party_phone_number: data.party_phone_number },
+              'CUSTOMER'
+            );
+            data.account_id = newAccountResult.account_id;
+          }
+        }
+
+
         const insertInventoryData: IInventoryAttributes = {
-          account_id: data.account_id,
+          account_id: data.account_id ,
           brand_model_id: brandID || 0,
           year_of_manufacture: data.year_of_manufacture,
           ownership_name: data.ownership_name,
@@ -75,6 +87,17 @@ class InventoryService {
           });
 
           if (data.is_delivery) {
+
+            if (data.delivery_service_phone_number) {
+              if (data.delivery_name) {
+                const newAccountResult = await accountsService.accountHelper(
+                  { party_name: data.delivery_name, party_phone_number: data.delivery_service_phone_number },
+                  E_ACCOUNT_CATEGORIES.DELIVERY_SERVICE
+                );
+    
+                data.delivery_service =newAccountResult.account_id
+              }
+            }
             const directExpense = await accountsQueries.findAccount(E_LEDGERS_BASIC.DIRECT_EXPENSE);
             const expenseVoucher = await getVoucher('Expense');
             const deliveryTransaction: ITransactionParams[] = [];
@@ -83,14 +106,14 @@ class InventoryService {
             if (directExpense) {
               deliveryTransaction.push({
                 amount: data.delivery_amount,
-                credit_account: data.delivery_service,
+                credit_account: data.delivery_service ,
                 debit_account: directExpense,
                 voucher_id: expenseVoucher,
               });
 
               if (addInventoryresult?.inventory_id) {
                 dsTransactions.push({
-                  ds_id: data.delivery_service,
+                  ds_id: data.delivery_service ,
                   vehicle_id: addInventoryresult.inventory_id,
                   transaction_id: 0,
                 });
@@ -376,7 +399,7 @@ class InventoryService {
     });
   }
 
-  listVehicles(page = 1, perPage = 10) {
+  listVehicles(page: number, perPage: number) {
     return new Promise(async (resolve, reject) => {
       try {
         const options: FindOptions = {
@@ -394,7 +417,7 @@ class InventoryService {
             'ownership_name',
             'insurance_date',
             'date_of_purchase',
-            'registration_number'
+            'registration_number',
           ],
           limit: perPage,
           offset: (page - 1) * perPage,
@@ -410,7 +433,7 @@ class InventoryService {
   listVehicleRegNumber() {
     return new Promise(async (resolve, reject) => {
       try {
-        const attributes = ['inventory_id', 'account_id', 'registration_number', 'sale_status',];
+        const attributes = ['inventory_id', 'account_id', 'registration_number', 'sale_status'];
         const options: FindOptions = {
           where: { sale_status: false },
           include: [
@@ -421,7 +444,7 @@ class InventoryService {
               attributes: ['inventory_id', 'sale_status'],
             },
           ],
-          attributes:attributes
+          attributes: attributes,
         };
         const vehicles = await inventoryQueries.getAllVehicles(options);
         return resolve(vehicles);
