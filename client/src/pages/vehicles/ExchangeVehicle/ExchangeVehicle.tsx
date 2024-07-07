@@ -61,7 +61,7 @@ const defaultValuesNew: IVehicleNewFormValues = {
 
 }
 const ExchangeVehicle = ({ showPopup, setExchangeDet }: IProps) => {
-    const { register, handleSubmit, reset, watch, setValue, formState: { errors }, control } = useForm({
+    const { register, handleSubmit, reset, watch, setValue, setError, formState: { errors }, control } = useForm({
         defaultValues
     })
     const { toastError, toastLoading, toastSuccess } = useToast()

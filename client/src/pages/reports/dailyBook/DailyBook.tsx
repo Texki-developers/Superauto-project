@@ -23,12 +23,12 @@ const DailyBook = () => {
     const selectUrl = `reports/list/dailybook-voucher`
     const fetchDailyBook = () => callApi(url);
     const fetchDailyBookFilterData = () => callApi(selectUrl);
-    const { data, isPending } = useQuery({ queryKey: [url + searchParams.get('filter')], queryFn: fetchDailyBook })
+    const { data, isPending } = useQuery({ queryKey: [url, searchParams.get('filter')], queryFn: fetchDailyBook })
     const { data: options } = useQuery({ queryKey: [selectUrl], queryFn: fetchDailyBookFilterData })
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onFilterChanged = (value: any) => {
         if (value?.prefix !== 'All') {
-            searchParams.set('fileter', value?.prefix)
+            searchParams.set('filter', value?.prefix)
             setSearchParams(searchParams)
         } else {
             searchParams.delete('filter')
