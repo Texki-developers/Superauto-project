@@ -28,7 +28,7 @@ interface IInventoryAttributes {
   rc_book: typeof fileUpload;
   insurance_doc: typeof fileUpload;
   proof_doc: typeof fileUpload;
-  date_of_purchase: string | null;
+  date_of_purchase: Date;
   sold_price?: number | null;
 }
 
@@ -38,6 +38,7 @@ interface ITransactionParams {
   debit_account: number;
   description?: string;
   voucher_id?: string;
+  transaction_date:Date
 }
 
 interface IDeliveryAttributes {

@@ -64,6 +64,7 @@ class AccountService {
               debit_account: expenseAcResult,
               description: data.description,
               voucher_id: voucher,
+              transaction_date:data.date
             },
           ],
           { transaction: dbTransaction }
@@ -100,6 +101,7 @@ class AccountService {
             debit_account: data.payment_from,
             description: data.description,
             voucher_id: voucher,
+            transaction_date:data.date
           },
         ]);
         resolve('Updated successully');
@@ -123,6 +125,7 @@ class AccountService {
             debit_account: debitAc,
             description: data.description,
             voucher_id: voucher,
+            transaction_date:data.date
           },
         ]);
         resolve('Updated successully');
