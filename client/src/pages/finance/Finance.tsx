@@ -98,7 +98,7 @@ const Finance = () => {
               />
             </section>
             <section className='pb-2 pt-5'>
-              <Table data={data?.data} columnData={columnData} />
+              <Table meta={data?.meta} data={data?.data} columnData={columnData} />
             </section>
           </div>
 

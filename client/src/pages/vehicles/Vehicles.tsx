@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import AddAndSearchItem from '../../components/addAndSearchItem/AddAndSearchItem';
 import Header from '../../components/header/Header';
 import AddVehicle from './AddVehicle';
@@ -86,7 +86,7 @@ const Vehicles = () => {
                   />
                 </div>
                 <section className='pt-5 pb-2'>
-                  <Table meta={{ perPage: 10, totalCount: 100 }} data={data?.data} columnData={columnData} />
+                  <Table meta={data?.meta} data={data?.data} columnData={columnData} />
                 </section>
               </>
             )
@@ -96,4 +96,4 @@ const Vehicles = () => {
   );
 };
 
-export default Vehicles;
+export default React.memo(Vehicles);

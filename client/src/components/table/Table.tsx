@@ -18,6 +18,7 @@ interface ITableProps {
 
 
 const totalItemsPerPage = [
+  5,
   10,
   20,
   30,
