@@ -61,7 +61,7 @@ const defaultValuesNew: IVehicleNewFormValues = {
 
 }
 const ExchangeVehicle = ({ showPopup, setExchangeDet }: IProps) => {
-    const { register, handleSubmit, reset, watch, setValue, setError, formState: { errors }, control } = useForm({
+    const { register, handleSubmit, reset, watch, setValue, formState: { errors }, control } = useForm({
         defaultValues
     })
     const { toastError, toastLoading, toastSuccess } = useToast()
@@ -69,7 +69,6 @@ const ExchangeVehicle = ({ showPopup, setExchangeDet }: IProps) => {
     const url = `inventory/model-brand/vehicle`
     const fetchBrandModal = (): Promise<{ data: IBranAndModel[] } | undefined> => callApi(url)
     const { data: brandData, isPending: brandLoading } = useQuery({ queryKey: ['brand/model-brand'], queryFn: fetchBrandModal })
-
     const { register: registerNew, handleSubmit: handleSubmitNew, reset: resetNew, formState: { errors: errorsNew }, control: controlNew } = useForm({
         defaultValues: defaultValuesNew
     })

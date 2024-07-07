@@ -2,32 +2,38 @@ import moment from 'moment';
 import { ITableColumn } from '../../../types/table/table';
 
 export const ColumnData: ITableColumn[] = [
-  { name: 'S.No', index: true },
   {
-    name: 'Date', key: 'transaction_date', columnData: (item: string) => {
+    name: 'Date', key: 'date', columnData: (item: string) => {
       return <p>{moment(item).format('YYYY-MM-DD')}</p>
     }
   },
   {
-    name: 'Voucher',
-    key: 'voucher_id',
+    name: '#',
+    key: 'voucherid',
     columnData: (item: string) => {
       return (<p className='text-primary-300'>{item}</p>);
     },
   },
   {
-    name: 'Dr. Account',
-    key: 'DebitAccount',
+    name: 'Note',
+    key: 'description',
     columnData: (item: { name: string }) => {
       return item?.name;
     },
   },
   {
-    name: 'Cr. Account',
-    key: 'CreditAccount',
+    name: 'Debit(₹)',
+    key: 'debit',
     columnData: (item: { name: string }) => {
       return item?.name;
     },
   },
-  { name: 'Amount(₹)', key: 'amount' },
+  {
+    name: 'Credit(₹)',
+    key: 'credit',
+    columnData: (item: { name: string }) => {
+      return item?.name;
+    },
+  },
+  { name: 'Balance', key: 'closingbalance' },
 ];
