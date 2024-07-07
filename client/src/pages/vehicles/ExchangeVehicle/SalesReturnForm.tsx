@@ -39,6 +39,15 @@ const SalesReturnForm = ({ onCancelClick, reset, register, control, errors, }: I
                     error={errors}
                     type='number'
                 />
+                <InputBox
+                    name="purchaseDate"
+                    label='Purchase Date'
+                    placeholder='Purchase Date'
+                    required
+                    register={register}
+                    error={errors}
+                    type='date'
+                />
             </div>
             <div className='button-wrapper flex h-full w-full items-center justify-between'>
                 <Button

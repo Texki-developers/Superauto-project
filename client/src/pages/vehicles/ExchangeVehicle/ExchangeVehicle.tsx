@@ -92,11 +92,12 @@ const ExchangeVehicle = ({ showPopup }: IProps) => {
 
                     {
                         selectedTab === 0 ?
-                            <form onSubmit={handleSubmit(onSalesSubmit)}>
-                                <AddvehicleForm hideDeliveryServices brands={brandData?.data} brandLoading={brandLoading} reset={reset} setValue={setValue} watch={watch} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
-                            </form> :
                             <form onSubmit={handleSubmitNew(onExchangeValue)}>
                                 <SalesReturnForm reset={resetNew} register={registerNew} errors={errorsNew} control={controlNew} onCancelClick={onCancelClick} />
+                            </form>
+                            :
+                            <form onSubmit={handleSubmit(onSalesSubmit)}>
+                                <AddvehicleForm brands={brandData?.data} brandLoading={brandLoading} reset={reset} setValue={setValue} watch={watch} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
                             </form>
                     }
 
