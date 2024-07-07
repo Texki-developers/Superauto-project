@@ -1,0 +1,18 @@
+.title {
+  @apply bg-gray-200 px-3 py-2;
+}
+.title > h4 {
+  @apply text-[1rem] font-semibold;
+}
+
+.first-level {
+  @apply flex items-center justify-between px-3 py-1 pl-6;
+}
+
+.second-level {
+  @apply flex items-center justify-between px-3 py-1 pl-10;
+}
+
+.total {
+  @apply flex items-center justify-between border-b-2 border-t-2 border-gray-300 px-3 py-1 pl-3;
+}

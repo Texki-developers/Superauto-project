@@ -12,7 +12,7 @@ export default defineConfig({
       {   
         find: 'react-query/devtools', 
         replacement: 'react-query/es/devtools/index',
-      },
+      }, 
     ],
   },
 }) 

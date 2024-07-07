@@ -10,21 +10,30 @@ interface ICheckBoxProps {
     isDisabled?: boolean;
     register?: any;
     error: any;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-    checked: boolean
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+    checked?: boolean
 }
 const CheckBox = (props: ICheckBoxProps) => {
     return (
         <div className="flex gap-2 items-center ">
-            <input
+            {props?.register ? <input
                 value={props.value}
                 name={props?.name}
                 disabled={props?.isDisabled}
                 defaultValue={props?.defaultValue}
-                checked={props?.checked}
-                onChange={props?.onChange}
+                {...props?.register(props?.name)}
                 aria-invalid={props.error?.[props.name ?? ''] ? "true" : "false"}
                 className="w-[15px] h-[15px] cursor-pointer checked:bg-primary-300" type='checkbox' id='checkbox' />
+
+                : <input
+                    value={props.value}
+                    name={props?.name}
+                    disabled={props?.isDisabled}
+                    defaultValue={props?.defaultValue}
+                    checked={props?.checked}
+                    onChange={props?.onChange}
+                    aria-invalid={props.error?.[props.name ?? ''] ? "true" : "false"}
+                    className="w-[15px] h-[15px] cursor-pointer checked:bg-primary-300" type='checkbox' id='checkbox' />}
             <label className="input-label cursor-pointer select-none" htmlFor='checkbox'>{props.label}</label>
         </div>
     )

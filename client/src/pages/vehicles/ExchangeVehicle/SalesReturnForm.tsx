@@ -2,7 +2,11 @@ import { Control, FieldErrors, UseFormRegister } from "react-hook-form";
 import Button from "../../../components/button.tsx/Button";
 import InputBox from "../../../components/formComponents/inputBox/InputBox";
 import { IVehicleNewFormValues } from "../../../types/vehicle/sellVehicle";
-import CreateSelectInput from "../../../components/formComponents/creatableSelect/CreatableSelect";
+import SelectInput from "../../../components/formComponents/selectInput/SelectInput";
+import useGetApis from "../../../hooks/useGetApi.hook";
+import { useQuery } from "@tanstack/react-query";
+import { useCallback } from "react";
+import { IOption } from "../../../config/paymentTypes.data";
 interface IProps {
     onCancelClick: () => void;
     register: UseFormRegister<IVehicleNewFormValues>;
@@ -10,22 +14,26 @@ interface IProps {
     errors: FieldErrors<IVehicleNewFormValues>;
     reset: (values?: IVehicleNewFormValues) => void;
 }
-const options = [
-    { value: 'chocolate', label: 'Chocolate' },
-    { value: 'strawberry', label: 'Strawberry' },
-    { value: 'vanilla', label: 'Vanilla' },
-];
-
 
 const SalesReturnForm = ({ onCancelClick, reset, register, control, errors, }: IProps) => {
+    const { callApi } = useGetApis();
+    const url = `inventory/list/vehicle/registration-number`
+    const fetchData = () => callApi(url);
+    const { data } = useQuery({ queryKey: [url], queryFn: fetchData })
+    const formatedData = useCallback((): IOption[] => {
+        return data?.data?.map((item: { vehicle_id: number, registration_number: string }) => ({
+            value: item?.vehicle_id,
+            label: item?.registration_number
+        }))
+    }, [data])
     return (
         <div className="grid gap-3 ">
             <div className="grid grid-cols-2 gap-3 py-6">
-                <CreateSelectInput
+                <SelectInput
                     name="registrationNumber"
                     label='Registartion Number'
                     placeholder='Registartion Number'
-                    options={options}
+                    options={formatedData()}
                     control={control}
                     error={errors}
                     required
@@ -38,6 +46,15 @@ const SalesReturnForm = ({ onCancelClick, reset, register, control, errors, }: I
                     register={register}
                     error={errors}
                     type='number'
+                />
+                <InputBox
+                    name="purchaseDate"
+                    label='Purchase Date'
+                    placeholder='Purchase Date'
+                    required
+                    register={register}
+                    error={errors}
+                    type='date'
                 />
             </div>
             <div className='button-wrapper flex h-full w-full items-center justify-between'>
