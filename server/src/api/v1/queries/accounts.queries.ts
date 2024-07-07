@@ -14,7 +14,7 @@ import { E_ACCOUNT_CATEGORIES } from '../../../utils/constants/constants';
 
 class AccountQueries {
   async createAccount(body: { name: string; contact_info: string; category: E_ACCOUNT_CATEGORIES; head: number }) {
-    return await Accounts.create(body);
+    return await Accounts.create(body,{returning:true})
   }
 
   async createEmployee(body: { account_id: number; salary: number }) {
@@ -101,8 +101,11 @@ class AccountQueries {
 
     const result = {
       accounts: accounts,
-      totalCount: totalCount,
-      currentLength: accounts.length,
+      meta:{
+        totalCount: totalCount,
+        currentLength: accounts.length,
+      }
+    
     };
 
     return result

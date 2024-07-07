@@ -1,3 +1,4 @@
+import { E_ACCOUNT_CATEGORIES } from "../utils/constants/constants";
 import { IAccountAttributes, IDeliveryAttributes, IEmployeeAttributes, IInventoryAttributes } from "./db.type";
 
 interface IAccountBody extends IAccountAttributes, IEmployeeAttributes {}
@@ -9,10 +10,11 @@ interface IInventoryBody extends IInventoryAttributes,IDeliveryAttributes {
     model:string
     is_sales_return?:boolean
     is_delivery:boolean
-
+    party_phone_number?:string,
+    delivery_service_phone_number?:string;
+    party_name?:string
+    delivery_name?:string
 }
-
-
 interface IassignVehicle {
     amount:number;
     regNum:string;
@@ -21,6 +23,12 @@ interface IassignVehicle {
     serviceId?:number
 }
 
+interface AccountData {
+    party_name: string;
+    party_phone_number: string;
+  }
+
+  
 interface IassignVehicleBody{
     Vehicles: IassignVehicle[]
 }
@@ -74,5 +82,6 @@ export type {
     IOtherExpenseBody,
     IRecieptBody,
     IPaymentBody,
+    AccountData,
     IsellVehicleBody
 }

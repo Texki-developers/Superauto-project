@@ -1,6 +1,6 @@
 import { Sequelize, Transaction } from 'sequelize';
 import { IAccountAttributes, IEmployeeAttributes } from '../../../types/db.type';
-import { IAccountBody, IOtherExpenseBody, IPaymentBody, IRecieptBody } from '../../../types/request.type';
+import { AccountData, IAccountBody, IOtherExpenseBody, IPaymentBody, IRecieptBody } from '../../../types/request.type';
 import { E_ACCOUNT_CATEGORIES, E_LEDGERS_BASIC, E_PRIMARY_LEDGERS } from '../../../utils/constants/constants';
 import accountsQueries from '../queries/accounts.queries';
 import authQueries from '../queries/accounts.queries';
@@ -17,7 +17,7 @@ class AccountService {
         const primaryLedger = E_PRIMARY_LEDGERS[category];
         if (primaryLedger) {
           const accountResult = await authQueries.createAccount({ ...data, head: primaryLedger });
-
+         
           if (category === E_ACCOUNT_CATEGORIES.EMPLOYEE) {
             const account_id = accountResult?.account_id;
             console.log(account_id, 'ACcount id');
@@ -34,6 +34,18 @@ class AccountService {
       }
     });
   };
+
+  async accountHelper(data: AccountData, category: keyof typeof E_ACCOUNT_CATEGORIES): Promise<any> {
+    const categoryKey = E_ACCOUNT_CATEGORIES[category];
+    const primaryLedger = E_PRIMARY_LEDGERS[categoryKey];
+
+    return await accountsQueries.createAccount({
+      name: data.party_name,
+      category: categoryKey,
+      contact_info: data.party_phone_number,
+      head: primaryLedger,
+    });
+  }
 
   bookOtherExpense = (data: IOtherExpenseBody) => {
     return new Promise(async (resolve, reject) => {
@@ -176,7 +188,7 @@ class AccountService {
   }
 
   getCategorySearch(search: string, category: string) {
-    console.log(search,category,"QUERY AP")
+    console.log(search, category, 'QUERY AP');
     return new Promise(async (resolve, reject) => {
       try {
         let whereCondition: any = {};
@@ -197,11 +209,22 @@ class AccountService {
             Sequelize.literal(`to_char("createdAt", 'YYYY-MM-DD HH24:MI:SS') ILIKE '%${search}%'`),
           ];
         }
- 
 
-       const result =  await accountsQueries.SearchCategory(whereCondition)
+        const result = await accountsQueries.SearchCategory(whereCondition);
 
-       return resolve (result)
+        return resolve(result);
+      } catch (err) {
+        console.log(err);
+        reject({ message: `Failed to List Financers..: ${err}` });
+      }
+    });
+  }
+
+  getBrokersList() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const getFinanceResult = await accountsQueries.findAccountsByCategory({ where: { category: 'BROKER' } });
+        return resolve(getFinanceResult);
       } catch (err) {
         console.log(err);
         reject({ message: `Failed to List Financers..: ${err}` });
