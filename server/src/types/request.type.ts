@@ -13,7 +13,8 @@ interface IInventoryBody extends IInventoryAttributes,IDeliveryAttributes {
     party_phone_number?:string,
     delivery_service_phone_number?:string;
     party_name?:string
-    delivery_name?:string
+    delivery_name?:string,
+    purchase_amount:number,
 }
 interface IassignVehicle {
     amount:number;
@@ -68,7 +69,7 @@ interface IsellVehicleBody {
     is_finance: boolean;
     is_exchange: boolean;
     exchange_vehicle_id?:number
-    rate: string;
+    rate: number;
     amount: number;
     customerName:string;
     customerPhoneNumber:string;

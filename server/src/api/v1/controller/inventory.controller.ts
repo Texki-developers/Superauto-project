@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { responseHandler } from '../../../utils/responseHandler/responseHandler';
 import inventoryService from '../services/inventory.service';
-import { IDeliveryAttributes, IInventoryAttributes } from '../../../types/db.type';
 import { getFile } from '../../../utils/getFile/getFile';
 import { IassignVehicleBody, IInventoryBody, IsellVehicleBody } from '../../../types/request.type';
 
@@ -21,6 +20,7 @@ class InventoryController {
       brand_model_id: body?.brand,
       year_of_manufacture: body.yearOfManufacture,
       purchase_rate: body.purchaseRate,
+      purchase_amount:body.purchaseAmount,
       sale_status: false,
       insurance_date: body.insuranceDate,
       delivery_service: body.deliveryService,
@@ -152,9 +152,13 @@ class InventoryController {
     const rcBook = getFile(req, 'rcBook');
     const insuranceDoc = getFile(req, 'insuranceDoc');
     const proofDoc = getFile(req, 'proofDoc');
-    if (!rcBook && !insuranceDoc && !proofDoc) {
-      throw new Error('The Required Docs are not provided');
+
+    if(!body.salesReturn){
+      if (!rcBook && !insuranceDoc && !proofDoc) {
+        throw new Error('The Required Docs are not provided');
+      }
     }
+   
     const data: IInventoryBody = {
       account_id: body.accountId,
       ownership_name: body.ownershipName,
@@ -177,8 +181,9 @@ class InventoryController {
       inventory_id: body.inventoryId,
       is_delivery: body.isDelivery,
       sold_price: body.soldPrice,
+      purchase_amount:body.purchaseAmount
     };
-
+console.log(data.is_sales_return,"IS SALES")
     inventoryService
       .exchangeVehicle(data)
       .then((data: any) => {

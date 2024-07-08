@@ -89,9 +89,7 @@ class ReportsController {
   }
 
   balanceSheetReport(req: Request, res: Response) {
-    const { ledger, fromDate, toDate } = req.query;
-
-    const ledgerStr = typeof ledger === 'string' ? ledger : '';
+    const { fromDate, toDate } = req.query;
     const fromDateStr = typeof fromDate === 'string' ? fromDate : '';
     const toDateStr = typeof toDate === 'string' ? toDate : '';
     reportsService

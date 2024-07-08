@@ -124,7 +124,8 @@ class ReportsService{
       return new Promise(async (resolve, reject) => {
         try {
 
-
+            const balanceSheet = await reportsQueries.balanceSheet()
+            return resolve(balanceSheet)
         } catch (err) {
           reject({ message: `Failed to List Brands: ${err}` });
         }

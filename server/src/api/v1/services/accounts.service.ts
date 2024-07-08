@@ -97,8 +97,8 @@ class AccountService {
         await accountsQueries.generateTransaction([
           {
             amount: data?.amount,
-            credit_account: creditAc,
-            debit_account: data.payment_from,
+            credit_account: data.payment_from,
+            debit_account: creditAc,
             description: data.description,
             voucher_id: voucher,
             transaction_date:data.date
@@ -121,8 +121,8 @@ class AccountService {
         await accountsQueries.generateTransaction([
           {
             amount: data?.amount,
-            credit_account: data.payment_to,
-            debit_account: debitAc,
+            credit_account: debitAc,
+            debit_account: data.payment_to,
             description: data.description,
             voucher_id: voucher,
             transaction_date:data.date

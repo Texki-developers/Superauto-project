@@ -12,7 +12,7 @@ enum E_PRIMARY_LEDGERS {
   SERVICE_SHOP = 1, // Inventory
   DELIVERY_SERVICE = 13, // Direct Expense
   FINANCER = 14, // Other Expense
-  BROKER = 8, // Other Payables
+  BROKER = 6, // Other Payables
   INVENTORY = 1,
   CUSTOMER = 2,  //
   CASH = 3,
