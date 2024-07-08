@@ -17,7 +17,7 @@ interface IProps {
 
 const SalesReturnForm = ({ onCancelClick, reset, register, control, errors, }: IProps) => {
     const { callApi } = useGetApis();
-    const url = `inventory/list/vehicle/registration-number`
+    const url = `inventory/list/vehicle/registration-number?isSold=true`
     const fetchData = () => callApi(url);
     const { data } = useQuery({ queryKey: [url], queryFn: fetchData })
     const formatedData = useCallback((): IOption[] => {
