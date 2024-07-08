@@ -41,25 +41,27 @@ const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, 
     const brand: any = watch('brand')
     setValue('model', '')
     if (brands && brands?.length > 0) {
-      const models = brands?.filter(item => {
-        console.log(item, brand)
-        return item.brand === brand.value
-      }).map(item => ({ value: item?.model, label: item.model }))
-      console.log("models", models)
+      const models = Array.from(new Set(brands?.filter(item => {
+        return item.brand === brand.value;
+      }).map(item => item.model)))
+        .map(model => ({ value: model, label: model }));
+      console.log(models)
       setModelsData(models)
     }
   }, [watch('brand')])
 
   useEffect(() => {
-    if (brands && brands?.length > 0) {
-      const brandOptions = brands?.map((item: IBranAndModel) => (
-        {
-          label: item.brand,
-          value: item.brand
-        }
-      ))
-      setBrandData(brandOptions)
+    if (brands && brands.length > 0) {
+      const brandOptionsMap = new Map();
+      brands.forEach((item: IBranAndModel) => {
+        brandOptionsMap.set(item.brand, { label: item.brand, value: item.brand });
+      });
+      const brandOptions = Array.from(brandOptionsMap.values());
+
+      console.log(brandOptions);
+      setBrandData(brandOptions);
     }
+
   }, [brands])
 
   const { formatedData: brokers, isPending: brokerPending } = useGetDropdownData(ICategory.BROKER)
