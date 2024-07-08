@@ -6,8 +6,21 @@ import { ITableColumn } from '../../types/table/table';
 export const ColumnData: ITableColumn[] = [
   { name: 'ID', key: 'inventory_id' },
   { name: 'Vehicle No', key: 'registration_number' },
-  { name: 'Customer', key: 'ownership_name' },
-  { name: 'Mobile', key: 'mobile' },
+  {
+    name: 'Customer', key: 'Account', columnData: (value: { name: string }) => {
+      return (
+        <p>{value?.name}</p>
+      )
+    }
+  },
+  {
+    name: 'Mobile', key: 'Account',
+    columnData: (value: { contact_info: string }) => {
+      return (
+        <p>{value?.contact_info}</p>
+      )
+    }
+  },
   {
     name: 'RC',
     key: 'rc_book',

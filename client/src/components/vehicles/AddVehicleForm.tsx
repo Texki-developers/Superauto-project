@@ -130,6 +130,7 @@ const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, 
                   type='number'
                   register={register}
                   error={errors}
+                  isDisabled
                 />
                 <InputBox
                   name='purchaseDate'

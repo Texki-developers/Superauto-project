@@ -106,6 +106,13 @@ const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
       refetch()
     }
   }
+  useEffect(() => {
+    const purchaseRate = watch('purchaseRate')
+    const purchaseAmount = watch('purchaseAmount')
+    if (purchaseAmount || purchaseRate) {
+      setValue('balance', `${Number(purchaseRate ?? 0) - Number(purchaseAmount ?? 0)}`)
+    }
+  }, [watch('purchaseRate'), watch('purchaseAmount')])
   return (
     <div>
       <Header breadCrumbData={breadCrumbData} />
