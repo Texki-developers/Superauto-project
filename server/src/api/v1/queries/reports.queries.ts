@@ -490,6 +490,23 @@ class ReportQueries {
             GROUP BY
                 a.account_id, a.name
         ),
+        capital AS (
+            SELECT 
+                a.account_id,
+                a.name,
+                COALESCE(SUM(CASE WHEN t.credit_account = a.account_id THEN t.amount ELSE 0 END), 0) - 
+                COALESCE(SUM(CASE WHEN t.debit_account = a.account_id THEN t.amount ELSE 0 END), 0) AS capital
+            FROM
+                accounts a
+            LEFT JOIN
+                transactions t ON a.account_id IN (t.debit_account, t.credit_account)
+            LEFT JOIN
+                primary_ledger p ON a.head = p.pl_id
+            WHERE
+                a.account_id = 120
+            GROUP BY
+                a.account_id, a.name
+        ),
         direct_expense AS (
             SELECT 
                 a.account_id,
@@ -577,6 +594,15 @@ class ReportQueries {
         
                 SELECT 
                     NULL AS account_id,
+                    'Capital' as name,
+                    capital AS "Total"
+                FROM 
+                    capital
+        
+                UNION ALL
+        
+                SELECT 
+                    NULL AS account_id,
                     'To Closing Inventory' as name,
                     closing_inventory AS "Total"
                 FROM 
@@ -621,9 +647,20 @@ class ReportQueries {
                             FROM 
                                 sales, closing_inventory, opening_inventory, purchase, direct_expense, salary
                            ), 0)
+        
+                UNION ALL
+        
+                SELECT 
+                    NULL AS account_id,
+                    'Net LOSS' AS name,
+                    COALESCE((SELECT 
+                                COALESCE(SUM(capital), 0) - COALESCE(SUM(Sales), 0) - COALESCE(SUM(closing_inventory), 0) - COALESCE(SUM(opening_inventory), 0) - COALESCE(SUM(Purchase), 0) + COALESCE(SUM(Direct_Expense), 0) AS "Total"
+                            FROM 
+                                capital, sales, closing_inventory, opening_inventory, purchase, direct_expense
+                           ), 0)
             ) AS combined_results
         ORDER BY 
-            name;
+            name;;
         `
         const [reportAndLoss]:any = await db.query(query, {
             // replacements: { startDate, endDate  },
