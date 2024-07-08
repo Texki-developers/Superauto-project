@@ -5,7 +5,7 @@ import PaymentIcon from '../../assets/icons/addPayment.svg'
 import AddExpenses from '../../assets/icons/addExpense.svg'
 import { SetStateAction, useState } from 'react';
 import PaymentForm from '../paymentFrom.tsx/PaymentForm';
-import ReceiptForm from '../receiptForm.tsx copy/ReceiptForm';
+import ReceiptForm from '../receiptForm/ReceiptForm';
 import ExpenseForm from '../expenseForm/ExpenseForm';
 
 
