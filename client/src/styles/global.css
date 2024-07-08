@@ -49,6 +49,22 @@ p {
     @apply grid h-full max-h-full grid-rows-[auto_auto_1fr];
   }
 
+  .bb-2 {
+    @apply border-b-2 border-gray-300
+  }
+
+  .bl-2 {
+    @apply border-l-2 border-gray-300
+  }
+
+  .br-2 {
+    @apply border-r-2 border-gray-300
+  }
+
+  .bt-2 {
+    @apply border-t-2 border-gray-300
+  }
+
   .pagination-box {
     @apply grid h-[30px] w-[30px] place-items-center rounded bg-gray-200 text-[14px];
   }

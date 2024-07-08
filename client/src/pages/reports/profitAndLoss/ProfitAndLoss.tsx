@@ -1,4 +1,3 @@
-import DateFilter from "../../../components/filterComponent/dateFilter/DateFilter"
 import Header from "../../../components/header/Header"
 import ProfitAndLossTable from "./components/ps-table"
 
@@ -12,7 +11,7 @@ const ProfitAndLoss = () => {
         <main className="table-wrapper">
             <Header title="Profit And Loss" breadCrumbData={breadCrumbData} />
             <div className=" py-3 flex justify-end gap-3">
-                <DateFilter />
+                {/* <DateFilter /> */}
             </div>
             <section className='pt-5 pb-2'>
                 <ProfitAndLossTable />

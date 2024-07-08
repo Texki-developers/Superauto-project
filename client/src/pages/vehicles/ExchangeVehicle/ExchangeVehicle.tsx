@@ -1,4 +1,4 @@
-import React, { SetStateAction, useState } from "react"
+import React, { SetStateAction, useEffect, useState } from "react"
 import ModalWrapper from "../../../components/modalWrapper"
 import AddvehicleForm from "../../../components/vehicles/AddVehicleForm"
 import CloseIcon from '../../../assets/icons/close-icon';
@@ -85,6 +85,7 @@ const ExchangeVehicle = ({ showPopup, setExchangeDet }: IProps) => {
         formData.append('yearOfManufacture', data.yearOfManufacture);
         formData.append('purchaseRate', data.purchaseRate);
         formData.append('saleStatus', 'false');
+        formData.append('purchaseAmount', data.purchaseAmount);
         formData.append('insuranceDate', data.insuranceDate);
         formData.append(data?.deliveryService.__isNew__ ? 'deliveryName' : 'deliveryService', data.deliveryService.value);
         formData.append('deliveryAmount', data.deliveryAmount);
@@ -115,6 +116,13 @@ const ExchangeVehicle = ({ showPopup, setExchangeDet }: IProps) => {
             toastError(id, 'Something went wrong')
         }
     }
+    useEffect(() => {
+        const purchaseRate = watch('purchaseRate')
+        const purchaseAmount = watch('purchaseAmount')
+        if (purchaseAmount || purchaseRate) {
+            setValue('balance', `${Number(purchaseRate ?? 0) - Number(purchaseAmount ?? 0)}`)
+        }
+    }, [watch('purchaseRate'), watch('purchaseAmount')])
     const onSalesReturn = async (data: IVehicleNewFormValues) => {
         console.log(data)
         const body = {
