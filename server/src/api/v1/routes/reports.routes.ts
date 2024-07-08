@@ -12,4 +12,5 @@ router.get('/trial-balance', reportsController.TrialBalanceReport);
 router.get('/balance-sheet', reportsController.balanceSheetReport);
 router.get('/list/dailybook-voucher', reportsController.listdailyBookVoucher);
 router.get('/list/ledgers', reportsController.listLedgers);
+router.get('/list/profit-loss', reportsController.profitAndLoss);
 export default router;

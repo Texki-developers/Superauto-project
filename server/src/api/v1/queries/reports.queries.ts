@@ -461,9 +461,132 @@ class ReportQueries {
             return balanceSheet;
       }
 
+      async profitAndLoss(){
+        const query  = `
+        WITH opening_inventory AS (
+            SELECT SUM(purchase_rate) AS opening_inventory 
+            FROM inventory 
+            WHERE date_of_purchase < '2024-06-06'
+        ),
+        closing_inventory AS (
+            SELECT SUM(purchase_rate) AS closing_inventory 
+            FROM inventory 
+            WHERE date_of_purchase > '2023-06-06'
+        ),
+        purchase AS (
+            SELECT 
+                a.account_id,
+                a.name,
+                COALESCE(SUM(CASE WHEN t.credit_account = a.account_id THEN t.amount ELSE 0 END), 0) - 
+                COALESCE(SUM(CASE WHEN t.debit_account = a.account_id THEN t.amount ELSE 0 END), 0) AS Purchase
+            FROM
+                accounts a
+            LEFT JOIN
+                transactions t ON a.account_id = t.debit_account OR a.account_id = t.credit_account
+            LEFT JOIN
+                primary_ledger p ON a.head = p.pl_id
+            WHERE
+                a.account_id = 125
+            GROUP BY
+                a.account_id, a.name
+        ),
+        direct_expense AS (
+            SELECT 
+                a.account_id,
+                a.name,
+                COALESCE(SUM(CASE WHEN t.credit_account = a.account_id THEN t.amount ELSE 0 END), 0) - 
+                COALESCE(SUM(CASE WHEN t.debit_account = a.account_id THEN t.amount ELSE 0 END), 0) AS Direct_Expense
+            FROM
+                accounts a
+            LEFT JOIN
+                transactions t ON a.account_id = t.debit_account OR a.account_id = t.credit_account
+            LEFT JOIN
+                primary_ledger p ON a.head = p.pl_id
+            WHERE
+                a.account_id = 122
+            GROUP BY
+                a.account_id, a.name
+        ),
+        sales AS (
+            SELECT 
+                a.account_id,
+                a.name,
+                COALESCE(SUM(CASE WHEN t.credit_account = a.account_id THEN t.amount ELSE 0 END), 0) - 
+                COALESCE(SUM(CASE WHEN t.debit_account = a.account_id THEN t.amount ELSE 0 END), 0) AS Sales
+            FROM
+                accounts a
+            LEFT JOIN
+                transactions t ON a.account_id = t.debit_account OR a.account_id = t.credit_account
+            LEFT JOIN
+                primary_ledger p ON a.head = p.pl_id
+            WHERE
+                a.account_id = 126
+            GROUP BY
+                a.account_id, a.name
+        )
+        
+        SELECT 
+            account_id,
+            name,
+            "Total"
+        FROM 
+            (
+                SELECT 
+                    account_id,
+                    name,
+                    Purchase AS "Total"
+                FROM 
+                    purchase 
+        
+                UNION ALL 
+        
+                SELECT 
+                    account_id,
+                    'Direct Expense' as name,
+                    Direct_Expense AS "Total"
+                FROM 
+                    direct_expense
+                UNION ALL
+        SELECT  NULL AS account_id,
+                    'To Closing Inventory' as name,
+                    closing_inventory AS "Total"
+                FROM 
+                    closing_inventory
+                UNION ALL
+        
+                SELECT 
+                    account_id,
+                    'Sales' as name,
+                    Sales AS "Total"
+                FROM 
+                    sales
+        
+                UNION ALL 
+        
+                SELECT 
+                    NULL AS account_id,
+                    'To Opening Inventory' AS name,
+                    opening_inventory AS "Total"
+                FROM 
+                    opening_inventory
+            ) AS combined_results
+        ORDER BY 
+            name;  
+        `
+        const [reportAndLoss] = await db.query(query, {
+            // replacements: { startDate, endDate  },
+            type: QueryTypes.RAW,
+          })
+          
+            return reportAndLoss;
+
+      }
+
     }      
 
 
+
+   
    
 
 export default new  ReportQueries()

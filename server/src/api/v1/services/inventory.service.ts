@@ -177,7 +177,7 @@ class InventoryService {
             ]);
 
             if (Vehicle && Vehicle.account_id && items.financerId && Vehicle.inventory_id) {
-              console.log('Entering...');
+
               transactions.push({
                 amount: items.amount,
                 credit_account: Vehicle.account_id,
@@ -205,6 +205,8 @@ class InventoryService {
           })
         );
 
+
+
         const TransactionResult = await accountsQueries.generateTransaction(transactions, {
           transaction: dbTransaction,
         });
@@ -212,6 +214,7 @@ class InventoryService {
         console.log(TransactionResult, 'Transaction Result');
 
         financerDetails.forEach((item, index) => {
+     
           financerDetails[index].transaction_id = TransactionResult[1].transaction_id;
         });
 
