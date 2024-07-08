@@ -461,14 +461,32 @@ class InventoryService {
     });
   }
 
-  listVehicleRegNumber() {
+  listVehicleRegNumber(isSold:boolean) {
     return new Promise(async (resolve, reject) => {
       try {
+
+let query = ''
+if(!isSold){
+   query = `
+  SELECT DISTINCT i.inventory_id, i.registration_number
+  FROM inventory i
+  LEFT JOIN sale_return sr ON i.inventory_id = sr.inventory_id AND sr.sale_status = false
+  WHERE i.sale_status = false 
+     OR (i.sale_status = true AND sr.inventory_id IS NOT NULL AND sr.sale_status = false);
+`;
+}else if(isSold){
+  query =  `SELECT i.inventory_id, i.registration_number FROM inventory i WHERE i.sale_status = true `
+}
+
+
+        
+
         const options: FindOptions = {
           where: {},
           raw: true,
         };
-        const vehicles = await inventoryQueries.getVehicleRegNo(options);
+
+        const vehicles = await inventoryQueries.getVehicleRegNo(options,query);
 
         return resolve(vehicles);
       } catch (err) {

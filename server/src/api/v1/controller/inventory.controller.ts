@@ -137,8 +137,12 @@ class InventoryController {
   }
 
   listVehicleRegNumber(req: Request, res: Response) {
+
+    const {isSold} = req.query
+    const fromDateStr = typeof isSold === 'string' ? isSold : '';
+
     inventoryService
-      .listVehicleRegNumber()
+      .listVehicleRegNumber(Boolean(isSold))
       .then((data: any) => {
         responseHandler(res, 'OK', data, { message: data.message });
       })
