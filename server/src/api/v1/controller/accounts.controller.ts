@@ -67,7 +67,7 @@ class AccountController {
 
   addPayment(req: Request, res: Response) {
     const { body } = req;
-
+    
     const data: IPaymentBody = {
       payment_from: body?.paymentFrom,
       payment_to: body?.paymentTo,

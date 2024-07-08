@@ -139,7 +139,7 @@ class InventoryService {
                 description: '',
               },
               {
-                amount: data.purchase_rate,
+                amount: data.purchase_amount,
                 credit_account: cashResult,
                 debit_account: data.account_id,
                 voucher_id: await getVoucher(E_VOUCHERS.Payments),
@@ -374,7 +374,7 @@ class InventoryService {
               transaction_date: data.sales_date,
             },
             {
-              amount: data.sales_rate,
+              amount: data.rate,
               credit_account: data.account_id,
               debit_account: cashId,
               voucher_id: await getVoucher(E_VOUCHERS.Sale),
@@ -643,7 +643,7 @@ class InventoryService {
                   transaction_date: data.date_of_purchase,
                 },
                 {
-                  amount: data.purchase_rate,
+                  amount: data.purchase_amount,
                   credit_account: cashResult,
                   debit_account: data.account_id,
                   voucher_id: paymentVoucher,
