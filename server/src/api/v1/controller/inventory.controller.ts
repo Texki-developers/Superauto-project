@@ -34,8 +34,8 @@ class InventoryController {
       isNew: body.isNew,
       is_delivery: body.isDelivery,
       party_phone_number:body.partyPhoneNumber,
-      delivery_service_phone_number:body.deliveryServicePhoneNumber,
       party_name:body.partyName,
+      delivery_service_phone_number:body.deliveryServicePhoneNumber,
       delivery_name:body.deliveryName
         };
 
@@ -66,6 +66,8 @@ class InventoryController {
       amount: body.amount,
       due_date: body.due_date,
       exchange_vehicle_id: body.exchangeVehicleId,
+      customerPhoneNumber:body.partyPhoneNumber,
+      customerName:body.partyName,
     };
 
     inventoryService

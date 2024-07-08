@@ -52,7 +52,7 @@ class InventoryService {
           if (data.party_name) {
             const newAccountResult = await accountsService.accountHelper(
               { party_name: data.party_name, party_phone_number: data.party_phone_number },
-              'CUSTOMER'
+              'BROKER'
             );
             data.account_id = newAccountResult.account_id;
           }
@@ -351,6 +351,16 @@ class InventoryService {
         const salesId = await accountsQueries.findAccount(E_LEDGERS_BASIC.SALE);
         const cashId = await accountsQueries.findAccount(E_LEDGERS_BASIC.CASH);
 
+        if (data.customerPhoneNumber && data?.customerPhoneNumber?.length > 0) {
+          if (data.customerName) {
+            const newAccountResult = await accountsService.accountHelper(
+              { party_name: data.customerName, party_phone_number: data.customerPhoneNumber },
+              'CUSTOMER'
+            );
+            data.account_id = newAccountResult.account_id;
+          }
+        }
+        
         let transactions: ITransactionParams[] = [];
 
         if (salesId && cashId) {
@@ -375,7 +385,9 @@ class InventoryService {
         }
 
         await accountsQueries.generateTransaction(transactions, { transaction: dbTransaction });
-        await inventoryQueries.changeStatusOfVehicle(data.sold_vehicle_id,data.sales_rate, { transaction: dbTransaction });
+        await inventoryQueries.changeStatusOfVehicle(data.sold_vehicle_id, data.sales_rate, {
+          transaction: dbTransaction,
+        });
         const salesData = {
           account_id: data.account_id,
           sold_date: data.sales_date,
@@ -415,6 +427,9 @@ class InventoryService {
     return new Promise(async (resolve, reject) => {
       try {
         const options: FindOptions = {
+          where: {
+            sale_status: false,
+          },
           include: [
             {
               model: Accounts,
@@ -431,7 +446,9 @@ class InventoryService {
             'date_of_purchase',
             'registration_number',
             'rc_book',
-            'insurance_doc','proof_doc'          ],
+            'insurance_doc',
+            'proof_doc',
+          ],
           limit: perPage,
           offset: (page - 1) * perPage,
         };
@@ -449,10 +466,10 @@ class InventoryService {
       try {
         const options: FindOptions = {
           where: {},
-          raw: true,         
+          raw: true,
         };
         const vehicles = await inventoryQueries.getVehicleRegNo(options);
-  
+
         return resolve(vehicles);
       } catch (err) {
         reject({ message: `Failed to List vehicles: ${err}` });
@@ -471,21 +488,21 @@ class InventoryService {
         const allowedExtension = ['pdf', 'jpg', 'jpeg', 'png'];
         const fileType = 'doc';
         let addInventoryresult;
-        let SaleReturnResult
+        let SaleReturnResult;
         console.log(data.is_sales_return, 'SALES RETURN');
         if (data.is_sales_return) {
           console.log('entering.... sales return', data);
           const generatedTransaction: ITransactionParams[] = [];
-          SaleReturnResult =  await inventoryQueries.addDataInToSalesReturn(
+          SaleReturnResult = await inventoryQueries.addDataInToSalesReturn(
             {
               inventory_id: data.inventory_id,
               sale_status: false,
               purchase_rate: data.purchase_rate,
               date_of_purchase: data.date_of_purchase,
             },
-            { transaction: dbTransaction, }
+            { transaction: dbTransaction }
           );
-          console.log(SaleReturnResult,"RESULTTT")
+          console.log(SaleReturnResult, 'RESULTTT');
           if (purchaseResult && cashResult) {
             generatedTransaction.push(
               {
@@ -512,7 +529,7 @@ class InventoryService {
           });
 
           await performTransaction(dbTransaction);
-          return resolve({ message: 'exchanged sales return Vehicle' ,data:SaleReturnResult});
+          return resolve({ message: 'exchanged sales return Vehicle', data: SaleReturnResult });
         } else {
           const docs = [data.rc_book, data.proof_doc, data.insurance_doc];
           console.log(docs, 'THE DC');
@@ -566,7 +583,7 @@ class InventoryService {
               transaction: dbTransaction,
             });
 
-            console.log(addInventoryresult,"RESULTTT")
+            console.log(addInventoryresult, 'RESULTTT');
 
             if (data.is_delivery) {
               const directExpense = await accountsQueries.findAccount(E_LEDGERS_BASIC.DIRECT_EXPENSE);
@@ -638,7 +655,6 @@ class InventoryService {
             await performTransaction(dbTransaction);
           }
 
-       
           return resolve({ message: 'Vehicle Added Successfully for exchange', data: addInventoryresult });
         }
       } catch (error) {
