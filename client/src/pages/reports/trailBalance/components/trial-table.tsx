@@ -1,5 +1,6 @@
 import { IFormatedData } from '../../../../types/trialBalance/trialBalance'
 import './style.scss'
+import { v4 as uuidv4 } from 'uuid';
 
 interface IProps {
     data: IFormatedData | null
@@ -31,7 +32,7 @@ const TrialTable = ({ data }: IProps) => {
                             </ul>
                             {
                                 data?.asset?.children?.map((item) => (
-                                    <ul className="child-tr">
+                                    <ul key={uuidv4()} className="child-tr">
                                         <li>{item?.ledger}</li>
                                         <li>{item?.total_debit}</li>
                                         <li>{item?.total_credit}</li>
@@ -49,7 +50,7 @@ const TrialTable = ({ data }: IProps) => {
                             </ul>
                             {
                                 data?.liability?.children?.map((item) => (
-                                    <ul className="child-tr">
+                                    <ul key={uuidv4()} className="child-tr">
                                         <li>{item?.ledger}</li>
                                         <li>{item?.total_debit}</li>
                                         <li>{item?.total_credit}</li>
