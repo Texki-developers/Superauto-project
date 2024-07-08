@@ -430,7 +430,8 @@ class InventoryService {
             'insurance_date',
             'date_of_purchase',
             'registration_number',
-          ],
+            'rc_book',
+            'insurance_doc','proof_doc'          ],
           limit: perPage,
           offset: (page - 1) * perPage,
         };

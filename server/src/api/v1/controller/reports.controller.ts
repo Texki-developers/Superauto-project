@@ -81,13 +81,13 @@ class ReportsController {
 
 
   TrialBalanceReport(req: Request, res: Response) {
-    const { ledger, fromDate, toDate } = req.query;
+    const { fromDate, toDate } = req.query;
 
-    const ledgerStr = typeof ledger === 'string' ? ledger : '';
+
     const fromDateStr = typeof fromDate === 'string' ? fromDate : '';
     const toDateStr = typeof toDate === 'string' ? toDate : '';
     reportsService
-      .trialBalanceReport()
+      .trialBalanceReport(fromDateStr,toDateStr)
       .then((data: any) => {
         responseHandler(res, 'OK', data, { message: data.message });
       })

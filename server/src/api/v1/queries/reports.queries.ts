@@ -330,14 +330,101 @@ class ReportQueries {
             COALESCE(Date, '1900-01-01'), VoucherID;  
       `;
       
-      const [ledgerWithBalanceResult] = await db.query(ledgerQuery, {
+      const [cashbookReport] = await db.query(ledgerQuery, {
         replacements: { startDate, endDate,accountId  },
         type: QueryTypes.RAW,
       })
       
-        return ledgerWithBalanceResult;
+        return cashbookReport;
       }
+
+      async trialBalanceReport (startDate:string,endDate:string){
+            const trialBalancequery = `
+            WITH account_balances AS (
+                SELECT
+                    a.account_id,
+                    a.name AS account_name,
+                    pl.type AS account_type,
+                    pl.ledger_name AS category,
+                    COALESCE(SUM(CASE WHEN t.debit_account = a.account_id THEN t.amount ELSE 0 END), 0) AS total_debits,
+                    COALESCE(SUM(CASE WHEN t.credit_account = a.account_id THEN t.amount ELSE 0 END), 0) AS total_credits
+                FROM
+                    accounts a
+                LEFT JOIN
+                    transactions t ON a.account_id = t.debit_account OR a.account_id = t.credit_account
+                LEFT JOIN
+                    primary_ledger pl ON a.head = pl.pl_id
+                WHERE
+                    t.transaction_date >= :startDate -- Replace with your fromdate parameter
+                    AND t.transaction_date <= :endDate -- Replace with your enddate parameter
+                GROUP BY
+                    a.account_id, a.name, pl.type, pl.ledger_name
+            ),
+            categorized_balances AS (
+                SELECT
+                    CASE
+                        WHEN account_type = 'asset' THEN 'Current Assets'
+                        WHEN account_type = 'liability' THEN 'Current Liabilities'
+                        WHEN account_type = 'equity' THEN 'Equity'
+                        WHEN account_type = 'expense' THEN 'Expenses'
+                        WHEN account_type = 'revenue' THEN 'Revenue'
+                        ELSE 'Others'
+                    END AS account_group,
+                    category,
+                    SUM(total_debits) AS debit_amount,
+                    SUM(total_credits) AS credit_amount
+                FROM
+                    account_balances
+                GROUP BY
+                    account_group, category
+            ),
+            grouped_balances AS (
+                SELECT
+                    account_group,
+                    category,
+                    NULL AS account_name, -- Placeholder for detailed rows
+                    debit_amount,
+                    credit_amount
+                FROM
+                    categorized_balances
+            
+                UNION ALL
+            
+                SELECT
+                    'Total ' || category AS account_group,
+                    category,
+                    'Total ' || category AS account_name,
+                    SUM(debit_amount) AS debit_amount,
+                    SUM(credit_amount) AS credit_amount
+                FROM
+                    categorized_balances
+                GROUP BY
+                    category
+            )
+            SELECT
+                account_group,
+                category,
+                debit_amount,
+                credit_amount
+            FROM
+                grouped_balances
+            ORDER BY
+                CASE WHEN account_group LIKE 'Total%' THEN 2 ELSE 1 END,
+                account_group,
+                category;
+            `
+
+            const [trialBalance] = await db.query(trialBalancequery, {
+                replacements: { startDate, endDate  },
+                type: QueryTypes.RAW,
+              })
+              
+                return trialBalance;
+      }
+
     }      
 
+
+   
 
 export default new  ReportQueries()
