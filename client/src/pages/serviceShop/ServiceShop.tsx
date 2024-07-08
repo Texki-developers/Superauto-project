@@ -58,7 +58,7 @@ const ServiceShop = () => {
       ...ColumnData,
       {
         name: 'Action',
-        key: 'id',
+        key: 'account_id',
         columnData: (id: string) => (
           <div className='flex gap-2 *:h-[20px] *:w-[20px]'>
             <img

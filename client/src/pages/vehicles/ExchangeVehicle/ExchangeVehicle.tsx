@@ -116,6 +116,7 @@ const ExchangeVehicle = ({ showPopup, setExchangeDet }: IProps) => {
         }
     }
     const onSalesReturn = async (data: IVehicleNewFormValues) => {
+        console.log(data)
         const body = {
             registrationNumber: data?.registrationNumber?.value,
             dateOfPurchase: data?.purchaseDate,
