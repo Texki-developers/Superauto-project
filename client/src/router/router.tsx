@@ -3,9 +3,11 @@ import ErrorPage from './not-found';
 import DashboardLayout from '../layouts/dashboardLayout/DashboardLayout';
 import { ISidebarItem } from '../types/sidebar/sidebar';
 import sidebarData from '../config/sidebar.data';
+import LoginPage from '../pages/login/Login';
 
 const generateRoutes = (sidebarItems: ISidebarItem[]) => {
   return sidebarItems.map((item) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const data: any = {
       path: item.url,
       element: item?.element,
@@ -28,6 +30,11 @@ export const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: generateRoutes(sidebarData),
   },
+  {
+    path: '/login',
+    element: <LoginPage />,
+    errorElement: <ErrorPage />
+  }
 ]);
 // import { createBrowserRouter } from 'react-router-dom';
 // import ErrorPage from './not-found';

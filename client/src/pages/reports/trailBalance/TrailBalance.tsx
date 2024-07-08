@@ -17,7 +17,6 @@ const TrailBalance = () => {
     const [, setSearchParams] = useSearchParams();
     const [fromDate, setFromDate] = useState(moment('2024-04-01').format('YYYY-MM-DD'));
     const [toDate, setToDate] = useState(moment().format('YYYY-MM-DD'));
-    const url = `reports/trial-balance?fromDate=${fromDate}&toDate=${toDate}`
     const handleDateFromChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newFromDate = moment(event.target.value).format('YYYY-MM-DD');
         setFromDate(newFromDate);
@@ -34,6 +33,7 @@ const TrailBalance = () => {
             return prevParams;
         });
     }, [fromDate, toDate, setSearchParams]);
+    const url = `reports/trial-balance?fromDate=${fromDate}&toDate=${toDate}`
     const { data, isPending } = useQueryGetApi(url)
     return (
         <>

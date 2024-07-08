@@ -1,6 +1,7 @@
 import './style.scss'
 
 interface IProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any
 }
 const TrialTable = ({ data }: IProps) => {
