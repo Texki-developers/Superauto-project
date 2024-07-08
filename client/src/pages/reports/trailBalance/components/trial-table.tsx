@@ -1,8 +1,9 @@
+import { IFormatedData } from '../../../../types/trialBalance/trialBalance'
 import './style.scss'
+import { v4 as uuidv4 } from 'uuid';
 
 interface IProps {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data: any
+    data: IFormatedData | null
 }
 const TrialTable = ({ data }: IProps) => {
     console.log(data)
@@ -19,40 +20,75 @@ const TrialTable = ({ data }: IProps) => {
                 <div className='grid gap-[5px]'>
                     <ul className="table-tr">
                         <li>Capital Account</li>
-                        <li>1000</li>
-                        <li>100</li>
+                        <li>0</li>
+                        <li>0</li>
                     </ul>
-                    <ul className="child-tr">
-                        <li>
-                            Capital Account
-                        </li>
-                        <li>1000</li>
-                        <li>100</li>
-                    </ul>
-                    <ul className="child-tr">
-                        <li>
-                            Capital Account
-                        </li>
-                        <li>1000</li>
-                        <li>100</li>
-                    </ul>
-                    <ul className="child-tr">
-                        <li>
-                            Capital Account
-                        </li>
-                        <li>1000</li>
-                        <li>100</li>
-                    </ul>
-                    <ul className="table-tr">
-                        <li>Capital Account</li>
-                        <li>1000</li>
-                        <li>100</li>
-                    </ul>
-                    <ul className="table-tr">
-                        <li>Capital Account</li>
-                        <li>1000</li>
-                        <li>100</li>
-                    </ul>
+                    {data?.asset &&
+                        <>
+                            <ul className="table-tr">
+                                <li>Current Assets</li>
+                                <li>{data?.asset?.total_debit}</li>
+                                <li>{data?.asset?.total_credit}</li>
+                            </ul>
+                            {
+                                data?.asset?.children?.map((item) => (
+                                    <ul key={uuidv4()} className="child-tr">
+                                        <li>{item?.ledger}</li>
+                                        <li>{item?.total_debit}</li>
+                                        <li>{item?.total_credit}</li>
+                                    </ul>
+                                ))
+                            }
+                        </>
+                    }
+                    {data?.liability &&
+                        <>
+                            <ul className="table-tr">
+                                <li>Current Liabilities</li>
+                                <li>{data?.liability?.total_debit}</li>
+                                <li>{data?.liability?.total_credit}</li>
+                            </ul>
+                            {
+                                data?.liability?.children?.map((item) => (
+                                    <ul key={uuidv4()} className="child-tr">
+                                        <li>{item?.ledger}</li>
+                                        <li>{item?.total_debit}</li>
+                                        <li>{item?.total_credit}</li>
+                                    </ul>
+                                ))
+                            }
+                        </>
+                    }
+                    {
+                        data?.Purchase &&
+                        <>
+                            <ul className="table-tr">
+                                <li>Purchase</li>
+                                <li>{data?.Purchase?.total_debit}</li>
+                                <li>{data?.Purchase?.total_credit}</li>
+                            </ul>
+                            <ul className="child-tr">
+                                <li>{data?.Purchase?.ledger}</li>
+                                <li>{data?.Purchase?.total_debit}</li>
+                                <li>{data?.Purchase?.total_credit}</li>
+                            </ul>
+                        </>
+                    }
+                    {
+                        data?.Sales &&
+                        <>
+                            <ul className="table-tr">
+                                <li>Sales</li>
+                                <li>{data?.Sales?.total_debit}</li>
+                                <li>{data?.Sales?.total_credit}</li>
+                            </ul>
+                            <ul className="child-tr">
+                                <li>{data?.Sales?.ledger}</li>
+                                <li>{data?.Sales?.total_debit}</li>
+                                <li>{data?.Sales?.total_credit}</li>
+                            </ul>
+                        </>
+                    }
                 </div>
             </div>
             <footer className='border-t border-gray-200 grid items-center px-4'>

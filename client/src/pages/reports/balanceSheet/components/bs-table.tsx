@@ -1,8 +1,16 @@
+import { IFormattedBalanceSheet } from '../../../../types/balanceSheet/balanceSheet'
 import './style.scss'
+import { v4 as uuidv4 } from 'uuid';
 
 interface IProps {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data: any
+    data: IFormattedBalanceSheet | null
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const keys: any = {
+    'Cash': 'Cash In Hand',
+    'Bank': 'Bank Accounts',
+    'Purchase': 'Inventory',
 }
 const BalanceSheetTable = ({ data }: IProps) => {
     console.log(data)
@@ -20,41 +28,33 @@ const BalanceSheetTable = ({ data }: IProps) => {
                 <aside className="border-r-2 border-gray-300">
                     <div>
                         <div className="title">
-                            <h4  >Current Assets</h4>
+                            <h4>Current Assets</h4>
                         </div>
-                        <Items amountColor='text-black-300' keyItem='Cash In Hand' value='1000' type='first-level' />
-                        <Items amountColor='text-primary-300' keyItem='Cash In Hand' value='1000' type='second-level' />
-                        <Items amountColor='text-failureRed' keyItem='Cash In Hand' value='-1000' type='first-level' />
+                        {
+                            data?.asset?.children?.map((item) => (
+                                <Items type='first-level' value={item?.balance} key={uuidv4()} keyItem={keys[item?.ledger] ?? item?.ledger} />
+                            ))
+                        }
                         <div className="total">
                             <h4 className="text-md font-semibold">Total Current Assets</h4>
-                            <h4 className="text-md font-semibold">₹40000</h4>
+                            <h4 className="text-md font-semibold">₹{data?.asset?.balance}</h4>
                         </div>
                     </div>
-                    <div>
-                        <div className="title">
-                            <h4  >Current Assets</h4>
-                        </div>
-                        <Items amountColor='text-black-300' keyItem='Cash In Hand' value='1000' type='first-level' />
-                        <Items amountColor='text-primary-300' keyItem='Cash In Hand' value='1000' type='first-level' />
-                        <Items amountColor='text-failureRed' keyItem='Cash In Hand' value='-1000' type='second-level' />
-                        <div className="total">
-                            <h4 className="text-md font-semibold">Total Current Assets</h4>
-                            <h4 className="text-md font-semibold">₹40000</h4>
-                        </div>
-                    </div>
+
                 </aside>
                 <aside>
                     <div>
                         <div className="title">
-                            <h4  >Current Assets</h4>
+                            <h4  >Current Liabilities</h4>
                         </div>
-                        <Items amountColor='text-black-300' keyItem='Cash In Hand' value='1000' type='first-level' />
-                        <Items amountColor='text-primary-300' keyItem='Cash In Hand' value='1000' type='second-level' />
-                        <Items amountColor='text-primary-300' keyItem='Cash In Hand' value='1000' type='second-level' />
-                        <Items amountColor='text-failureRed' keyItem='Cash In Hand' value='-1000' type='second-level' />
+                        {
+                            data?.liability?.children?.map((item) => (
+                                <Items type='first-level' value={item?.balance} key={uuidv4()} keyItem={keys[item?.ledger] ?? item?.ledger} />
+                            ))
+                        }
                         <div className="total">
                             <h4 className="text-md font-semibold">Total Current Assets</h4>
-                            <h4 className="text-md font-semibold">₹40000</h4>
+                            <h4 className="text-md font-semibold">₹{data?.liability?.balance}</h4>
                         </div>
                     </div>
                 </aside>
@@ -62,11 +62,11 @@ const BalanceSheetTable = ({ data }: IProps) => {
             <footer className="text-md  grid grid-cols-2 border-t-2 border-gray-300">
                 <div className=" px-3 flex items-center justify-between border-r-2 border-gray-300">
                     <h4 className="text-md font-semibold">TOTAL ASSETS</h4>
-                    <h4 className="text-md font-semibold">₹40000</h4>
+                    <h4 className="text-md font-semibold">₹{data?.asset?.balance}</h4>
                 </div>
                 <div className="px-3  flex items-center justify-between ">
                     <h4 className="text-md font-semibold">TOTAL LIABIILITIES & EQUITY</h4>
-                    <h4 className="text-md font-semibold">₹40000</h4>
+                    <h4 className="text-md font-semibold">₹{data?.liability?.balance}</h4>
                 </div>
             </footer>
         </div>
@@ -76,10 +76,10 @@ const BalanceSheetTable = ({ data }: IProps) => {
 export default BalanceSheetTable
 
 interface IItems {
-    type: string;
+    type: 'first-level' | 'second-level';
     value: string;
     keyItem: string;
-    amountColor: string;
+    amountColor?: string;
 }
 const Items = ({ type, value, keyItem, amountColor }: IItems) => {
     return (
