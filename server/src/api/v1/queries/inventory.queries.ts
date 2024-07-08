@@ -15,6 +15,7 @@ import {
   ITransactionParams,
 } from '../../../types/db.type';
 import SaleReturn from '../../../models/salesReturn';
+import { db } from '../../../config/database';
 
 class InventoryQueries {
   async addVehicle(data: IInventoryAttributes, options?: any): Promise<IInventoryAttributes> {
@@ -104,6 +105,20 @@ class InventoryQueries {
     return result;
   }
 
+  async getVehicleRegNo(options: FindOptions) {
+    const query = `
+    SELECT DISTINCT i.inventory_id, i.registration_number
+    FROM inventory i
+    LEFT JOIN sale_return sr ON i.inventory_id = sr.inventory_id AND sr.sale_status = false
+    WHERE i.sale_status = false 
+       OR (i.sale_status = true AND sr.inventory_id IS NOT NULL AND sr.sale_status = false);
+`;
+
+    // Set the `replacements` property to include a custom SQL query and options.
+    const [vehicles] = await db.query(query, options);
+    console.log(vehicles)
+    return vehicles
+  }
   async addDataInToSalesReturn(data: any, options?: any) {
     return await SaleReturn.create(data, options);
   }
@@ -114,6 +129,10 @@ class InventoryQueries {
         exclude: ['createdAt', 'updatedAt'],
       },
     });
+  }
+
+  async getSalesReturn(options: FindOptions) {
+    return await SaleReturn.findAll(options);
   }
 
   async getVehiclebyId(inventory_id: number) {
