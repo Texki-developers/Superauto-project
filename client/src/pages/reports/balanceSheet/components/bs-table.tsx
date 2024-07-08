@@ -1,13 +1,18 @@
 import './style.scss'
 
-const BalanceSheetTable = () => {
+interface IProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data: any
+}
+const BalanceSheetTable = ({ data }: IProps) => {
+    console.log(data)
     return (
         <div className="w-full border-2 border-gray-300 h-full rounded-lg bg-white-100 grid grid-rows-[80px_1fr_80px]">
             <header className="border-b-2 border-gray-300 grid grid-cols-2">
                 <div className="border-r-2 border-gray-300 grid place-items-center">
                     <h3 className="text-lg font-bold">Assets</h3>
                 </div>
-                <div className="border-r-2 border-gray-300 grid place-items-center">
+                <div className=" grid place-items-center">
                     <h3 className="text-lg font-bold">LIABILITIES & EQUITY</h3>
                 </div>
             </header>
@@ -38,7 +43,7 @@ const BalanceSheetTable = () => {
                         </div>
                     </div>
                 </aside>
-                <aside className="border-r-2 border-gray-300">
+                <aside>
                     <div>
                         <div className="title">
                             <h4  >Current Assets</h4>
