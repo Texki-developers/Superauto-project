@@ -11,6 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import Loading from '../../../components/loading/Loading';
 import { ColumnData } from './ledger.data';
 
+
 const breadCrumbData = [
     { name: 'Dashboard', link: '/' },
     { name: 'All Reports' },
@@ -19,6 +20,11 @@ const breadCrumbData = [
 
 const Ledger = () => {
     const [searchParams, setSearchParams] = useSearchParams();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [tableData, setTableData] = useState<any>()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [lastItem, setLastItem] = useState<any>()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [fromDate, setFromDate] = useState(moment('2024-04-01').format('YYYY-MM-DD'));
     const [toDate, setToDate] = useState(moment().format('YYYY-MM-DD'));
 
@@ -57,6 +63,40 @@ const Ledger = () => {
         });
     }, [fromDate, toDate, setSearchParams]);
 
+
+
+    useEffect(() => {
+        if (data) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const notLastItem = data?.data?.filter((_item: any, i: number) => {
+                return i !== data?.data.length - 1
+            })
+            setTableData(notLastItem)
+
+            if (data?.data.length > 0) {
+                setLastItem(data?.data[data?.data.length - 1])
+            }
+        }
+    }, [data])
+
+    const FooterResult = () => {
+        return (
+            <>
+                {
+                    lastItem &&
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td className='font-semibold text-sm'>{lastItem?.description}</td>
+                        <td className='font-semibold text-sm'>{lastItem?.debit}</td>
+                        <td className='font-semibold text-sm'>{lastItem?.credit}</td>
+                        <td className='font-semibold text-sm'>{lastItem?.closingbalance}</td>
+                    </tr>
+                }
+            </>
+        )
+    }
+
     return (
         <>
             {isPending && <Loading />}
@@ -86,7 +126,7 @@ const Ledger = () => {
                     />
                 </div>
                 <section className="pt-5 pb-2">
-                    <Table data={data?.data} columnData={ColumnData} hideFooter />
+                    <Table balanceFooterComponent={<FooterResult />} data={tableData} showFooterBalance columnData={ColumnData} hideFooter />
                 </section>
             </main>
         </>

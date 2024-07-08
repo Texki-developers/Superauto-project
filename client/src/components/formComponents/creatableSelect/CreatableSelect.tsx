@@ -18,6 +18,8 @@ interface ISelectInputProps {
     name?: string;
     isDisabled?: boolean;
     isSearchable?: boolean;
+    labelName?: string;
+    valueName?: string;
     isLoading?: boolean;
     control: any
     error: any
@@ -49,6 +51,8 @@ export default function CreateSelectInput(props: ISelectInputProps) {
                             value={props?.value}
                             {...field}
                             isLoading={props?.isLoading}
+                            getOptionLabel={(data) => { return props?.labelName ? data[props?.labelName] : data?.label }}
+                            getOptionValue={(data) => { return props?.valueName ? data[props?.valueName] : data?.value }}
                             onChange={(value) => {
                                 field.onChange(value)
                                 if (value?.__isNew__) {
