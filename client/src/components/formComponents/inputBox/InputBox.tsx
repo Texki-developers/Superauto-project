@@ -22,6 +22,7 @@ const InputBox = (props: IInputProps) => {
         placeholder={props?.placeholder}
         className='input-normal w-full '
         type={props?.type ?? 'text'}
+        autoComplete={false}
         value={props.value}
         name={props?.name}
         disabled={props?.isDisabled}
@@ -30,7 +31,7 @@ const InputBox = (props: IInputProps) => {
         aria-invalid={props.error?.[props.name ?? ''] ? "true" : "false"}
       />
       <div className="h-3">
-        {props.error?.[props?.name ?? ''] && <p role="alert" className="absolute top-16 text-xs text-red-500">{props.error?.[props.name]?.message}</p>}
+        {props.error?.[props?.name ?? ''] && <p role="alert" className="absolute top-16 !text-xs text-red-500">{props.error?.[props.name]?.message}</p>}
       </div>
     </div>
   );
