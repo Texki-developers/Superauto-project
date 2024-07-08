@@ -75,6 +75,7 @@ const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
     formData.append('brandModel_id', 'null'); // You can update this value as needed
     formData.append('yearOfManufacture', data.yearOfManufacture);
     formData.append('purchaseRate', data.purchaseRate);
+    formData.append('purchaseAmount', data.purchaseAmount);
     formData.append('saleStatus', 'false');
     formData.append('insuranceDate', data.insuranceDate);
     formData.append(data?.deliveryService.__isNew__ ? 'deliveryName' : 'deliveryService', data.deliveryService.value);
