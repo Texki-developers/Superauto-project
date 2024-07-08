@@ -52,7 +52,6 @@ const Table = (props: ITableProps) => {
   }, [props?.data, props?.columnData, props?.balanceFooterComponent])
 
   const handlePageClick = (event: { selected: number }) => {
-    console.log(event);
     if (event.selected === 0) {
       searchParams.set('page', '1');
       setSearchParams(searchParams);
