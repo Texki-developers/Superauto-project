@@ -66,7 +66,9 @@ const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
       is_exchange: !!exchangeDet,
       rate: Number(data?.rate),
       amount: Number(data?.paymentAmount),
-      due_date: data?.dueDate
+      due_date: data?.dueDate,
+      finance_charge: Number(data?.financeServiceCharge),
+      finance_amount: Number(data?.financeAmount),
     };
     if (data?.customer?.__isNew__) {
       apiBody['customerPhoneNumber'] = data?.customerPhoneNumber

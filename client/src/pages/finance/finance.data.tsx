@@ -17,7 +17,7 @@ export const ColumnData = [
     name: 'Date',
     key: 'createdAt',
     columnData: (item: string) => {
-      return <p>{moment(item).format('YYYY-MM-DD')}</p>
+      return <p>{ item && moment(item).format('YYYY-MM-DD')}</p>
     }
   },
 ];

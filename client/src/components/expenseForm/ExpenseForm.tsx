@@ -7,19 +7,22 @@ import SelectInput from "../formComponents/selectInput/SelectInput";
 import AuthApiService from "../../services/api-services";
 import { IExpenseFormData } from "../../types/expenseForm/expenseForm";
 import useToast from "../../hooks/useToast.hook";
+import useGetDropdownData from "../../hooks/useGetDropdownData.hook";
 
 interface IProps {
     setShow: React.Dispatch<SetStateAction<string>>
 }
 
 
+const defaultValues: IExpenseFormData = {
+    expenseTo: '14', // Assuming the value '14' corresponds to one of the options
+    description: "This is description",
+    date: "2024-07-03T01:25:38.835Z",
+    amount: 1000
+};
 const ExpenseForm = ({ setShow }: IProps) => {
-    const defaultValues: IExpenseFormData = {
-        expenseTo: '14', // Assuming the value '14' corresponds to one of the options
-        description: "This is description",
-        date: "2024-07-03T01:25:38.835Z",
-        amount: 1000
-    };
+    const { data } = useGetDropdownData(null, 'accounts/list/getAllAccounts')
+    console.log(data)
 
     const { register, handleSubmit, control, formState: { errors } } = useForm<IExpenseFormData>({
         defaultValues

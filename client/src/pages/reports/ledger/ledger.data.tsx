@@ -4,7 +4,7 @@ import { ITableColumn } from '../../../types/table/table';
 export const ColumnData: ITableColumn[] = [
   {
     name: 'Date', key: 'date', columnData: (item: string) => {
-      return <p>{moment(item).format('YYYY-MM-DD')}</p>
+      return <p>{item && moment(item).format('YYYY-MM-DD')}</p>
     }
   },
   {
