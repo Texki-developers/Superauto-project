@@ -70,6 +70,8 @@ interface IsellVehicleBody {
     exchange_vehicle_id?:number
     rate: string;
     amount: number;
+    customerName:string;
+    customerPhoneNumber:string;
     due_date: Date;
 
 }
