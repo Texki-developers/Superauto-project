@@ -26,7 +26,18 @@ interface ISelectInputProps {
 }
 
 export default function CreateSelectInput(props: ISelectInputProps) {
-
+    const customStyles = {
+        menu: (provided: any) => ({
+            ...provided,
+            maxHeight: '150px',
+            zIndex: 999
+        }),
+        menuList: (provided: any) => ({
+            ...provided,
+            maxHeight: 150, // or '150px'
+            zIndex: 999
+        }),
+    };
     return (
         <div className='grid gap-1 w-full relative'>
             {!props?.hideLabel && (
@@ -61,6 +72,7 @@ export default function CreateSelectInput(props: ISelectInputProps) {
                                     props?.setIsNew && props.setIsNew(false)
                                 }
                             }}
+                            styles={customStyles}
                             options={props?.options}
                             aria-invalid={props?.error?.[props?.name ?? ''] ? "true" : "false"}
                         />

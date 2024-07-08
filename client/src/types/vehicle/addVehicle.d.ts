@@ -17,7 +17,7 @@
 //   deliveryAmount: string;
 // }
 
-interface DataItem {
+export interface DataItem {
   value: string;
   label: string;
   __isNew__?: boolean;

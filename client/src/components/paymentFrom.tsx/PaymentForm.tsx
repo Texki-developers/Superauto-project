@@ -5,34 +5,55 @@ import SaveCancelButtons from "../save-cancel-buttons/SaveCancelButtons"
 import CreateSelectInput from "../formComponents/creatableSelect/CreatableSelect";
 import { SetStateAction, useState } from "react";
 import SelectInput from "../formComponents/selectInput/SelectInput";
+import { IFormData, IPaymentBodyData, IPaymentResData } from "../../types/paymentForm/paymentForm";
+import { paymentTypesWithName } from "../../config/paymentTypes.data";
+import useGetDropdownData from "../../hooks/useGetDropdownData.hook";
+import useToast from "../../hooks/useToast.hook";
+import AuthApiService from "../../services/api-services";
 
 interface IProps {
     setShow: React.Dispatch<SetStateAction<string>>
 }
 
+const defaultValues: IFormData = {
+    paymentTo: {},
+    paymentFrom: {},
+    phoneNumber: '',
+    description: '',
+    date: '',
+    amount: null,
+};
+
 const PaymentForm = ({ setShow }: IProps) => {
     const [isNew, setIsNew] = useState<boolean>(false)
-    const { register, handleSubmit, control, formState: { errors } } = useForm();
+    const { register, handleSubmit, control, formState: { errors } } = useForm({ defaultValues });
+    const { data, isPending } = useGetDropdownData(null, 'accounts/list/getAllAccounts')
     const onClose = () => {
         setShow('')
     }
-    const onSubmit = (data: any) => {
-        console.log(data);
-    }
-    const options = [
-        {
-            value: 'Cash',
-            label: 'Cash'
-        },
-        {
-            value: 'Credit Card',
-            label: 'Credit Card'
-        },
-        {
-            value: 'Bank Transfer',
-            label: 'Bank Transfer'
+    const { toastError, toastLoading, toastSuccess } = useToast()
+    const onSubmit = async (data: IFormData) => {
+        const body = {
+            "paymentFrom": data?.paymentFrom?.value,
+            "paymentTo": Number(data?.paymentTo?.account_id),
+            "description": data?.description,
+            "date": data?.date,
+            "amount": Number(data?.amount)
         }
-    ]
+        const id = toastLoading('Loading...')
+        try {
+            const data = await AuthApiService.postApi<IPaymentBodyData, IPaymentResData>('accounts/book/payment', body);
+            if (data?.status === 'error') {
+                toastError(id, data?.message)
+                setShow("")
+                return
+            }
+            toastSuccess(id, "Payment Added successfully")
+            setShow("")
+        } catch (error) {
+            toastError(id, "Something went wrong")
+        }
+    }
     return (
         <ModalWrapper onClose={onClose} title="Add Payment">
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -41,8 +62,11 @@ const PaymentForm = ({ setShow }: IProps) => {
                         label='Payment To'
                         required
                         control={control}
-                        options={options}
                         placeholder='Payee'
+                        options={data?.data}
+                        labelName="name"
+                        isLoading={isPending}
+                        valueName="account_id"
                         error={errors}
                         setIsNew={setIsNew}
                         name='paymentTo'
@@ -50,7 +74,7 @@ const PaymentForm = ({ setShow }: IProps) => {
                     <SelectInput
                         label='Payment From'
                         required
-                        options={options}
+                        options={paymentTypesWithName}
                         control={control}
                         placeholder='Payment From'
                         error={errors}
