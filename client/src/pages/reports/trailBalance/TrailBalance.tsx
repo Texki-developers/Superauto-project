@@ -102,7 +102,7 @@ const TrailBalance = () => {
                     />
                 </div>
                 <section className='pt-5 pb-2'>
-                    <TrialTable data={formatedData} />
+                    <TrialTable total={data?.total} data={formatedData} />
                 </section>
             </main>
         </>

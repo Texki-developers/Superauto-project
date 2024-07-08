@@ -11,6 +11,7 @@ const keys: any = {
     'Cash': 'Cash In Hand',
     'Bank': 'Bank Accounts',
     'Purchase': 'Inventory',
+    'Capital A/C': 'Capital Stock',
 }
 const BalanceSheetTable = ({ data }: IProps) => {
     console.log(data)
@@ -53,8 +54,22 @@ const BalanceSheetTable = ({ data }: IProps) => {
                             ))
                         }
                         <div className="total">
-                            <h4 className="text-md font-semibold">Total Current Assets</h4>
+                            <h4 className="text-md font-semibold">Total Current Liabilities</h4>
                             <h4 className="text-md font-semibold">₹{data?.liability?.balance}</h4>
+                        </div>
+                    </div>
+                    <div>
+                        <div className="title">
+                            <h4>Shareholder’s Equity</h4>
+                        </div>
+                        {
+                            data?.equity?.children?.map((item) => (
+                                <Items type='first-level' value={item?.balance} key={uuidv4()} keyItem={keys[item?.ledger] ?? item?.ledger} />
+                            ))
+                        }
+                        <div className="total">
+                            <h4 className="text-md font-semibold">Total shareholder’s Equity</h4>
+                            <h4 className="text-md font-semibold">₹{data?.equity?.balance}</h4>
                         </div>
                     </div>
                 </aside>
@@ -66,7 +81,7 @@ const BalanceSheetTable = ({ data }: IProps) => {
                 </div>
                 <div className="px-3  flex items-center justify-between ">
                     <h4 className="text-md font-semibold">TOTAL LIABIILITIES & EQUITY</h4>
-                    <h4 className="text-md font-semibold">₹{data?.liability?.balance}</h4>
+                    <h4 className="text-md font-semibold">₹{Number(data?.liability?.balance ?? 0) + Number(data?.equity?.balance ?? 0)}</h4>
                 </div>
             </footer>
         </div>
