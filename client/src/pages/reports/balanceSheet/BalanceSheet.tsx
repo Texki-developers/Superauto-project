@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react"
 import Header from "../../../components/header/Header"
 import Loading from "../../../components/loading/Loading"
 import useQueryGetApi from "../../../hooks/useQueryGetApi.hook"
 import BalanceSheetTable from "./components/bs-table"
+import { IBalanceSheetData, IFormattedBalanceSheet } from "../../../types/balanceSheet/balanceSheet"
 
 const breadCrumbData = [
     { name: 'Dashboard', link: '/' },
@@ -9,8 +11,43 @@ const breadCrumbData = [
     { name: 'Balance Sheet' },
 ]
 const BalanceSheet = () => {
+    const [formatedData, setFormatedData] = useState<IFormattedBalanceSheet | null>(null)
     const url = `reports/balance-sheet`
     const { data, isPending } = useQueryGetApi(url)
+    const getFormatData = (data: IBalanceSheetData[]) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const store: any = {
+            "asset": {
+                children: [],
+                balance: 0
+            },
+            "liability": {
+                children: [],
+                balance: 0
+            },
+            "equity": {
+                children: [],
+                balance: 0
+            }
+        }
+        for (const item of data) {
+            if (item?.ledger === 'Total') {
+                store[item?.category].balance = item?.balance
+                continue;
+            }
+            if (store[item?.category]) {
+                const obj = store[item?.category]
+                obj.children && obj.children.push(item)
+                continue;
+            }
+        }
+        setFormatedData(store)
+    }
+    useEffect(() => {
+        if (data?.data) {
+            getFormatData(data?.data)
+        }
+    }, [data])
     return (
         <>
             {
@@ -22,7 +59,7 @@ const BalanceSheet = () => {
                     {/* <DateFilter /> */}
                 </div>
                 <section className='pt-5 pb-2'>
-                    <BalanceSheetTable data={data} />
+                    <BalanceSheetTable data={formatedData} />
                 </section>
             </main>
         </>

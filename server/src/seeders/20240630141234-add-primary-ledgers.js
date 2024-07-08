@@ -12,7 +12,7 @@ module.exports = {
           account_head: 1,
           createdAt: new Date(),
           updatedAt: new Date(),
-          type: ''
+          type: 'asset',
         },
         {
           pl_id: 2,
@@ -20,7 +20,7 @@ module.exports = {
           account_head: 2,
           createdAt: new Date(),
           updatedAt: new Date(),
-          type: ''
+          type: 'asset',
         },
         {
           pl_id: 3,
@@ -28,7 +28,7 @@ module.exports = {
           account_head: 3,
           createdAt: new Date(),
           updatedAt: new Date(),
-          type: ''
+          type: 'asset',
         },
         {
           pl_id: 4,
@@ -36,7 +36,7 @@ module.exports = {
           account_head: 4,
           createdAt: new Date(),
           updatedAt: new Date(),
-          type: ''
+          type: 'asset',
         },
         {
           pl_id: 5,
@@ -44,7 +44,7 @@ module.exports = {
           account_head: 5,
           createdAt: new Date(),
           updatedAt: new Date(),
-          type: ''
+          type: 'asset',
         },
         {
           pl_id: 6,
@@ -52,7 +52,7 @@ module.exports = {
           account_head: 6,
           createdAt: new Date(),
           updatedAt: new Date(),
-          type: ''
+          type: 'liability',
         },
         {
           pl_id: 7,
@@ -60,7 +60,7 @@ module.exports = {
           account_head: 7,
           createdAt: new Date(),
           updatedAt: new Date(),
-          type: ''
+          type: 'liability',
         },
         {
           pl_id: 8,
@@ -68,7 +68,7 @@ module.exports = {
           account_head: 8,
           createdAt: new Date(),
           updatedAt: new Date(),
-          type: ''
+          type: 'liability',
         },
         {
           pl_id: 9,
@@ -76,16 +76,15 @@ module.exports = {
           account_head: 9,
           createdAt: new Date(),
           updatedAt: new Date(),
-          type: ''
+          type: 'liability',
         },
-
         {
           pl_id: 10,
           ledger_name: 'Tax Payables',
           account_head: 10,
           createdAt: new Date(),
           updatedAt: new Date(),
-          type: ''
+          type: 'liability',
         },
         {
           pl_id: 11,
@@ -93,7 +92,7 @@ module.exports = {
           account_head: 11,
           createdAt: new Date(),
           updatedAt: new Date(),
-          type: ''
+          type: 'equity',
         },
         {
           pl_id: 12,
@@ -101,7 +100,7 @@ module.exports = {
           account_head: 12,
           createdAt: new Date(),
           updatedAt: new Date(),
-          type: ''
+          type: 'equity',
         },
         {
           pl_id: 13,
@@ -109,7 +108,7 @@ module.exports = {
           account_head: 13,
           createdAt: new Date(),
           updatedAt: new Date(),
-          type: ''
+          type: 'expense',
         },
         {
           pl_id: 14,
@@ -117,7 +116,7 @@ module.exports = {
           account_head: 14,
           createdAt: new Date(),
           updatedAt: new Date(),
-          type: ''
+          type: 'expense',
         },
         {
           pl_id: 15,
@@ -125,7 +124,7 @@ module.exports = {
           account_head: 15,
           createdAt: new Date(),
           updatedAt: new Date(),
-          type: ''
+          type: 'expense',
         },
         {
           pl_id: 16,
@@ -133,7 +132,7 @@ module.exports = {
           account_head: 16,
           createdAt: new Date(),
           updatedAt: new Date(),
-          type: ''
+          type: 'revenue',
         },
         {
           pl_id: 17,
@@ -141,8 +140,8 @@ module.exports = {
           account_head: 17,
           createdAt: new Date(),
           updatedAt: new Date(),
-          type: ''
-        }
+          type: 'revenue',
+        },
       ],
       {}
     );

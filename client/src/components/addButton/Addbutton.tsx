@@ -4,15 +4,17 @@ import ReceiptIcon from '../../assets/icons/addReceipt.svg'
 import PaymentIcon from '../../assets/icons/addPayment.svg'
 import AddExpenses from '../../assets/icons/addExpense.svg'
 import { SetStateAction, useState } from 'react';
-import PaymentForm, { IProps } from '../paymentFrom.tsx/PaymentForm';
+import PaymentForm, { IProps } from '../paymentFrom/PaymentForm';
 import ReceiptForm from '../receiptForm/ReceiptForm';
 import ExpenseForm from '../expenseForm/ExpenseForm';
+import JournalForm from '../journal/journalForm';
 
 
 const addForms: { [key: string]: ({ setShow }: IProps) => JSX.Element } = {
     "payment": PaymentForm,
     "receipt": ReceiptForm,
-    "expense": ExpenseForm
+    "expense": ExpenseForm,
+    "journal": JournalForm
 }
 const getForm = (form: string, setShowForm: React.Dispatch<SetStateAction<string>>) => {
     const Component = addForms[form]
@@ -41,6 +43,10 @@ const Addbutton = () => {
                         className='w-5 h-5'
                         src={PaymentIcon} />
                     } text='Add Payment' bg='primary' />
+                    <Button onClick={() => setShowForm('journal')} className='!w-[180px]' icon={<img
+                        className='w-5 h-5'
+                        src={PaymentIcon} />
+                    } text='Add Journal' bg='primary' />
                 </div>
             </div>
         </>
