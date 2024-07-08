@@ -101,6 +101,21 @@ class ReportsController {
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
       });
   }
+
+
+  profitAndLoss(req: Request, res: Response) {
+    const { fromDate, toDate } = req.query;
+    const fromDateStr = typeof fromDate === 'string' ? fromDate : '';
+    const toDateStr = typeof toDate === 'string' ? toDate : '';
+    reportsService
+      .profitAndLoss()
+      .then((data: any) => {
+        responseHandler(res, 'OK', data, { message: data.message });
+      })
+      .catch((error) => {
+        responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+      });
+  }
 }
 
 export default new ReportsController();

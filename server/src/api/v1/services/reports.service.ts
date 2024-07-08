@@ -132,6 +132,18 @@ class ReportsService{
       });
     }
 
+    profitAndLoss(){
+      return new Promise(async (resolve, reject) => {
+        try {
+
+            const balanceSheet = await reportsQueries.profitAndLoss()
+            return resolve(balanceSheet)
+        } catch (err) {
+          reject({ message: `Failed to List Brands: ${err}` });
+        }
+      });
+    }
+
 
 }
 
