@@ -1,6 +1,10 @@
 import './style.scss'
 
-const TrialTable = () => {
+interface IProps {
+    data: any
+}
+const TrialTable = ({ data }: IProps) => {
+    console.log(data)
     return (
         <div className="w-full h-full bg-white-100  rounded-lg grid grid-rows-[1fr_50px]">
             <div className="table-container">

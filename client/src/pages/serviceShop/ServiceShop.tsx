@@ -112,6 +112,7 @@ const ServiceShop = () => {
               <Header />
               <section className='pt-[50px]'>
                 <AddAndSearchItem
+                  hideSearch
                   addButtonText='Add Service Shop'
                   onAddButtonClick={onAddItemClick}
                 />

@@ -83,6 +83,7 @@ const Vehicles = () => {
                 <div className='pt-[50px]'>
                   <AddAndSearchItem
                     onSearch={onSearchData}
+                    hideSearch
                     addButtonText='Add Vehicle'
                     onAddButtonClick={onAddButtonClick}
                   />
