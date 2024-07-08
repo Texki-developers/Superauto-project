@@ -471,7 +471,7 @@ class ReportQueries {
         closing_inventory AS (
             SELECT SUM(purchase_rate) AS closing_inventory 
             FROM inventory 
-            WHERE date_of_purchase > '2023-06-06'
+            WHERE date_of_purchase > '2025-06-06'
         ),
         purchase AS (
             SELECT 
@@ -482,7 +482,7 @@ class ReportQueries {
             FROM
                 accounts a
             LEFT JOIN
-                transactions t ON a.account_id = t.debit_account OR a.account_id = t.credit_account
+                transactions t ON a.account_id IN (t.debit_account, t.credit_account)
             LEFT JOIN
                 primary_ledger p ON a.head = p.pl_id
             WHERE
@@ -499,7 +499,7 @@ class ReportQueries {
             FROM
                 accounts a
             LEFT JOIN
-                transactions t ON a.account_id = t.debit_account OR a.account_id = t.credit_account
+                transactions t ON a.account_id IN (t.debit_account, t.credit_account)
             LEFT JOIN
                 primary_ledger p ON a.head = p.pl_id
             WHERE
@@ -516,11 +516,28 @@ class ReportQueries {
             FROM
                 accounts a
             LEFT JOIN
-                transactions t ON a.account_id = t.debit_account OR a.account_id = t.credit_account
+                transactions t ON a.account_id IN (t.debit_account, t.credit_account)
             LEFT JOIN
                 primary_ledger p ON a.head = p.pl_id
             WHERE
                 a.account_id = 126
+            GROUP BY
+                a.account_id, a.name
+        ),
+        salary AS (
+            SELECT 
+                a.account_id,
+                a.name,
+                COALESCE(SUM(CASE WHEN t.credit_account = a.account_id THEN t.amount ELSE 0 END), 0) - 
+                COALESCE(SUM(CASE WHEN t.debit_account = a.account_id THEN t.amount ELSE 0 END), 0) AS salary
+            FROM
+                accounts a
+            LEFT JOIN
+                transactions t ON a.account_id IN (t.debit_account, t.credit_account)
+            LEFT JOIN
+                primary_ledger p ON a.head = p.pl_id
+            WHERE
+                a.account_id = 117
             GROUP BY
                 a.account_id, a.name
         )
@@ -542,16 +559,29 @@ class ReportQueries {
         
                 SELECT 
                     account_id,
+                    'Salary' as name,
+                    salary AS "Total"
+                FROM 
+                    salary
+        
+                UNION ALL
+        
+                SELECT 
+                    account_id,
                     'Direct Expense' as name,
                     Direct_Expense AS "Total"
                 FROM 
                     direct_expense
+        
                 UNION ALL
-        SELECT  NULL AS account_id,
+        
+                SELECT 
+                    NULL AS account_id,
                     'To Closing Inventory' as name,
                     closing_inventory AS "Total"
                 FROM 
                     closing_inventory
+        
                 UNION ALL
         
                 SELECT 
@@ -569,15 +599,39 @@ class ReportQueries {
                     opening_inventory AS "Total"
                 FROM 
                     opening_inventory
+        
+                UNION ALL
+        
+                SELECT 
+                    NULL AS account_id,
+                    'Gross Profit/Loss' AS name,
+                    COALESCE((SELECT 
+                                COALESCE(SUM(Sales), 0) + COALESCE(SUM(closing_inventory), 0) + COALESCE(SUM(opening_inventory), 0) + COALESCE(SUM(Purchase), 0) - COALESCE(SUM(Direct_Expense), 0) AS "Total"
+                            FROM 
+                                sales, closing_inventory, opening_inventory, purchase, direct_expense
+                           ), 0)
+        
+                UNION ALL
+        
+                SELECT 
+                    NULL AS account_id,
+                    'Net Profit' AS name,
+                    COALESCE((SELECT 
+                                COALESCE(SUM(Sales), 0) + COALESCE(SUM(closing_inventory), 0) + COALESCE(SUM(opening_inventory), 0) + COALESCE(SUM(Purchase), 0) - COALESCE(SUM(Direct_Expense), 0) - COALESCE(SUM(salary), 0) AS "Total"
+                            FROM 
+                                sales, closing_inventory, opening_inventory, purchase, direct_expense, salary
+                           ), 0)
             ) AS combined_results
         ORDER BY 
-            name;  
+            name;
         `
-        const [reportAndLoss] = await db.query(query, {
+        const [reportAndLoss]:any = await db.query(query, {
             // replacements: { startDate, endDate  },
             type: QueryTypes.RAW,
           })
           
+
+
             return reportAndLoss;
 
       }
