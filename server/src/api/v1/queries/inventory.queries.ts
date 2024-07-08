@@ -105,14 +105,8 @@ class InventoryQueries {
     return result;
   }
 
-  async getVehicleRegNo(options: FindOptions) {
-    const query = `
-    SELECT DISTINCT i.inventory_id, i.registration_number
-    FROM inventory i
-    LEFT JOIN sale_return sr ON i.inventory_id = sr.inventory_id AND sr.sale_status = false
-    WHERE i.sale_status = false 
-       OR (i.sale_status = true AND sr.inventory_id IS NOT NULL AND sr.sale_status = false);
-`;
+  async getVehicleRegNo(options: FindOptions,query:string) {
+   
 
     // Set the `replacements` property to include a custom SQL query and options.
     const [vehicles] = await db.query(query, options);
