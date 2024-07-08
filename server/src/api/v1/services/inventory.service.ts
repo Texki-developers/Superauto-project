@@ -430,7 +430,8 @@ class InventoryService {
             'insurance_date',
             'date_of_purchase',
             'registration_number',
-          ],
+            'rc_book',
+            'insurance_doc','proof_doc'          ],
           limit: perPage,
           offset: (page - 1) * perPage,
         };
@@ -446,20 +447,12 @@ class InventoryService {
   listVehicleRegNumber() {
     return new Promise(async (resolve, reject) => {
       try {
-        const attributes = ['inventory_id', 'account_id', 'registration_number', 'sale_status'];
         const options: FindOptions = {
-          where: { sale_status: false },
-          include: [
-            {
-              model: SaleReturn,
-              foreignKey: 'inventory_id',
-              where: { sale_status: false },
-              attributes: ['inventory_id', 'sale_status'],
-            },
-          ],
-          attributes: attributes,
+          where: {},
+          raw: true,         
         };
-        const vehicles = await inventoryQueries.getAllVehicles(options);
+        const vehicles = await inventoryQueries.getVehicleRegNo(options);
+  
         return resolve(vehicles);
       } catch (err) {
         reject({ message: `Failed to List vehicles: ${err}` });

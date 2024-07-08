@@ -108,11 +108,12 @@ class ReportsService{
       });
     }
 
-    trialBalanceReport(){
+    trialBalanceReport(startDate:string,endDate:string){
       return new Promise(async (resolve, reject) => {
         try {
 
-
+            const trialbalanceResult = await reportsQueries.trialBalanceReport(startDate,endDate)
+            return resolve(trialbalanceResult)
         } catch (err) {
           reject({ message: `Failed to List Brands: ${err}` });
         }

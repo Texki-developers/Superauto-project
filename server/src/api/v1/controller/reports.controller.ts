@@ -20,7 +20,6 @@ class ReportsController {
   }
 
   listdailyBookVoucher(req: Request, res: Response) {
-    
     reportsService
       .listdailyBookVoucher()
       .then((data: any) => {
@@ -29,10 +28,9 @@ class ReportsController {
       .catch((error) => {
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
       });
-  } 
+  }
 
   listLedgers(req: Request, res: Response) {
-    
     reportsService
       .listLedgers()
       .then((data: any) => {
@@ -41,7 +39,7 @@ class ReportsController {
       .catch((error) => {
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
       });
-  } 
+  }
 
   ledgerReport(req: Request, res: Response) {
     const { ledger, fromDate, toDate } = req.query;
@@ -59,7 +57,6 @@ class ReportsController {
       });
   }
 
-
   cashbookReport(req: Request, res: Response) {
     const { query, fromDate, toDate } = req.query;
 
@@ -67,7 +64,7 @@ class ReportsController {
     const fromDateStr = typeof fromDate === 'string' ? fromDate : '';
     const toDateStr = typeof toDate === 'string' ? toDate : '';
     reportsService
-      .cashbookReport(querystr,fromDateStr,toDateStr)
+      .cashbookReport(querystr, fromDateStr, toDateStr)
       .then((data: any) => {
         responseHandler(res, 'OK', data, { message: data.message });
       })
@@ -76,18 +73,13 @@ class ReportsController {
       });
   }
 
-
-
-
-
   TrialBalanceReport(req: Request, res: Response) {
-    const { ledger, fromDate, toDate } = req.query;
+    const { fromDate, toDate } = req.query;
 
-    const ledgerStr = typeof ledger === 'string' ? ledger : '';
     const fromDateStr = typeof fromDate === 'string' ? fromDate : '';
     const toDateStr = typeof toDate === 'string' ? toDate : '';
     reportsService
-      .trialBalanceReport()
+      .trialBalanceReport(fromDateStr, toDateStr)
       .then((data: any) => {
         responseHandler(res, 'OK', data, { message: data.message });
       })
@@ -95,7 +87,6 @@ class ReportsController {
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
       });
   }
-
 
   balanceSheetReport(req: Request, res: Response) {
     const { ledger, fromDate, toDate } = req.query;

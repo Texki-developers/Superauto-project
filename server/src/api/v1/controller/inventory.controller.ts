@@ -138,7 +138,7 @@ class InventoryController {
     inventoryService
       .listVehicleRegNumber()
       .then((data: any) => {
-        responseHandler(res, 'OK', data.accounts, { message: data.message });
+        responseHandler(res, 'OK', data, { message: data.message });
       })
       .catch((error) => {
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
