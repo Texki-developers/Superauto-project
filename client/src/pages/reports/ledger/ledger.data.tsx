@@ -17,23 +17,16 @@ export const ColumnData: ITableColumn[] = [
   {
     name: 'Note',
     key: 'description',
-    columnData: (item: { name: string }) => {
-      return item?.name;
-    },
+
   },
   {
     name: 'Debit(₹)',
     key: 'debit',
-    columnData: (item: { name: string }) => {
-      return item?.name;
-    },
+
   },
   {
     name: 'Credit(₹)',
     key: 'credit',
-    columnData: (item: { name: string }) => {
-      return item?.name;
-    },
   },
   { name: 'Balance', key: 'closingbalance' },
 ];
