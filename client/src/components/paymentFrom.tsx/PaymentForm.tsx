@@ -11,7 +11,7 @@ import useGetDropdownData from "../../hooks/useGetDropdownData.hook";
 import useToast from "../../hooks/useToast.hook";
 import AuthApiService from "../../services/api-services";
 
-interface IProps {
+export interface IProps {
     setShow: React.Dispatch<SetStateAction<string>>
 }
 

@@ -107,6 +107,7 @@ const DeliveryServices = () => {
             <Header />
             <section className='pt-[50px]'>
               <AddAndSearchItem
+                hideSearch
                 addButtonText='Add Delivery Services'
                 onAddButtonClick={onAddItemClick}
               />

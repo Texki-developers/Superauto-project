@@ -14,6 +14,8 @@ import { useState } from 'react';
 import useToast from '../../hooks/useToast.hook';
 import AuthApiService from '../../services/api-services';
 import { IAssignApiBody } from '../../types/apimodal/apimodal';
+import { useQuery } from '@tanstack/react-query';
+import useGetApis from '../../hooks/useGetApi.hook';
 
 export default function AssignVehicles({ setAssign, itemId, parent, apiUrl }: AssignVehiclesProps) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -35,25 +37,18 @@ export default function AssignVehicles({ setAssign, itemId, parent, apiUrl }: As
     name: 'vehicle',
   });
 
-  const selectOption = [
-    {
-      value: 'kl 47 k 3300',
-      label: 'Kl 47 k 3300',
-    },
-    {
-      value: 'kl 47 p 3300',
-      label: 'Kl 47 k 3300',
-    },
-  ];
   const { toastError, toastLoading, toastSuccess } = useToast()
-
+  const { callApi } = useGetApis()
+  const url = `inventory/list/vehicle/registration-number`
+  const fetchData = () => callApi(url);
+  const { data } = useQuery({ queryKey: [url], queryFn: fetchData })
   const onSubmit: SubmitHandler<IassignFormInput> = async (data: any) => {
     const id = toastLoading('Loading...')
     // creating the body
     const Vehicles = data?.vehicle?.map((item: any) => (
       {
-        regNum: item?.regNum?.value,
-        amount: item?.amount,
+        regNum: item?.regNum?.registration_number,
+        amount: Number(item?.amount),
         [parent]: itemId
       }
     ))
@@ -103,12 +98,15 @@ export default function AssignVehicles({ setAssign, itemId, parent, apiUrl }: As
           {fields.map((field, index) => (
             <div key={field.id} className='flex w-full items-end gap-6'>
               <SelectInput
-                options={selectOption}
+                options={data?.data}
                 name={`vehicle[${index}].regNum`}
                 label='Registration Number'
                 control={control}
+                valueName='inventory_id'
+                labelName='registration_number'
                 required={true}
                 error={errors}
+                minH={80}
               />
 
               <InputBox

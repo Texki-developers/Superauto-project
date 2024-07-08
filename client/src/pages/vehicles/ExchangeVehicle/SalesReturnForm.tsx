@@ -21,8 +21,8 @@ const SalesReturnForm = ({ onCancelClick, reset, register, control, errors, }: I
     const fetchData = () => callApi(url);
     const { data } = useQuery({ queryKey: [url], queryFn: fetchData })
     const formatedData = useCallback((): IOption[] => {
-        return data?.data?.map((item: { vehicle_id: number, registration_number: string }) => ({
-            value: item?.vehicle_id,
+        return data?.data?.map((item: { inventory_id: number, registration_number: string }) => ({
+            value: item?.inventory_id,
             label: item?.registration_number
         }))
     }, [data])

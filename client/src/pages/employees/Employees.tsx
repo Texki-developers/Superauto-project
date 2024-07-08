@@ -90,6 +90,7 @@ const Employees = () => {
               <Header />
               <section className='pt-[50px]'>
                 <AddAndSearchItem
+                  hideSearch
                   addButtonText='Add Employees'
                   onAddButtonClick={onAddItemClick}
                 />

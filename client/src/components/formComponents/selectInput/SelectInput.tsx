@@ -20,18 +20,19 @@ interface ISelectInputProps {
   error: any
   labelName?: string;
   valueName?: string;
+  minH?: number
 }
 
 export default function SelectInput(props: ISelectInputProps) {
   const customStyles = {
     menu: (provided: any) => ({
       ...provided,
-      maxHeight: '150px',
+      maxHeight: props?.minH ?? '150px',
       zIndex: 999
     }),
     menuList: (provided: any) => ({
       ...provided,
-      maxHeight: 150, // or '150px'
+      maxHeight: props?.minH ?? 150, // or '150px'
       zIndex: 999
     }),
   };
