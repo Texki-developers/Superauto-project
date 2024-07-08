@@ -3,9 +3,13 @@ import './style.scss'
 import { v4 as uuidv4 } from 'uuid';
 
 interface IProps {
-    data: IFormatedData | null
+    data: IFormatedData | null;
+    total: {
+        debit: number,
+        credit: number,
+    }
 }
-const TrialTable = ({ data }: IProps) => {
+const TrialTable = ({ data, total }: IProps) => {
     console.log(data)
     return (
         <div className="w-full h-full bg-white-100  rounded-lg grid grid-rows-[1fr_50px]">
@@ -94,8 +98,8 @@ const TrialTable = ({ data }: IProps) => {
             <footer className='border-t border-gray-200 grid items-center px-4'>
                 <ul className="table-head-tr bg-white-100">
                     <li>Total</li>
-                    <li>1000</li>
-                    <li>200</li>
+                    <li>{total?.debit}</li>
+                    <li>{total?.credit}</li>
                 </ul>
             </footer>
         </div>
