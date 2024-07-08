@@ -18,6 +18,8 @@ interface ISelectInputProps {
   isSearchable?: boolean;
   control: any
   error: any
+  labelName?: string;
+  valueName?: string;
 }
 
 export default function SelectInput(props: ISelectInputProps) {
@@ -44,6 +46,8 @@ export default function SelectInput(props: ISelectInputProps) {
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-expect-error
               value={props?.value}
+              getOptionLabel={(data) => { return props?.labelName ? data[props?.labelName] : data?.label }}
+              getOptionValue={(data) => { return props?.valueName ? data[props?.valueName] : data?.value }}
               {...field}
               options={props?.options}
               aria-invalid={props?.error?.[props?.name ?? ''] ? "true" : "false"}

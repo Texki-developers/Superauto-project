@@ -14,7 +14,7 @@ export const DateInput = ({ placeholder, onChange, value }: IProps) => {
     return (
         <input
             placeholder={placeholder}
-            className="textbox-n w-[150px] outline-none border border-gray-400 rounded-md h-[40x] px-2 text-sm"
+            className="textbox-n w-[150px] outline-none border border-gray-400 rounded-md h-[40px] px-2 text-sm"
             type={type}
             onChange={onChange}
             value={value}
