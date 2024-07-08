@@ -89,6 +89,7 @@ const Customers = () => {
               <Header />
               <section className='pt-[50px]'>
                 <AddAndSearchItem
+                  hideSearch
                   onSearch={() => { }}
                   addButtonText='Add Customer'
                   onAddButtonClick={onAddItemClick}

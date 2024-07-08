@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import moment from "moment"
 
@@ -18,7 +19,7 @@ export const ColumnData = [
     name: 'Date',
     key: 'createdAt',
     columnData: (item: string) => {
-      return <p>{moment(item).format('YYYY-MM-DD')}</p>
+      return <p>{item && moment(item).format('YYYY-MM-DD')}</p>
     }
   },
 ];

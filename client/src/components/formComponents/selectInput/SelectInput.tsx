@@ -18,10 +18,24 @@ interface ISelectInputProps {
   isSearchable?: boolean;
   control: any
   error: any
+  labelName?: string;
+  valueName?: string;
+  minH?: number
 }
 
 export default function SelectInput(props: ISelectInputProps) {
-
+  const customStyles = {
+    menu: (provided: any) => ({
+      ...provided,
+      maxHeight: props?.minH ?? '150px',
+      zIndex: 999
+    }),
+    menuList: (provided: any) => ({
+      ...provided,
+      maxHeight: props?.minH ?? 150, // or '150px'
+      zIndex: 999
+    }),
+  };
   return (
     <div className='grid gap-1 w-full relative'>
       {!props?.hideLabel && (
@@ -44,8 +58,11 @@ export default function SelectInput(props: ISelectInputProps) {
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-expect-error
               value={props?.value}
+              getOptionLabel={(data) => { return props?.labelName ? data[props?.labelName] : data?.label }}
+              getOptionValue={(data) => { return props?.valueName ? data[props?.valueName] : data?.value }}
               {...field}
               options={props?.options}
+              styles={customStyles}
               aria-invalid={props?.error?.[props?.name ?? ''] ? "true" : "false"}
             />
           </>

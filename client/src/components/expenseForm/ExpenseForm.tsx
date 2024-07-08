@@ -5,21 +5,23 @@ import SaveCancelButtons from "../save-cancel-buttons/SaveCancelButtons"
 import { SetStateAction } from "react";
 import SelectInput from "../formComponents/selectInput/SelectInput";
 import AuthApiService from "../../services/api-services";
-import { IExpenseFormData } from "../../types/expenseForm/expenseForm";
+import { IExpenseApiBody, IExpenseApiResData, IExpenseFormData } from "../../types/expenseForm/expenseForm";
 import useToast from "../../hooks/useToast.hook";
+import useGetDropdownData from "../../hooks/useGetDropdownData.hook";
 
 interface IProps {
     setShow: React.Dispatch<SetStateAction<string>>
 }
 
 
+const defaultValues: IExpenseFormData = {
+    expenseTo: null, // Assuming the value '14' corresponds to one of the options
+    description: "",
+    date: "",
+    amount: null
+};
 const ExpenseForm = ({ setShow }: IProps) => {
-    const defaultValues: IExpenseFormData = {
-        expenseTo: '14', // Assuming the value '14' corresponds to one of the options
-        description: "This is description",
-        date: "2024-07-03T01:25:38.835Z",
-        amount: 1000
-    };
+    const { data } = useGetDropdownData(null, 'accounts/list/getAllAccounts')
 
     const { register, handleSubmit, control, formState: { errors } } = useForm<IExpenseFormData>({
         defaultValues
@@ -32,14 +34,14 @@ const ExpenseForm = ({ setShow }: IProps) => {
     const { toastError, toastLoading, toastSuccess } = useToast()
     const onSubmit = async (data: IExpenseFormData) => {
         const body = {
-            expenseTo: data.expenseTo,
-            description: data.description,
-            date: data.date,
-            amount: data.amount
+            expenseTo: data?.expenseTo?.account_id as string,
+            description: data?.description,
+            date: data?.date,
+            amount: data?.amount
         };
         const id = toastLoading('Loading...')
         try {
-            const data = await AuthApiService.postApi<IExpenseFormData, any>('accounts/book/other-expense', body);
+            const data = await AuthApiService.postApi<IExpenseApiBody, IExpenseApiResData>('accounts/book/other-expense', body);
             if (data?.status === 'error') {
                 toastError(id, data?.message)
                 setShow("")
@@ -51,22 +53,6 @@ const ExpenseForm = ({ setShow }: IProps) => {
             toastError(id, "Something went wrong")
         }
     }
-
-    const options = [
-        {
-            value: 'Cash',
-            label: 'Cash'
-        },
-        {
-            value: 'Credit Card',
-            label: 'Credit Card'
-        },
-        {
-            value: 'Bank Transfer',
-            label: 'Bank Transfer'
-        }
-    ];
-
     return (
         <ModalWrapper onClose={onClose} title="Add Expense">
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -76,7 +62,9 @@ const ExpenseForm = ({ setShow }: IProps) => {
                         label='Expense To'
                         required
                         control={control}
-                        options={options}
+                        options={data?.data}
+                        labelName="name"
+                        valueName="account_id"
                         placeholder='Payee'
                         error={errors}
                         name='expenseTo'

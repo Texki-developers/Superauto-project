@@ -132,7 +132,7 @@ export const sidebarData: ISidebarItem[] = [
         element: <BalanceSheet />,
       },
       {
-        name: 'Profi & Loss',
+        name: 'Profit & Loss',
         url: '/all-reports/profit-loss',
         id: uuidv4() + 4,
         isSubMenu: false,

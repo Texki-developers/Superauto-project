@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query"
-import DateFilter from "../../../components/filterComponent/dateFilter/DateFilter"
 import SelectFilter from "../../../components/filterComponent/selectFilter/Select"
 import Header from "../../../components/header/Header"
 import Table from "../../../components/table/Table"
@@ -8,13 +7,13 @@ import Loading from "../../../components/loading/Loading"
 import { ColumnData } from "./dailyBook.data"
 import { useSearchParams } from "react-router-dom"
 
+const breadCrumbData = [
+    { name: 'Dashboard', link: '/' },
+    { name: 'All Reports' },
+    { name: 'DailyBook' },
+]
 const DailyBook = () => {
     const [searchParams, setSearchParams] = useSearchParams()
-    const breadCrumbData = [
-        { name: 'Dashboard', link: '/' },
-        { name: 'All Reports' },
-        { name: 'DailyBook' },
-    ]
     const { callApi } = useGetApis()
     let url = `reports/daily-report`
     if (searchParams.get('filter')) {
@@ -51,10 +50,10 @@ const DailyBook = () => {
                         placeholder="Filter"
                         onChange={onFilterChanged}
                         options={options?.data} />
-                    <DateFilter />
+                    {/* <DateFilter /> */}
                 </div>
                 <section className='pt-5 pb-2'>
-                    <Table data={data?.data} columnData={ColumnData} hideFooter />
+                    <Table showRowColor data={data?.data} columnData={ColumnData} hideFooter />
                 </section>
             </main>
         </>

@@ -1,8 +1,13 @@
+import moment from 'moment';
 import { ITableColumn } from '../../../types/table/table';
 
 export const ColumnData: ITableColumn[] = [
-  { name: 'S.No',index:true },
-  { name: 'Date', key: 'transaction_date' },
+  { name: 'S.No', index: true },
+  {
+    name: 'Date', key: 'transaction_date', columnData: (item: string) => {
+      return <p>{moment(item).format('YYYY-MM-DD')}</p>
+    }
+  },
   {
     name: 'Voucher',
     key: 'voucher_id',

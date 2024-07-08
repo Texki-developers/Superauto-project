@@ -4,12 +4,12 @@ import ReceiptIcon from '../../assets/icons/addReceipt.svg'
 import PaymentIcon from '../../assets/icons/addPayment.svg'
 import AddExpenses from '../../assets/icons/addExpense.svg'
 import { SetStateAction, useState } from 'react';
-import PaymentForm from '../paymentFrom.tsx/PaymentForm';
-import ReceiptForm from '../receiptForm.tsx copy/ReceiptForm';
+import PaymentForm, { IProps } from '../paymentFrom.tsx/PaymentForm';
+import ReceiptForm from '../receiptForm/ReceiptForm';
 import ExpenseForm from '../expenseForm/ExpenseForm';
 
 
-const addForms: any = {
+const addForms: { [key: string]: ({ setShow }: IProps) => JSX.Element } = {
     "payment": PaymentForm,
     "receipt": ReceiptForm,
     "expense": ExpenseForm
@@ -27,7 +27,7 @@ const Addbutton = () => {
                 getForm(showForm, setShowForm)
 
             }
-            <div className=" shadow-[0px_0px_5px_#00000044] cursor-pointer group addIcon grid place-items-center fixed w-14 h-14 right-3 bottom-3 rounded-full bg-primary-300">
+            <div className=" shadow-[0px_0px_5px_#00000044] cursor-pointer group addIcon grid place-items-center fixed w-14 h-14 right-3 bottom-3 rounded-full bg-[#4c5ce9d1]">
                 <img alt='AddIcon' className='w-5' src={AddIcon} />
                 <div className="group-hover:grid hidden absolute bottom-[100%]  right-2 p-2 gap-2 ">
                     <Button onClick={() => setShowForm('expense')} className='!w-[180px]' icon={<img
