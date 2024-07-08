@@ -16,6 +16,7 @@ interface ITableProps {
   };
   showFooterBalance?: boolean;
   balanceFooterComponent?: React.ReactNode;
+  showRowColor?: boolean;
 }
 
 const totalItemsPerPage = [5, 10, 20, 30];
@@ -87,9 +88,9 @@ const Table = (props: ITableProps) => {
           {props?.data?.length > 0 &&
             props?.data?.map((item: any, i: number) => {
               return (
-                <tr key={i}>
+                <tr className={(props?.showRowColor && i % 2 == 1) ? 'bg-gray-100' : ""} key={i}>
                   {props?.columnData?.map((keyItem) => (
-                    <td key={uuidv4()}>
+                    <td className={props?.showRowColor ? 'py-2 px-4' : 'p-4'} key={uuidv4()}>
                       {keyItem?.columnData && keyItem?.key ? (
                         <span className='grid w-full place-items-center'>
                           {keyItem?.columnData(item?.[keyItem?.key])}

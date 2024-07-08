@@ -126,7 +126,7 @@ const Ledger = () => {
                     />
                 </div>
                 <section className="pt-5 pb-2">
-                    {searchParams.get('name') ? <Table balanceFooterComponent={<FooterResult />} data={tableData} showFooterBalance columnData={ColumnData} hideFooter /> :
+                    {searchParams.get('name') ? <Table showRowColor balanceFooterComponent={<FooterResult />} data={tableData} showFooterBalance columnData={ColumnData} hideFooter /> :
                         <div className="grid place-items-center">
                             <h2>Select Ledger</h2>
                         </div>

@@ -53,7 +53,7 @@ const DailyBook = () => {
                     {/* <DateFilter /> */}
                 </div>
                 <section className='pt-5 pb-2'>
-                    <Table data={data?.data} columnData={ColumnData} hideFooter />
+                    <Table showRowColor data={data?.data} columnData={ColumnData} hideFooter />
                 </section>
             </main>
         </>
