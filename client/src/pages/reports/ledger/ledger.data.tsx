@@ -28,5 +28,5 @@ export const ColumnData: ITableColumn[] = [
     name: 'Credit(₹)',
     key: 'credit',
   },
-  { name: 'Balance', key: 'closingbalance' },
+  { name: 'Balance', key: 'runningbalance' },
 ];
