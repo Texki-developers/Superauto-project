@@ -26,7 +26,7 @@ const Ledger = () => {
     const [lastItem, setLastItem] = useState<any>()
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [fromDate, setFromDate] = useState(moment('2024-04-01').format('YYYY-MM-DD'));
-    const [toDate, setToDate] = useState(moment().format('YYYY-MM-DD'));
+    const [toDate, setToDate] = useState(moment('2025-03-31').format('YYYY-MM-DD'));
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSelectableFilter = (newValue: SingleValue<any>) => {
