@@ -153,7 +153,7 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
                   <InputBox
                     name='registrationNumber'
                     label='Registration Number'
-                    placeholder='KL55AE5570'
+                    placeholder='Registration Number'
                     register={register}
                     isDisabled
                     error={errors}
