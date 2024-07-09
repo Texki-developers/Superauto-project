@@ -1,6 +1,15 @@
 import './style.scss'
 
-const BalanceSheetTable = () => {
+interface IProps {
+    data: {
+        [key: string]: {
+            total: number,
+            account_id: string,
+        }
+    }
+}
+const BalanceSheetTable = ({ data }: IProps) => {
+    console.log(data)
     return (
         <div className="w-full border-2 border-gray-300 h-full rounded-lg bg-white-100 grid grid-rows-[40px_1fr_80px]">
             <header className="bb-2 grid grid-cols-2">
@@ -37,15 +46,14 @@ const BalanceSheetTable = () => {
                                 <h3>Amount</h3>
                             </header>
                             <div className='p-3 bb-2 h-[200px]'>
-                                <p className="py-1">3000</p>
-                                <p className="py-1">3000</p>
-                                <p className="py-1">3000</p>
-                                <p className="py-1">3000</p>
+                                <p className="py-1">{data?.["to_purchase"]?.total}</p>
+                                <p className="py-1">{data?.["to_opening_inventory"]?.total}</p>
+                                <p className="py-1">{data?.["to_other_direct_expense"]?.total}</p>
+                                <p className="py-1">{data?.["to_gross_profit_c/d"]?.total}</p>
                             </div>
                             <div className='px-3 mt-7 bt-2 h-[100px]'>
-                                <p className="py-1">300</p>
-                                <p className="py-1">300</p>
-
+                                <p className="py-1">{data?.["to_gross_loss"]?.total}</p>
+                                <p className="py-1">{data?.["to_salaries"]?.total}</p>
                             </div>
                         </div>
                     </section>
@@ -74,14 +82,12 @@ const BalanceSheetTable = () => {
                                 <h3>Amount</h3>
                             </header>
                             <div className='p-3 bb-2 h-[200px]'>
-                                <p className="py-1">3000</p>
-                                <p className="py-1">3000</p>
-                                <p className="py-1">3000</p>
+                                <p className="py-1">{data?.["by_sales"]?.total}</p>
+                                <p className="py-1">{data?.["by_closing_inventory"]?.total}</p>
+                                <p className="py-1">{data?.["by_gross_loss"]?.total}</p>
                             </div>
                             <div className='px-3 mt-7 bt-2 h-[100px]'>
-                                <p className="py-1">300</p>
-                                <p className="py-1">300</p>
-
+                                <p className="py-1">{data?.["by_gross_profit"]?.total}</p>
                             </div>
                         </div>
                     </section>
@@ -91,13 +97,13 @@ const BalanceSheetTable = () => {
                 <div className=" grid grid-cols-[1fr_120px] items-center justify-between border-r-2 border-gray-300">
                     <h4 className=" px-3 text-md font-semibold text-lg">By Net loss</h4>
                     <div className="bl-2 h-full grid place-items-center">
-                        <h4 className="text-md font-semibold text-lg">₹40000</h4>
+                        <h4 className="text-md font-semibold text-lg">₹{data?.["by_net_loss"]?.total}</h4>
                     </div>
                 </div>
                 <div className=" items-center justify-between grid grid-cols-[1fr_120px]">
                     <h4 className="px-3 text-md font-semibold text-lg">By Net Loss</h4>
                     <div className="bl-2 h-full grid place-items-center">
-                        <h4 className="text-md font-semibold text-lg">₹40000</h4>
+                        <h4 className="text-md font-semibold text-lg">₹{data?.["by_net_loss"]?.total}</h4>
                     </div>
                 </div>
             </footer>

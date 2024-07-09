@@ -1,9 +1,11 @@
+import { useEffect, useState } from "react"
 import Header from "../../../components/header/Header"
 import Loading from "../../../components/loading/Loading"
 import useQueryGetApi from "../../../hooks/useQueryGetApi.hook"
 import ProfitAndLossTable from "./components/ps-table"
 
 const ProfitAndLoss = () => {
+    const [formattedData, setFormattedData] = useState({})
     const breadCrumbData = [
         { name: 'Dashboard', link: '/' },
         { name: 'All Reports' },
@@ -11,6 +13,23 @@ const ProfitAndLoss = () => {
     ]
     const url = `reports/list/profit-loss`
     const { data, isPending } = useQueryGetApi(url)
+    console.log(data)
+    const getFormatData = () => {
+        const formated = data?.data?.map((item: { name: string, Total: string, account_id: string }) => (
+            {
+                [item?.name]: {
+                    total: item?.Total,
+                    account_id: item?.account_id
+                }
+            }
+        ))
+        setFormattedData(formated)
+    }
+    useEffect(() => {
+        if (data?.data) {
+            getFormatData()
+        }
+    }, [data])
     return (
         <>
             {
@@ -22,7 +41,7 @@ const ProfitAndLoss = () => {
                     {/* <DateFilter /> */}
                 </div>
                 <section className='pt-5 pb-2'>
-                    <ProfitAndLossTable />
+                    <ProfitAndLossTable data={formattedData} />
                 </section>
             </main>
         </>
