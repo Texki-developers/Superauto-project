@@ -28,10 +28,11 @@ interface IProps {
     }
   ) => void; // SetValue function for setting form values
   showFinance: boolean;
+  total: number,
   setShowFinance: React.Dispatch<SetStateAction<boolean>>;
 }
 
-const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, control, errors, setValue, showFinance, setShowFinance }: IProps) => {
+const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, control, errors, total, setValue, showFinance, setShowFinance }: IProps) => {
   const [newCustomer, setNewCustomer] = useState(false)
   const { formatedData: customers, isPending: customerPending } = useGetDropdownData(ICategory.CUSTOMER)
   console.log(customers)
@@ -152,7 +153,7 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
                   <InputBox
                     name='registrationNumber'
                     label='Registration Number'
-                    placeholder='KL55AE5570'
+                    placeholder='Registration Number'
                     register={register}
                     isDisabled
                     error={errors}
@@ -193,6 +194,7 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
                   name='balance'
                   label='Balance'
                   placeholder='0'
+                  isDisabled
                   type='number'
                   register={register}
                   error={errors}
@@ -204,7 +206,7 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
           <div>
             <div>
               <div className='grand-total flex justify-end font-bold text-lg py-4'>
-                Grand Total: 2237/-
+                Grand Total: {total}/-
               </div>
               <div className='button-wrapper flex h-full w-full items-center justify-between'>
                 <Button

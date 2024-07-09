@@ -77,6 +77,7 @@ const Table = (props: ITableProps) => {
               <th
                 id={`table-${item?.name.split(' ').join('')}`}
                 key={uuidv4()}
+                className={item?.textAlign}
               >
                 {item?.name}
               </th>
@@ -89,9 +90,9 @@ const Table = (props: ITableProps) => {
               return (
                 <tr className={(props?.showRowColor && i % 2 == 1) ? 'bg-gray-100' : ""} key={i}>
                   {props?.columnData?.map((keyItem) => (
-                    <td className={props?.showRowColor ? 'py-2 px-4' : 'p-4'} key={uuidv4()}>
+                    <td className={(props?.showRowColor ? 'py-2 px-4 ' : 'p-4 ') + keyItem?.textAlign} key={uuidv4()}>
                       {keyItem?.columnData && keyItem?.key ? (
-                        <span className='grid w-full place-items-center'>
+                        <span className={`grid w-full ${keyItem?.textAlign ? '' : 'place-items-center'} ${keyItem?.align}`}>
                           {keyItem?.columnData(item?.[keyItem?.key])}
                         </span>
                       ) : keyItem?.key ? (

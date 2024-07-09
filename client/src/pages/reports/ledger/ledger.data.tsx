@@ -22,11 +22,18 @@ export const ColumnData: ITableColumn[] = [
   {
     name: 'Debit(₹)',
     key: 'debit',
+    textAlign: 'text-start',
 
   },
   {
     name: 'Credit(₹)',
     key: 'credit',
+    textAlign: 'text-start',
   },
-  { name: 'Balance', key: 'runningbalance' },
+  {
+    name: 'Balance',
+    key: 'runningbalance',
+    textAlign: 'text-end',
+
+  },
 ];

@@ -20,7 +20,7 @@ const defaultValues: IVehicleSellFormValues = {
     label: '',
   },  // Default values for all fields
   saleRate: '',
-  mrp: '5454',
+  mrp: '',
   salesDate: '',
   paymentType: {
     value: '',
@@ -37,12 +37,13 @@ const defaultValues: IVehicleSellFormValues = {
 };
 
 const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
-  const { register, handleSubmit, reset, setValue, formState: { errors }, control } = useForm({
+  const { register, handleSubmit, reset, watch, setValue, formState: { errors }, control } = useForm({
     defaultValues
   })
   const [showExchangeForm, setShowExchangeForm] = useState(false);
   const { toastError, toastLoading, toastSuccess } = useToast()
   const [showFinance, setShowFinance] = useState(false);
+  const [total, setTotal] = useState<number>(0);
   const [exchangeDet, setExchangeDet] = useState<IExchangeVehicleDetails | null>(null)
   const onCancelClick = () => {
     setShowSellPage(false);
@@ -97,6 +98,20 @@ const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
     exchangeDet?.rate && setValue('rate', exchangeDet.rate)
   }, [exchangeDet])
 
+  useEffect(() => {
+    const salesRate = watch('saleRate')
+    const financeAmount = watch('financeAmount')
+    const financeServiceCharge = watch('financeServiceCharge')
+    setTotal(Number(salesRate ?? 0) + Number(financeAmount ?? 0) + Number(financeServiceCharge ?? 0))
+  }, [watch('saleRate'), watch('financeAmount'), watch('financeServiceCharge')])
+
+  useEffect(() => {
+    const salesRate = watch('saleRate')
+    const paymentAmount = watch('paymentAmount')
+    if (salesRate || paymentAmount) {
+      setValue('balance', `${Number(salesRate ?? 0) - Number(paymentAmount ?? 0)}`)
+    }
+  }, [watch('saleRate'), watch('paymentAmount')])
   return (
     <div>
       <Header breadCrumbData={breadCrumbData} />
@@ -104,7 +119,7 @@ const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
         {
           showExchangeForm ? <ExchangeVehicle setExchangeDet={setExchangeDet} showPopup={setShowExchangeForm} /> :
             <form onSubmit={handleSubmit(onSubmit)}>
-              <SellVehicleForm setShowFinance={setShowFinance} showFinance={showFinance} setValue={setValue} setShowExchangeForm={setShowExchangeForm} register={register} reset={reset} errors={errors} control={control} onCancelClick={onCancelClick} />
+              <SellVehicleForm total={total} setShowFinance={setShowFinance} showFinance={showFinance} setValue={setValue} setShowExchangeForm={setShowExchangeForm} register={register} reset={reset} errors={errors} control={control} onCancelClick={onCancelClick} />
             </form>
         }
       </div>
