@@ -17,6 +17,7 @@ export const ColumnData: ITableColumn[] = [
   },
   {
     name: 'Dr. Account',
+    textAlign: 'text-start',
     key: 'DebitAccount',
     columnData: (item: { name: string }) => {
       return item?.name;
@@ -24,10 +25,11 @@ export const ColumnData: ITableColumn[] = [
   },
   {
     name: 'Cr. Account',
+    textAlign: 'text-start',
     key: 'CreditAccount',
     columnData: (item: { name: string }) => {
       return item?.name;
     },
   },
-  { name: 'Amount(₹)', key: 'amount' },
+  { name: 'Amount(₹)', key: 'amount', textAlign: 'text-end' },
 ];
