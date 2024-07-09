@@ -124,7 +124,7 @@ export default function AssignVehicles({ setAssign, itemId, parent, apiUrl }: As
                   iconStyle={{ width: '1rem', textAlign: 'center' }}
                   text=''
                   type='button'
-                  bg='primary'
+                  bg={index === fields.length - 1 ? 'primary' : 'red'}
                   onClick={
                     index === fields.length - 1
                       ? handleAddField

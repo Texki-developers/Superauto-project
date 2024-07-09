@@ -92,7 +92,7 @@ const Table = (props: ITableProps) => {
                   {props?.columnData?.map((keyItem) => (
                     <td className={(props?.showRowColor ? 'py-2 px-4 ' : 'p-4 ') + keyItem?.textAlign} key={uuidv4()}>
                       {keyItem?.columnData && keyItem?.key ? (
-                        <span className={`grid w-full align-items-center ${keyItem?.align}`}>
+                        <span className={`grid w-full ${keyItem?.textAlign ? '' : 'place-items-center'} ${keyItem?.align}`}>
                           {keyItem?.columnData(item?.[keyItem?.key])}
                         </span>
                       ) : keyItem?.key ? (
