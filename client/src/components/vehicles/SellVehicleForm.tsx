@@ -193,6 +193,7 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
                   name='balance'
                   label='Balance'
                   placeholder='0'
+                  isDisabled
                   type='number'
                   register={register}
                   error={errors}

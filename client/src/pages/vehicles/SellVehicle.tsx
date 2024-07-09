@@ -37,7 +37,7 @@ const defaultValues: IVehicleSellFormValues = {
 };
 
 const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
-  const { register, handleSubmit, reset, setValue, formState: { errors }, control } = useForm({
+  const { register, handleSubmit, reset, watch, setValue, formState: { errors }, control } = useForm({
     defaultValues
   })
   const [showExchangeForm, setShowExchangeForm] = useState(false);
@@ -96,6 +96,14 @@ const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
     exchangeDet?.regNumb && setValue('registrationNumber', exchangeDet.regNumb)
     exchangeDet?.rate && setValue('rate', exchangeDet.rate)
   }, [exchangeDet])
+
+  useEffect(() => {
+    const salesRate = watch('saleRate')
+    const paymentAmount = watch('paymentAmount')
+    if (salesRate || paymentAmount) {
+      setValue('balance', `${Number(salesRate ?? 0) - Number(paymentAmount ?? 0)}`)
+    }
+  }, [watch('saleRate'), watch('paymentAmount')])
 
   return (
     <div>
