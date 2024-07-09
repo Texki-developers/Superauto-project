@@ -414,7 +414,12 @@ select * from join_ledger where ledger in ('Sundry Debtors','Cash','Bank','Sundr
 
                 return {
                     result,
-                    total
+                    
+                    total:{
+                        debit:total.total_debit,
+                        credit:total.total_credit,
+                    }
+                    
                 
                 };
       }
