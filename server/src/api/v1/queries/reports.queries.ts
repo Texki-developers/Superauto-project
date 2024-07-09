@@ -382,20 +382,41 @@ class ReportQueries {
     
     primary_ledger pl ON pl.pl_id = gat.account_type
     ),
+ total_category_all AS (
+    select sum(total_debit) AS all_total_debit,sum(total_credit) AS all_total_credit,type from join_ledger where ledger in ('Sundry Debtors','Cash','Bank','Sundry Creditor','Other Payables','Salary Payables','Purchase','Cash') group by type
+    ),
     total_category AS (
     select sum(total_debit) AS total_debit,sum(total_credit) AS total_credit,type from join_ledger jl where type in ('asset','liability')  group by type
-    )
+    ),
+grand_total AS (
+    select sum(all_total_debit) AS grand_total_debit,sum(all_total_credit) AS grand_total_credit from total_category_all 
+    )   
     
-    
-    select * from join_ledger where ledger in ('Sundry Debtors','Cash','Bank','Sundry Creditor','Other Payables','Salary Payables','Purchase','Cash') union all select total_debit,total_credit,type,'Total' as ledger from total_category 
+   
+select * from join_ledger where ledger in ('Sundry Debtors','Cash','Bank','Sundry Creditor','Other Payables','Salary Payables','Purchase','Cash') union all select total_debit,total_credit,type,'Total' as ledger from total_category UNION ALL select  grand_total_debit,grand_total_credit, NULL AS type,'Grand Total' As ledger from grand_total
             `
 
             const [trialBalance] = await db.query(trialBalancequery, {
                 replacements: { startDate, endDate  },
                 type: QueryTypes.RAW,
               })
-              
-                return trialBalance;
+
+              const result: any[] = [];
+              let total: any= null;
+
+              trialBalance.forEach((item:any) => {
+                if (item.ledger === 'Grand Total') {
+                  total = item;
+                } else {
+                  result.push(item);
+                }
+              });
+
+                return {
+                    result,
+                    total
+                
+                };
       }
 
 
