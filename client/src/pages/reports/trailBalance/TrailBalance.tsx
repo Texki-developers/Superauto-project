@@ -41,7 +41,6 @@ const TrailBalance = () => {
     const url = `reports/trial-balance?fromDate=${fromDate}&toDate=${toDate}`
     const { data, isPending } = useQueryGetApi(url)
     const getFormatData = (data: ITrialBalanceData[]) => {
-        console.log(data)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const store: any = {
             asset: { children: [] },
@@ -72,11 +71,13 @@ const TrailBalance = () => {
                 continue;
             }
         }
+        console.log(store)
         setFormatedData(store)
     }
     useEffect(() => {
-        if (data?.data) {
-            getFormatData(data?.data)
+        console.log(data)
+        if (data?.data?.result) {
+            getFormatData(data?.data?.result)
         }
     }, [data])
     return (
@@ -102,7 +103,7 @@ const TrailBalance = () => {
                     />
                 </div>
                 <section className='pt-5 pb-2'>
-                    <TrialTable total={data?.total} data={formatedData} />
+                    <TrialTable total={data?.data?.total} data={formatedData} />
                 </section>
             </main>
         </>
