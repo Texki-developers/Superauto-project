@@ -5,8 +5,6 @@ import AddVehicle from './AddVehicle';
 import Table from '../../components/table/Table';
 import { ColumnData } from './vehicle.data';
 import addProduct from '../../assets/icons/addCart.svg';
-import DeleteIcon from '../../assets/icons/delete.svg';
-import EditIcon from '../../assets/icons/edit.svg';
 import SellVehicle from './SellVehicle';
 import { useQuery } from '@tanstack/react-query';
 import { ITableColumn } from '../../types/table/table';
@@ -52,7 +50,7 @@ const Vehicles = () => {
               src={addProduct}
               alt=''
             />
-            <img
+            {/* <img
               onClick={() => onActionClick('edit', id)}
               src={EditIcon}
               alt=''
@@ -61,7 +59,7 @@ const Vehicles = () => {
               onClick={() => onActionClick('delete', id)}
               src={DeleteIcon}
               alt=''
-            />
+            /> */}
           </div>
         ),
       },

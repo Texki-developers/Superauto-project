@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import AddAndSearchItem from '../../components/addAndSearchItem/AddAndSearchItem';
 import Header from '../../components/header/Header';
 import ModalWrapper from '../../components/modalWrapper';
@@ -9,9 +9,9 @@ import { IEmployee } from '../../types/employees/employees';
 import { useForm } from 'react-hook-form';
 import useAccountApi from '../../hooks/useAccountApi.hook';
 import { IAccountApiBody, ICategory } from '../../types/apimodal/apimodal.d';
-import { ITableColumn } from '../../types/table/table';
-import DeleteIcon from '../../assets/icons/delete.svg';
-import EditIcon from '../../assets/icons/edit.svg';
+// import { ITableColumn } from '../../types/table/table';
+// import DeleteIcon from '../../assets/icons/delete.svg';
+// import EditIcon from '../../assets/icons/edit.svg';
 import useGetCategoryApi from '../../hooks/useGetCategoryApi.hook';
 
 const defaultValues: IEmployee = {
@@ -44,32 +44,32 @@ const Employees = () => {
     setShowEmployeesPopup(true);
   };
   const { data, isPending, refetch } = useGetCategoryApi(ICategory.EMPLOYEE)
-  const onActionClick = (type: string, id: string) => {
-    console.log(type, id)
-  }
-  const columnData: ITableColumn[] = useMemo(() => {
-    return [
-      ...ColumnData,
-      {
-        name: 'Action',
-        key: 'id',
-        columnData: (id: string) => (
-          <div className='flex gap-2 *:h-[20px] *:w-[20px]'>
-            <img
-              onClick={() => onActionClick('edit', id)}
-              src={EditIcon}
-              alt=''
-            />
-            <img
-              onClick={() => onActionClick('delete', id)}
-              src={DeleteIcon}
-              alt=''
-            />
-          </div>
-        ),
-      },
-    ];
-  }, []);
+  // const onActionClick = (type: string, id: string) => {
+  //   console.log(type, id)
+  // }
+  // const columnData: ITableColumn[] = useMemo(() => {
+  //   return [
+  //     ...ColumnData,
+  //     {
+  //       name: 'Action',
+  //       key: 'id',
+  //       columnData: (id: string) => (
+  //         <div className='flex gap-2 *:h-[20px] *:w-[20px]'>
+  //           <img
+  //             onClick={() => onActionClick('edit', id)}
+  //             src={EditIcon}
+  //             alt=''
+  //           />
+  //           <img
+  //             onClick={() => onActionClick('delete', id)}
+  //             src={DeleteIcon}
+  //             alt=''
+  //           />
+  //         </div>
+  //       ),
+  //     },
+  //   ];
+  // }, []);
   return (
     <>
       {
@@ -96,7 +96,7 @@ const Employees = () => {
                 />
               </section>
               <section className='pt-5 pb-2'>
-                <Table meta={data?.meta} data={data?.data} columnData={columnData} />
+                <Table meta={data?.meta} data={data?.data} columnData={ColumnData} />
               </section>
             </div>
           </>

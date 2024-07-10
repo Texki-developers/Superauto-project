@@ -11,8 +11,8 @@ import AddFinance from './AddFinance';
 import { IFinance } from '../../types/finance/finance';
 import { IAccountApiBody, ICategory } from '../../types/apimodal/apimodal.d';
 import useAccountApi from '../../hooks/useAccountApi.hook';
-import DeleteIcon from '../../assets/icons/delete.svg';
-import EditIcon from '../../assets/icons/edit.svg';
+// import DeleteIcon from '../../assets/icons/delete.svg';
+// import EditIcon from '../../assets/icons/edit.svg';
 import useGetCategoryApi from '../../hooks/useGetCategoryApi.hook';
 
 const defaultValues: IFinance = {
@@ -65,7 +65,7 @@ const Finance = () => {
               src={addProduct}
               alt=''
             />
-            <img
+            {/* <img
               onClick={() => onActionClick('edit', id)}
               src={EditIcon}
               alt=''
@@ -74,7 +74,7 @@ const Finance = () => {
               onClick={() => onActionClick('delete', id)}
               src={DeleteIcon}
               alt=''
-            />
+            /> */}
           </div>
         ),
       },

@@ -11,8 +11,6 @@ import useAccountApi from '../../hooks/useAccountApi.hook';
 import { IAccountApiBody, ICategory } from '../../types/apimodal/apimodal.d';
 import AssignVehicles from '../../components/AssignVehicles/AssignVehicles';
 import addProduct from '../../assets/icons/vehicle.png';
-import DeleteIcon from '../../assets/icons/delete.svg';
-import EditIcon from '../../assets/icons/edit.svg';
 import useGetCategoryApi from '../../hooks/useGetCategoryApi.hook';
 const defaultValues: IDeliveryService = {
   name: '', // Default value for name
@@ -64,7 +62,7 @@ const DeliveryServices = () => {
               src={addProduct}
               alt=''
             />
-            <img
+            {/* <img
               onClick={() => onActionClick('edit', id)}
               src={EditIcon}
               alt=''
@@ -73,7 +71,7 @@ const DeliveryServices = () => {
               onClick={() => onActionClick('delete', id)}
               src={DeleteIcon}
               alt=''
-            />
+            /> */}
           </div>
         ),
       },
