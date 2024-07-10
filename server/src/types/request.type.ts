@@ -71,8 +71,8 @@ interface IsellVehicleBody {
     exchange_vehicle_id?:number
     rate: number;
     amount: number;
-    customerName:string;
-    customerPhoneNumber:string;
+    customer_name:string;
+    customer_phone_number:string;
     due_date: Date;
 
 }

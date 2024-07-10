@@ -66,8 +66,8 @@ class InventoryController {
       amount: body.amount,
       due_date: body.due_date,
       exchange_vehicle_id: body.exchangeVehicleId,
-      customerPhoneNumber:body.partyPhoneNumber,
-      customerName:body.partyName,
+      customer_phone_number:body.customerPhoneNumber,
+      customer_name:body.customerName,
     };
 
     inventoryService
