@@ -122,6 +122,7 @@ class InventoryService {
                 dsTransactions[index].transaction_id = resultTransaction[index].transaction_id;
               });
 
+
               await inventoryQueries.addTodeliveryServiceTable(dsTransactions, { transaction: dbTransaction });
             } else {
               throw new Error('Delivery Expense Is not Found Try again...');
@@ -205,17 +206,15 @@ class InventoryService {
           })
         );
 
-
-
         const TransactionResult = await accountsQueries.generateTransaction(transactions, {
           transaction: dbTransaction,
         });
 
-        console.log(TransactionResult, 'Transaction Result');
-
         financerDetails.forEach((item, index) => {
-     
-          financerDetails[index].transaction_id = TransactionResult[1].transaction_id;
+
+          if (index >= 2 && index % 2 === 0) {
+            financerDetails[index].transaction_id = TransactionResult[index].transaction_id;
+          }
         });
 
         await inventoryQueries.addTofinanceTable(financerDetails, { transaction: dbTransaction });
@@ -352,8 +351,7 @@ class InventoryService {
       try {
         const dbTransaction = await db.transaction();
         const salesId = await accountsQueries.findAccount(E_LEDGERS_BASIC.SALE);
-        const cashId = await accountsQueries.findAccount(E_LEDGERS_BASIC.CASH);
-
+        const payment_mode = await accountsQueries.findAccount(data.payment_mode);
         if (data.customerPhoneNumber && data?.customerPhoneNumber?.length > 0) {
           if (data.customerName) {
             const newAccountResult = await accountsService.accountHelper(
@@ -363,10 +361,8 @@ class InventoryService {
             data.account_id = newAccountResult.account_id;
           }
         }
-        
         let transactions: ITransactionParams[] = [];
-
-        if (salesId && cashId) {
+        if (salesId && payment_mode) {
           transactions = [
             {
               amount: data.sales_rate,
@@ -379,14 +375,13 @@ class InventoryService {
             {
               amount: data.rate,
               credit_account: data.account_id,
-              debit_account: cashId,
+              debit_account: payment_mode,
               voucher_id: await getVoucher(E_VOUCHERS.Sale),
               description: '',
               transaction_date: data.sales_date,
             },
           ];
         }
-
         await accountsQueries.generateTransaction(transactions, { transaction: dbTransaction });
         await inventoryQueries.changeStatusOfVehicle(data.sold_vehicle_id, data.sales_rate, {
           transaction: dbTransaction,
@@ -411,14 +406,11 @@ class InventoryService {
         if (!data.is_exchange) {
           delete salesData.exchange_vehicle_id;
         }
-
         await inventoryQueries.addDatatoSales(salesData, { transaction: dbTransaction });
-
         await performTransaction(dbTransaction);
-
         resolve({
           message: 'vehicle sale success',
-        });
+        })
       } catch (error) {
         reject({ message: `Failed to sell vehicle Error: ${error}` });
       }
@@ -703,6 +695,18 @@ if(!isSold){
         const editGetApi = await inventoryQueries.getVehiclebyId(inventoryId);
 
         return resolve(editGetApi);
+      } catch (err) {
+        reject({ message: `Failed to List Brands: ${err}` });
+      }
+    });
+  }
+
+  getVehicleMrp(vehicle_id:number){
+    return new Promise(async (resolve, reject) => {
+      try {
+        const vehicle = await inventoryQueries.getVehicleMrp(vehicle_id);
+
+        return resolve(vehicle);
       } catch (err) {
         reject({ message: `Failed to List Brands: ${err}` });
       }

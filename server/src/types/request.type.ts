@@ -62,7 +62,7 @@ interface IsellVehicleBody {
     account_id: number;
     sales_rate: number;
     sales_date: Date;
-    payment_mode: string;
+    payment_mode: 'Cash'|'Bank';
     finance_amount?: number;
     finance_charge?: number;
     sold_vehicle_id: number;

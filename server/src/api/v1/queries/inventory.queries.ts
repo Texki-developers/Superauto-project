@@ -1,4 +1,4 @@
-import { FindOptions } from 'sequelize';
+import { FindOptions, QueryTypes } from 'sequelize';
 import BrandModel from '../../../models/brand';
 import FileStore from '../../../models/documents';
 import DsTransaction from '../../../models/dsTransactions';
@@ -105,13 +105,11 @@ class InventoryQueries {
     return result;
   }
 
-  async getVehicleRegNo(options: FindOptions,query:string) {
-   
-
+  async getVehicleRegNo(options: FindOptions, query: string) {
     // Set the `replacements` property to include a custom SQL query and options.
     const [vehicles] = await db.query(query, options);
-    console.log(vehicles)
-    return vehicles
+    console.log(vehicles);
+    return vehicles;
   }
   async addDataInToSalesReturn(data: any, options?: any) {
     return await SaleReturn.create(data, options);
@@ -160,6 +158,30 @@ class InventoryQueries {
         'year_of_manufacture',
       ],
     });
+  }
+
+  async getVehicleMrp(vehicle_id: number) {
+    const query = `
+    SELECT 
+    (i.purchase_rate + SUM(t.amount)) AS MRP
+FROM 
+    inventory i
+LEFT JOIN 
+    ds_transactions ds ON i.inventory_id = ds.vehicle_id
+LEFT JOIN 
+    service_transactions st ON i.inventory_id = st.vehicle_id
+LEFT JOIN 
+    transactions t ON ds.transaction_id = t.transaction_id OR st.transaction_id = t.transaction_id
+WHERE 
+    i.inventory_id = :vehicle_id
+GROUP BY 
+    i.purchase_rate;`;
+    const [mrp] = await db.query(query, {
+      replacements: { vehicle_id },
+      type: QueryTypes.RAW,
+    });
+
+    return mrp[0]
   }
 }
 

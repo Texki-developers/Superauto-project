@@ -221,6 +221,18 @@ console.log(data.is_sales_return,"IS SALES")
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
       });
   }
+
+  getVehicleMrp (req: Request, res: Response){
+    const { vehicle_id } = req.query;
+    inventoryService
+      .getVehicleMrp(Number(vehicle_id))
+      .then((data: any) => {
+        responseHandler(res, 'OK', data, { message: data.message });
+      })
+      .catch((error) => {
+        responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+      });
+  }
 }
 
 export default new InventoryController();

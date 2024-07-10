@@ -6,6 +6,7 @@ import {
   import { db } from '../config/database';
 import { IDsTransactionAttributes } from '../types/db.type';
 import Transaction from './transaction';
+import Inventory from './inventory';
   
   // Define the interface for model attributes
 
@@ -33,7 +34,11 @@ import Transaction from './transaction';
     },
     vehicle_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references:{
+        model:Inventory,
+        key:'inventory_id'
+      }
     },
     transaction_id: {
       type: DataTypes.INTEGER,

@@ -1,4 +1,4 @@
-import DoneIcon from '../../assets/icons/done.svg';
+import DoneIcon from '../../assets/icons/Done.svg';
 import Error from '../../assets/icons/error.svg';
 import { ITableColumn } from '../../types/table/table';
 
