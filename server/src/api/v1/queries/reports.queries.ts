@@ -362,40 +362,56 @@ class ReportQueries {
                     a.account_id,
                     a.name,
                     p.pl_id AS account_type,
-            p.type,
+                    p.type,
                     COALESCE(SUM(CASE WHEN t.debit_account = a.account_id THEN t.amount ELSE 0 END), 0) AS total_debit,
                     COALESCE(SUM(CASE WHEN t.credit_account = a.account_id THEN t.amount ELSE 0 END), 0) AS total_credit
                 FROM
                     accounts a
                 LEFT JOIN
-                    transactions t ON a.account_id = t.debit_account OR a.account_id = t.credit_account
+                    transactions t ON (a.account_id = t.debit_account OR a.account_id = t.credit_account)
+                    AND t.transaction_date BETWEEN :startDate AND :endDate -- Adjust these dates as needed
                 LEFT JOIN
                     primary_ledger p ON a.head = p.pl_id
                 GROUP BY
-                      a.account_id, a.name, p.pl_id
+                    a.account_id, a.name, p.pl_id
             ),
-    group_by_account_type AS (
-    select account_type,sum(total_debit) AS total_debit ,sum(total_credit) AS total_credit from account_balances 
-    group by account_type
-    
-    ),
-    join_ledger AS (
-    select total_debit,total_credit,type,ledger_name as ledger from group_by_account_type gat LEFT JOIN 
-    
-    primary_ledger pl ON pl.pl_id = gat.account_type
-    ),
- total_category_all AS (
-    select sum(total_debit) AS all_total_debit,sum(total_credit) AS all_total_credit,type from join_ledger where ledger in ('Sundry Debtors','Cash','Bank','Sundry Creditor','Other Payables','Salary Payables','Purchase','Cash') group by type
-    ),
-    total_category AS (
-    select sum(total_debit) AS total_debit,sum(total_credit) AS total_credit,type from join_ledger jl where type in ('asset','liability')  group by type
-    ),
-grand_total AS (
-    select sum(all_total_debit) AS grand_total_debit,sum(all_total_credit) AS grand_total_credit from total_category_all 
-    )   
-    
-   
-select * from join_ledger where ledger in ('Sundry Debtors','Cash','Bank','Sundry Creditor','Other Payables','Salary Payables','Purchase','Cash') union all select total_debit,total_credit,type,'Total' as ledger from total_category UNION ALL select  grand_total_debit,grand_total_credit, NULL AS type,'Grand Total' As ledger from grand_total
+            group_by_account_type AS (
+                SELECT account_type, SUM(total_debit) AS total_debit, SUM(total_credit) AS total_credit
+                FROM account_balances 
+                GROUP BY account_type
+            ),
+            join_ledger AS (
+                SELECT total_debit, total_credit, type, ledger_name AS ledger
+                FROM group_by_account_type gat
+                LEFT JOIN primary_ledger pl ON pl.pl_id = gat.account_type
+            ),
+            total_category_all AS (
+                SELECT SUM(total_debit) AS all_total_debit, SUM(total_credit) AS all_total_credit, type
+                FROM join_ledger
+                WHERE ledger IN ('Sundry Debtors', 'Cash', 'Bank', 'Sundry Creditor', 'Other Payables', 'Salary Payables', 'Purchase', 'Cash')
+                GROUP BY type
+            ),
+            total_category AS (
+                SELECT SUM(total_debit) AS total_debit, SUM(total_credit) AS total_credit, type
+                FROM join_ledger
+                WHERE type IN ('asset', 'liability')
+                GROUP BY type
+            ),
+            grand_total AS (
+                SELECT SUM(all_total_debit) AS grand_total_debit, SUM(all_total_credit) AS grand_total_credit
+                FROM total_category_all 
+            )
+            
+            SELECT * 
+            FROM join_ledger 
+            WHERE ledger IN ('Sundry Debtors', 'Cash', 'Bank', 'Sundry Creditor', 'Other Payables', 'Salary Payables', 'Purchase', 'Cash') 
+            UNION ALL 
+            SELECT total_debit, total_credit, type, 'Total' AS ledger 
+            FROM total_category 
+            UNION ALL 
+            SELECT grand_total_debit, grand_total_credit, NULL AS type, 'Grand Total' AS ledger 
+            FROM grand_total;
+            
             `
 
             const [trialBalance] = await db.query(trialBalancequery, {
@@ -494,12 +510,12 @@ select * from join_ledger where ledger in ('Sundry Debtors','Cash','Bank','Sundr
         WITH opening_inventory AS (
             SELECT SUM(purchase_rate) AS opening_inventory 
             FROM inventory 
-            WHERE date_of_purchase < '2024-06-06'
+            WHERE date_of_purchase < '2023-06-06'
         ),
         closing_inventory AS (
             SELECT SUM(purchase_rate) AS closing_inventory 
             FROM inventory 
-            WHERE date_of_purchase > '2025-06-06'
+            WHERE date_of_purchase > '2024-06-06'
         ),
         purchase AS (
             SELECT 
@@ -514,7 +530,7 @@ select * from join_ledger where ledger in ('Sundry Debtors','Cash','Bank','Sundr
             LEFT JOIN
                 primary_ledger p ON a.head = p.pl_id
             WHERE
-                a.account_id = 125
+                a.account_id = 16
             GROUP BY
                 a.account_id, a.name
         ),
@@ -531,7 +547,7 @@ select * from join_ledger where ledger in ('Sundry Debtors','Cash','Bank','Sundr
             LEFT JOIN
                 primary_ledger p ON a.head = p.pl_id
             WHERE
-                a.account_id = 120
+                a.account_id = 11
             GROUP BY
                 a.account_id, a.name
         ),
@@ -548,7 +564,7 @@ select * from join_ledger where ledger in ('Sundry Debtors','Cash','Bank','Sundr
             LEFT JOIN
                 primary_ledger p ON a.head = p.pl_id
             WHERE
-                a.account_id = 122
+                a.account_id = 13
             GROUP BY
                 a.account_id, a.name
         ),
@@ -565,7 +581,7 @@ select * from join_ledger where ledger in ('Sundry Debtors','Cash','Bank','Sundr
             LEFT JOIN
                 primary_ledger p ON a.head = p.pl_id
             WHERE
-                a.account_id = 126
+                a.account_id = 17
             GROUP BY
                 a.account_id, a.name
         ),
@@ -582,11 +598,10 @@ select * from join_ledger where ledger in ('Sundry Debtors','Cash','Bank','Sundr
             LEFT JOIN
                 primary_ledger p ON a.head = p.pl_id
             WHERE
-                a.account_id = 117
+                a.account_id = 5
             GROUP BY
                 a.account_id, a.name
         )
-        
         SELECT 
             account_id,
             name,
@@ -599,96 +614,108 @@ select * from join_ledger where ledger in ('Sundry Debtors','Cash','Bank','Sundr
                     Purchase AS "Total"
                 FROM 
                     purchase 
-        
+                
                 UNION ALL 
-        
+                
                 SELECT 
                     account_id,
-                    'Salary' as name,
+                    'to_salaries' as name,
                     salary AS "Total"
                 FROM 
                     salary
-        
+                
                 UNION ALL
-        
+                
                 SELECT 
                     account_id,
-                    'Direct Expense' as name,
+                    'to_other_direct_expense' as name,
                     Direct_Expense AS "Total"
                 FROM 
                     direct_expense
-        
+                
                 UNION ALL
-        
+                
                 SELECT 
                     NULL AS account_id,
-                    'Capital' as name,
+                    'by_investment' as name,
                     capital AS "Total"
                 FROM 
                     capital
-        
+                
                 UNION ALL
-        
+                
                 SELECT 
                     NULL AS account_id,
-                    'To Closing Inventory' as name,
-                    closing_inventory AS "Total"
+                    'by_closing_inventory' as name,
+                    closing_inventory.closing_inventory AS "Total"
                 FROM 
                     closing_inventory
-        
+                
                 UNION ALL
-        
+                
                 SELECT 
                     account_id,
-                    'Sales' as name,
+                    'by_sales' as name,
                     Sales AS "Total"
                 FROM 
                     sales
-        
+                
                 UNION ALL 
-        
+                
                 SELECT 
                     NULL AS account_id,
-                    'To Opening Inventory' AS name,
-                    opening_inventory AS "Total"
+                    'to_opening_inventory' AS name,
+                    opening_inventory.opening_inventory AS "Total"
                 FROM 
                     opening_inventory
-        
+                
                 UNION ALL
-        
+                
                 SELECT 
                     NULL AS account_id,
-                    'Gross Profit/Loss' AS name,
-                    COALESCE((SELECT 
+                    'by_gross_profit_loss' AS name,
+                    COALESCE(
+                        (
+                            SELECT 
                                 COALESCE(SUM(Sales), 0) + COALESCE(SUM(closing_inventory), 0) + COALESCE(SUM(opening_inventory), 0) + COALESCE(SUM(Purchase), 0) - COALESCE(SUM(Direct_Expense), 0) AS "Total"
                             FROM 
                                 sales, closing_inventory, opening_inventory, purchase, direct_expense
-                           ), 0)
-        
+                        ), 
+                        0
+                    )
+                
                 UNION ALL
-        
+                
                 SELECT 
                     NULL AS account_id,
-                    'Net Profit' AS name,
-                    COALESCE((SELECT 
+                    'to_net_profit' AS name,
+                    COALESCE(
+                        (
+                            SELECT 
                                 COALESCE(SUM(Sales), 0) + COALESCE(SUM(closing_inventory), 0) + COALESCE(SUM(opening_inventory), 0) + COALESCE(SUM(Purchase), 0) - COALESCE(SUM(Direct_Expense), 0) - COALESCE(SUM(salary), 0) AS "Total"
                             FROM 
                                 sales, closing_inventory, opening_inventory, purchase, direct_expense, salary
-                           ), 0)
-        
+                        ), 
+                        0
+                    )
+                
                 UNION ALL
-        
+                
                 SELECT 
                     NULL AS account_id,
-                    'Net LOSS' AS name,
-                    COALESCE((SELECT 
+                    'by_net_loss' AS name,
+                    COALESCE(
+                        (
+                            SELECT 
                                 COALESCE(SUM(capital), 0) - COALESCE(SUM(Sales), 0) - COALESCE(SUM(closing_inventory), 0) - COALESCE(SUM(opening_inventory), 0) - COALESCE(SUM(Purchase), 0) + COALESCE(SUM(Direct_Expense), 0) AS "Total"
                             FROM 
                                 capital, sales, closing_inventory, opening_inventory, purchase, direct_expense
-                           ), 0)
+                        ), 
+                        0
+                    )
             ) AS combined_results
         ORDER BY 
-            name;;
+            name;
         `
         const [reportAndLoss]:any = await db.query(query, {
             // replacements: { startDate, endDate  },
