@@ -93,7 +93,7 @@ const Table = (props: ITableProps) => {
                     <td className={(props?.showRowColor ? 'py-2 px-4 ' : 'p-4 ') + keyItem?.textAlign} key={uuidv4()}>
                       {keyItem?.columnData && keyItem?.key ? (
                         <span className={`grid w-full ${keyItem?.textAlign ? '' : 'place-items-center'} ${keyItem?.align}`}>
-                          {keyItem?.columnData(item?.[keyItem?.key])}
+                          {keyItem?.columnData(item?.[keyItem?.key], keyItem?.returnData ? item : null)}
                         </span>
                       ) : keyItem?.key ? (
                         item?.[keyItem?.key]
