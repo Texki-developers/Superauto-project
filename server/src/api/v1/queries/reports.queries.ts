@@ -180,8 +180,8 @@ class ReportQueries {
                 NULL AS Date,
                 'Closing Balance' AS Description,
                 NULL AS VoucherID,
-                0 AS Debit,
-                0 AS Credit,
+                COALESCE((SELECT SUM(debit) FROM combined_data), 0) AS Debit,
+                COALESCE((SELECT SUM(credit) FROM combined_data), 0) AS Credit,
                 (SELECT * FROM total_closing_balance) AS RunningBalance
   )
   
@@ -200,6 +200,8 @@ class ReportQueries {
       }
 
       async cashbookReport(query:string,startDate:string, endDate:string,accountId:number){
+
+        console.log(startDate,endDate,accountId)
         const ledgerQuery = `
         WITH account_type AS (
             SELECT 
@@ -334,15 +336,15 @@ class ReportQueries {
                 NULL AS Date,
                 'Closing Balance' AS Description,
                 NULL AS VoucherID,
-                0 AS Debit,
-                0 AS Credit,
+                COALESCE((SELECT SUM(debit) FROM combined_data), 0) AS Debit,
+                COALESCE((SELECT SUM(credit) FROM combined_data), 0) AS Credit,
                 (SELECT * FROM total_closing_balance) AS RunningBalance
   )
   
         SELECT 
      *
         FROM 
-            all_data; 
+            all_data;
       `;
       
       const [cashbookReport] = await db.query(ledgerQuery, {

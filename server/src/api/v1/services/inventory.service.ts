@@ -352,12 +352,15 @@ class InventoryService {
         const dbTransaction = await db.transaction();
         const salesId = await accountsQueries.findAccount(E_LEDGERS_BASIC.SALE);
         const payment_mode = await accountsQueries.findAccount(data.payment_mode);
-        if (data.customerPhoneNumber && data?.customerPhoneNumber?.length > 0) {
-          if (data.customerName) {
+        if (data.customer_phone_number && data?.customer_phone_number?.length > 0) {
+          console.log('entering inside ?')
+          if (data.customer_name) {
             const newAccountResult = await accountsService.accountHelper(
-              { party_name: data.customerName, party_phone_number: data.customerPhoneNumber },
+              { party_name: data.customer_name, party_phone_number: data.customer_phone_number },
               'CUSTOMER'
             );
+
+            console.log(newAccountResult,"NEW ACCOUNT")
             data.account_id = newAccountResult.account_id;
           }
         }
@@ -382,6 +385,7 @@ class InventoryService {
             },
           ];
         }
+        console.log(transactions,"TRANSACTIon")
         await accountsQueries.generateTransaction(transactions, { transaction: dbTransaction });
         await inventoryQueries.changeStatusOfVehicle(data.sold_vehicle_id, data.sales_rate, {
           transaction: dbTransaction,
