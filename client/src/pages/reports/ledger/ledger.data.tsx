@@ -22,11 +22,26 @@ export const ColumnData: ITableColumn[] = [
   {
     name: 'Debit(₹)',
     key: 'debit',
+    textAlign: 'text-start',
+    returnData: true,
+    columnData: (value, data) => {
+      return (data?.debit == 0 && data?.credit == 0) ? '' : value
+    }
 
   },
   {
     name: 'Credit(₹)',
     key: 'credit',
+    textAlign: 'text-start',
+    returnData: true,
+    columnData: (value, data) => {
+      return (data?.debit == 0 && data?.credit == 0) ? '' : value
+    }
   },
-  { name: 'Balance', key: 'runningbalance' },
+  {
+    name: 'Balance',
+    key: 'runningbalance',
+    textAlign: 'text-end',
+
+  },
 ];

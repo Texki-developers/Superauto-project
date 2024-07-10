@@ -70,7 +70,7 @@ const CashBook = () => {
                         <td className='font-semibold text-sm'>{lastItem?.description}</td>
                         <td className='font-semibold text-sm'>{lastItem?.debit}</td>
                         <td className='font-semibold text-sm'>{lastItem?.credit}</td>
-                        <td className='font-semibold text-sm'>{lastItem?.closingbalance}</td>
+                        <td className='font-semibold text-sm'>{lastItem?.runningbalance}</td>
                     </tr>
                 }
             </>
