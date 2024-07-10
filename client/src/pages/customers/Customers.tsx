@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import AddAndSearchItem from '../../components/addAndSearchItem/AddAndSearchItem';
 import Header from '../../components/header/Header';
 import ModalWrapper from '../../components/modalWrapper';
@@ -9,9 +9,6 @@ import { useForm } from 'react-hook-form';
 import Table from '../../components/table/Table';
 import { IAccountApiBody, ICategory } from '../../types/apimodal/apimodal.d';
 import useAccountApi from '../../hooks/useAccountApi.hook';
-import { ITableColumn } from '../../types/table/table';
-import DeleteIcon from '../../assets/icons/delete.svg';
-import EditIcon from '../../assets/icons/edit.svg';
 import useGetCategoryApi from '../../hooks/useGetCategoryApi.hook';
 
 const defaultValues: ICustomer = {
@@ -47,29 +44,29 @@ const Customers = () => {
   const onActionClick = (type: string, id: string) => {
     console.log(type, id)
   }
-  const columnData: ITableColumn[] = useMemo(() => {
-    return [
-      ...ColumnData,
-      {
-        name: 'Action',
-        key: 'id',
-        columnData: (id: string) => (
-          <div className='flex gap-2 *:h-[20px] *:w-[20px]'>
-            <img
-              onClick={() => onActionClick('edit', id)}
-              src={EditIcon}
-              alt=''
-            />
-            <img
-              onClick={() => onActionClick('delete', id)}
-              src={DeleteIcon}
-              alt=''
-            />
-          </div>
-        ),
-      },
-    ];
-  }, []);
+  // const columnData: ITableColumn[] = useMemo(() => {
+  //   return [
+  //     ...ColumnData,
+  //     {
+  //       name: 'Action',
+  //       key: 'id',
+  //       columnData: (id: string) => (
+  //         <div className='flex gap-2 *:h-[20px] *:w-[20px]'>
+  //           <img
+  //             onClick={() => onActionClick('edit', id)}
+  //             src={EditIcon}
+  //             alt=''
+  //           />
+  //           <img
+  //             onClick={() => onActionClick('delete', id)}
+  //             src={DeleteIcon}
+  //             alt=''
+  //           />
+  //         </div>
+  //       ),
+  //     },
+  //   ];
+  // }, []);
   return (
     <>
       {
@@ -96,7 +93,7 @@ const Customers = () => {
                 />
               </section>
               <section className='pt-5 pb-2'>
-                <Table meta={data?.meta} data={data.data} columnData={columnData} />
+                <Table meta={data?.meta} data={data.data} columnData={ColumnData} />
               </section>
             </div>
           </>

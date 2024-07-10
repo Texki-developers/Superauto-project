@@ -12,8 +12,8 @@ import { IAccountApiBody, ICategory } from '../../types/apimodal/apimodal.d';
 import useAccountApi from '../../hooks/useAccountApi.hook';
 import { ITableColumn } from '../../types/table/table';
 import addProduct from '../../assets/icons/vehicle.png';
-import DeleteIcon from '../../assets/icons/delete.svg';
-import EditIcon from '../../assets/icons/edit.svg';
+// import DeleteIcon from '../../assets/icons/delete.svg';
+// import EditIcon from '../../assets/icons/edit.svg';
 import useGetCategoryApi from '../../hooks/useGetCategoryApi.hook';
 
 const defaultValues: IServiceShop = {
@@ -66,7 +66,7 @@ const ServiceShop = () => {
               src={addProduct}
               alt=''
             />
-            <img
+            {/* <img
               onClick={() => onActionClick('edit', id)}
               src={EditIcon}
               alt=''
@@ -75,7 +75,7 @@ const ServiceShop = () => {
               onClick={() => onActionClick('delete', id)}
               src={DeleteIcon}
               alt=''
-            />
+            /> */}
           </div>
         ),
       },
