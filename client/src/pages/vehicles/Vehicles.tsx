@@ -19,6 +19,7 @@ const Vehicles = () => {
   const [showAddPage, setShowAddPage] = useState<boolean>(false);
   const [showSellPage, setShowSellPage] = useState<boolean>(false);
   const [selectedVehicle, setSelectedVehicle] = useState('')
+  const [selectedVehicleMrp, setSelectedVehicleMrp] = useState<string | undefined>('')
   const onAddButtonClick = () => {
     setShowAddPage(true);
   };
@@ -30,9 +31,10 @@ const Vehicles = () => {
   const onSearchData = (query: string) => {
     console.log(query)
   }
-  const onActionClick = (type: 'add' | 'edit' | 'delete', id: string) => {
+  const onActionClick = (type: 'add' | 'edit' | 'delete', id: string, mrp?: string) => {
     if (type === 'add') {
       setSelectedVehicle(id)
+      setSelectedVehicleMrp(mrp)
       setShowSellPage(true);
     }
   };
@@ -42,10 +44,11 @@ const Vehicles = () => {
       {
         name: 'Action',
         key: 'inventory_id',
-        columnData: (id: string) => (
+        returnData: true,
+        columnData: (id: string, data: any) => (
           <div className='flex gap-2 *:h-[20px] *:w-[20px]'>
             <img
-              onClick={() => onActionClick('add', id)}
+              onClick={() => onActionClick('add', id, data?.mrp)}
               src={addProduct}
               alt=''
             />
@@ -75,7 +78,7 @@ const Vehicles = () => {
           <AddVehicle setShowAddPage={setShowAddPage} refetch={refetch} />
         ) :
           showSellPage ? (
-            <SellVehicle refetch={refetch} vehicleId={selectedVehicle} setShowSellPage={setShowSellPage} />
+            <SellVehicle mrp={selectedVehicleMrp} refetch={refetch} vehicleId={selectedVehicle} setShowSellPage={setShowSellPage} />
           ) :
             (
               <>

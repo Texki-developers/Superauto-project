@@ -5,7 +5,8 @@ export interface ITableColumn {
   align?: string;
   key?: string;
   index?: boolean;
-  textAlign?:string
+  textAlign?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  columnData?: (value: any) => string | React.ReactNode;
+  columnData?: (value: any, data?: any) => string | React.ReactNode;
+  returnData?: boolean;
 }

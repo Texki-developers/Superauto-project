@@ -12,6 +12,7 @@ interface IProps {
   setShowSellPage: React.Dispatch<SetStateAction<boolean>>;
   vehicleId: string;
   refetch: () => void;
+  mrp?: string | undefined;
 }
 
 const defaultValues: IVehicleSellFormValues = {
@@ -36,7 +37,7 @@ const defaultValues: IVehicleSellFormValues = {
   balance: ''
 };
 
-const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
+const SellVehicle = ({ setShowSellPage, vehicleId, refetch, mrp }: IProps) => {
   const { register, handleSubmit, reset, watch, setValue, formState: { errors }, control } = useForm({
     defaultValues
   })
@@ -48,6 +49,9 @@ const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
   const onCancelClick = () => {
     setShowSellPage(false);
   };
+  useEffect(() => {
+    setValue('mrp', mrp ?? '')
+  }, [])
   const breadCrumbData = [
     { name: 'Dashboard', link: '/' },
     { name: 'Vehicles', link: '/vehicles' },
