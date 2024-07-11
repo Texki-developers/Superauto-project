@@ -6,6 +6,9 @@ import useGetApis from "../../../hooks/useGetApi.hook"
 import Loading from "../../../components/loading/Loading"
 import { ColumnData } from "./dailyBook.data"
 import { useSearchParams } from "react-router-dom"
+import DateFilter from "../../../components/filterComponent/dateFilter/DateFilter"
+import moment from "moment"
+import { useState } from "react"
 
 const breadCrumbData = [
     { name: 'Dashboard', link: '/' },
@@ -19,7 +22,10 @@ const DailyBook = () => {
     if (searchParams.get('filter')) {
         url = url + `?voucher=${searchParams.get('filter')}`
     }
-    const selectUrl = `reports/list/dailybook-voucher`
+    const [fromDate, setFromDate] = useState(moment('2024-01-06').format('YYYY-MM-DD'));
+    const [toDate, setToDate] = useState(moment('2024-01-08').format('YYYY-MM-DD'));
+
+    const selectUrl = `reports/list/dailybook-voucher?fromDate=${fromDate}&toDate=${toDate}`
     const fetchDailyBook = () => callApi(url);
     const fetchDailyBookFilterData = () => callApi(selectUrl);
     const { data, isPending } = useQuery({ queryKey: [url, searchParams.get('filter')], queryFn: fetchDailyBook })
@@ -34,6 +40,15 @@ const DailyBook = () => {
             setSearchParams(searchParams)
         }
     }
+    const handleDateFromChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newFromDate = moment(event.target.value).format('YYYY-MM-DD');
+        setFromDate(newFromDate);
+    };
+
+    const handleDateToChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newToDate = moment(event.target.value).format('YYYY-MM-DD');
+        setToDate(newToDate);
+    };
     return (
         <>
             {
@@ -50,7 +65,18 @@ const DailyBook = () => {
                         placeholder="Filter"
                         onChange={onFilterChanged}
                         options={options?.data} />
-                    {/* <DateFilter /> */}
+                    <DateFilter
+                        dateFromProps={{
+                            placeholder: 'Date From',
+                            onChange: handleDateFromChange,
+                            value: fromDate,
+                        }}
+                        dateToProps={{
+                            placeholder: 'Date To',
+                            onChange: handleDateToChange,
+                            value: toDate,
+                        }}
+                    />
                 </div>
                 <section className='pt-5 pb-2'>
                     <Table showRowColor data={data?.data} columnData={ColumnData} hideFooter />

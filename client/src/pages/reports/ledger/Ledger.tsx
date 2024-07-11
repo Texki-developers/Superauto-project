@@ -87,10 +87,10 @@ const Ledger = () => {
                     <tr>
                         <td></td>
                         <td></td>
-                        <td className='font-semibold text-sm'>{lastItem?.description}</td>
-                        <td className='font-semibold text-sm'>{lastItem?.debit}</td>
-                        <td className='font-semibold text-sm'>{lastItem?.credit}</td>
-                        <td className='font-semibold text-sm'>{lastItem?.runningbalance}</td>
+                        <td className='font-semibold text-sm  text-center'>{lastItem?.description}</td>
+                        <td className='font-semibold text-sm  text-start'>{lastItem?.debit}</td>
+                        <td className='font-semibold text-sm  text-start'>{lastItem?.credit}</td>
+                        <td className='font-semibold text-sm  text-end'>{lastItem?.runningbalance}</td>
                     </tr>
                 }
             </>
