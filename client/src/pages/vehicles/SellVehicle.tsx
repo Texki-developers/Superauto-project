@@ -7,12 +7,12 @@ import { useForm } from 'react-hook-form';
 import ExchangeVehicle from './ExchangeVehicle/ExchangeVehicle';
 import useToast from '../../hooks/useToast.hook';
 import AuthApiService from '../../services/api-services';
+import useQueryGetApi from '../../hooks/useQueryGetApi.hook';
 
 interface IProps {
   setShowSellPage: React.Dispatch<SetStateAction<boolean>>;
   vehicleId: string;
   refetch: () => void;
-  mrp?: string | undefined;
 }
 
 const defaultValues: IVehicleSellFormValues = {
@@ -37,7 +37,7 @@ const defaultValues: IVehicleSellFormValues = {
   balance: ''
 };
 
-const SellVehicle = ({ setShowSellPage, vehicleId, refetch, mrp }: IProps) => {
+const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
   const { register, handleSubmit, reset, watch, setValue, formState: { errors }, control } = useForm({
     defaultValues
   })
@@ -49,9 +49,13 @@ const SellVehicle = ({ setShowSellPage, vehicleId, refetch, mrp }: IProps) => {
   const onCancelClick = () => {
     setShowSellPage(false);
   };
+
+  const { data } = useQueryGetApi(`inventory/vehicle/mrp?vehicle_id=${vehicleId}`)
   useEffect(() => {
-    setValue('mrp', mrp ?? '')
-  }, [])
+    if (data) {
+      setValue('mrp', data?.data?.mrp)
+    }
+  }, [data])
   const breadCrumbData = [
     { name: 'Dashboard', link: '/' },
     { name: 'Vehicles', link: '/vehicles' },
