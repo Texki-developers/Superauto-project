@@ -13,17 +13,13 @@ const ProfitAndLoss = () => {
     ]
     const url = `reports/list/profit-loss`
     const { data, isPending } = useQueryGetApi(url)
-    console.log(data)
     const getFormatData = () => {
-        const formated = data?.data?.map((item: { name: string, Total: string, account_id: string }) => (
-            {
-                [item?.name]: {
-                    total: item?.Total,
-                    account_id: item?.account_id
-                }
-            }
-        ))
-        setFormattedData(formated)
+        const formatted: any = {};
+        for (let item of data?.data) {
+            formatted[item.name] = { total: item.Total, account_id: item.account_id }
+        }
+        console.log(formatted)
+        setFormattedData(formatted)
     }
     useEffect(() => {
         if (data?.data) {

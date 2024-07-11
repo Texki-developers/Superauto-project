@@ -46,14 +46,14 @@ const BalanceSheetTable = ({ data }: IProps) => {
                                 <h3>Amount</h3>
                             </header>
                             <div className='p-3 bb-2 h-[200px]'>
-                                <p className="py-1">{data?.["to_purchase"]?.total}</p>
-                                <p className="py-1">{data?.["to_opening_inventory"]?.total}</p>
-                                <p className="py-1">{data?.["to_other_direct_expense"]?.total}</p>
-                                <p className="py-1">{data?.["to_gross_profit_c/d"]?.total}</p>
+                                <p className="py-1">{data?.["to_purchase"]?.total ?? "--"}</p>
+                                <p className="py-1">{data?.["to_opening_inventory"]?.total ?? "--"}</p>
+                                <p className="py-1">{data?.["to_other_direct_expense"]?.total ?? "--"}</p>
+                                <p className="py-1">{data?.["to_gross_profit_c/d"]?.total ?? "--"}</p>
                             </div>
                             <div className='px-3 mt-7 bt-2 h-[100px]'>
-                                <p className="py-1">{data?.["to_gross_loss"]?.total}</p>
-                                <p className="py-1">{data?.["to_salaries"]?.total}</p>
+                                <p className="py-1">{data?.["to_gross_loss"]?.total ?? "--"}</p>
+                                <p className="py-1">{data?.["to_salaries"]?.total ?? "--"}</p>
                             </div>
                         </div>
                     </section>
@@ -82,12 +82,12 @@ const BalanceSheetTable = ({ data }: IProps) => {
                                 <h3>Amount</h3>
                             </header>
                             <div className='p-3 bb-2 h-[200px]'>
-                                <p className="py-1">{data?.["by_sales"]?.total}</p>
-                                <p className="py-1">{data?.["by_closing_inventory"]?.total}</p>
-                                <p className="py-1">{data?.["by_gross_loss"]?.total}</p>
+                                <p className="py-1">{data?.["by_sales"]?.total ?? "--"}</p>
+                                <p className="py-1">{data?.["by_closing_inventory"]?.total ?? "--"}</p>
+                                <p className="py-1">{data?.["by_gross_loss"]?.total ?? "--"}</p>
                             </div>
                             <div className='px-3 mt-7 bt-2 h-[100px]'>
-                                <p className="py-1">{data?.["by_gross_profit"]?.total}</p>
+                                <p className="py-1">{data?.["by_gross_profit"]?.total ?? "--"}</p>
                             </div>
                         </div>
                     </section>
@@ -102,7 +102,7 @@ const BalanceSheetTable = ({ data }: IProps) => {
                 </div>
                 <div className=" items-center justify-between grid grid-cols-[1fr_120px]">
                     <h4 className="px-3 text-md font-semibold text-lg">By Net Loss</h4>
-                    <div className="bl-2 h-full grid place-items-center">
+                    <div className="bl-2 h-full grid place-items-center ">
                         <h4 className="text-md font-semibold text-lg">₹{data?.["by_net_loss"]?.total}</h4>
                     </div>
                 </div>
