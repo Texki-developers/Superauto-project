@@ -77,7 +77,7 @@ const BalanceSheetTable = ({ data }: IProps) => {
             <div className='grid grid-cols-2'>
                 <div className='border-r-2 border-gray-300'></div>
                 <div className="items-center flex justify-between w-full h-full px-3 bt-2" >
-                    <h4 className="text-md font-semibold">TOTAL ASSETS</h4>
+                    <h4 className="text-md font-semibold">Total Profits</h4>
                     <h4 className="text-md font-semibold">₹{data?.asset?.balance}</h4>
                 </div>
             </div>
