@@ -31,15 +31,15 @@ const TrialTable = ({ data, total }: IProps) => {
                         <>
                             <ul className="table-tr">
                                 <li>Current Assets</li>
-                                <li>{data?.asset?.total_debit}</li>
-                                <li>{data?.asset?.total_credit}</li>
+                                <li>{Number(data?.asset?.total_debit) || ""}</li>
+                                <li>{Number(data?.asset?.total_credit) || ""}</li>
                             </ul>
                             {
-                                data?.asset?.children?.map((item) => (
-                                    <ul key={uuidv4()} className="child-tr">
+                                data?.asset?.children?.map((item, i) => (
+                                    <ul key={uuidv4()} className={`child-tr ${i !== data?.asset?.children?.length as number - 1 && 'border-b-2 border-gray-200'}`}>
                                         <li>{item?.ledger}</li>
-                                        <li>{item?.total_debit}</li>
-                                        <li>{item?.total_credit}</li>
+                                        <li>{Number(item?.total_debit) || ""}</li>
+                                        <li>{Number(item?.total_credit) || ""}</li>
                                     </ul>
                                 ))
                             }
@@ -49,15 +49,15 @@ const TrialTable = ({ data, total }: IProps) => {
                         <>
                             <ul className="table-tr">
                                 <li>Current Liabilities</li>
-                                <li>{data?.liability?.total_debit}</li>
-                                <li>{data?.liability?.total_credit}</li>
+                                <li>{Number(data?.liability?.total_debit) || ""}</li>
+                                <li>{Number(data?.liability?.total_credit) || ""}</li>
                             </ul>
                             {
-                                data?.liability?.children?.map((item) => (
-                                    <ul key={uuidv4()} className="child-tr">
+                                data?.liability?.children?.map((item, i) => (
+                                    <ul key={uuidv4()} className={`child-tr ${i !== data?.liability?.children?.length as number - 1 && 'border-b-2 border-gray-200'}`}>
                                         <li>{item?.ledger}</li>
-                                        <li>{item?.total_debit}</li>
-                                        <li>{item?.total_credit}</li>
+                                        <li>{Number(item?.total_debit) || ""}</li>
+                                        <li>{Number(item?.total_credit) || ""}</li>
                                     </ul>
                                 ))
                             }
@@ -68,13 +68,13 @@ const TrialTable = ({ data, total }: IProps) => {
                         <>
                             <ul className="table-tr">
                                 <li>Purchase</li>
-                                <li>{data?.Purchase?.total_debit}</li>
-                                <li>{data?.Purchase?.total_credit}</li>
+                                <li>{Number(data?.Purchase?.total_debit) || ""}</li>
+                                <li>{Number(data?.Purchase?.total_credit) || ""}</li>
                             </ul>
                             <ul className="child-tr">
                                 <li>{data?.Purchase?.ledger}</li>
-                                <li>{data?.Purchase?.total_debit}</li>
-                                <li>{data?.Purchase?.total_credit}</li>
+                                <li>{Number(data?.Purchase?.total_debit) || ""}</li>
+                                <li>{Number(data?.Purchase?.total_credit) || ""}</li>
                             </ul>
                         </>
                     }
@@ -83,13 +83,13 @@ const TrialTable = ({ data, total }: IProps) => {
                         <>
                             <ul className="table-tr">
                                 <li>Sales</li>
-                                <li>{data?.Sales?.total_debit}</li>
-                                <li>{data?.Sales?.total_credit}</li>
+                                <li>{Number(data?.Sales?.total_debit) || ""}</li>
+                                <li>{Number(data?.Sales?.total_credit) || ""}</li>
                             </ul>
                             <ul className="child-tr">
                                 <li>{data?.Sales?.ledger}</li>
-                                <li>{data?.Sales?.total_debit}</li>
-                                <li>{data?.Sales?.total_credit}</li>
+                                <li>{Number(data?.Sales?.total_debit) || ""}</li>
+                                <li>{Number(data?.Sales?.total_credit) || ""}</li>
                             </ul>
                         </>
                     }
@@ -98,8 +98,8 @@ const TrialTable = ({ data, total }: IProps) => {
             <footer className='border-t border-gray-200 grid items-center px-4'>
                 <ul className="table-head-tr bg-white-100">
                     <li>Total</li>
-                    <li>{total?.debit}</li>
-                    <li>{total?.credit}</li>
+                    <li className='text-failureRed'>{Number(total?.debit) || ""}</li>
+                    <li>{Number(total?.credit) || ""}</li>
                 </ul>
             </footer>
         </div>

@@ -4,12 +4,12 @@ import React from 'react';
 import { DateInput } from './CustomDateField';
 
 interface DateFilterProps {
-    dateFromProps: {
+    dateFromProps?: {
         placeholder: string;
         onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
         value: string;
     };
-    dateToProps: {
+    dateToProps?: {
         placeholder: string;
         onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
         value: string;
@@ -19,8 +19,8 @@ interface DateFilterProps {
 const DateFilter: React.FC<DateFilterProps> = ({ dateFromProps, dateToProps }) => {
     return (
         <div className="flex gap-2">
-            <DateInput {...dateFromProps} />
-            <DateInput {...dateToProps} />
+            {dateFromProps && <DateInput {...dateFromProps} />}
+            {dateToProps && <DateInput {...dateToProps} />}
         </div>
     );
 };

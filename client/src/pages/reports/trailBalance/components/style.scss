@@ -15,7 +15,7 @@
   @apply grid grid-cols-[1fr_150px_150px] justify-items-end bg-gray-200 px-4 py-1;
 }
 .child-tr > :first-child {
-  @apply justify-self-start pl-5 text-primary-300;
+  @apply justify-self-start pl-8 text-primary-300;
 }
 .child-tr {
   @apply grid grid-cols-[1fr_150px_150px] justify-items-end px-4;

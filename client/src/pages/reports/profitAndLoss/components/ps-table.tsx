@@ -95,7 +95,7 @@ const BalanceSheetTable = ({ data }: IProps) => {
             </main>
             <footer className="text-md  grid grid-cols-2 bt-2">
                 <div className=" grid grid-cols-[1fr_120px] items-center justify-between border-r-2 border-gray-300">
-                    <h4 className=" px-3 text-md font-semibold text-lg">By Net loss</h4>
+                    <h4 className=" px-3 text-md font-semibold text-lg">To Net Profit</h4>
                     <div className="bl-2 h-full grid place-items-center">
                         <h4 className="text-md font-semibold text-lg">₹{data?.["by_net_loss"]?.total}</h4>
                     </div>
