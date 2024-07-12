@@ -4,16 +4,22 @@ import Loading from "../../../components/loading/Loading"
 import useQueryGetApi from "../../../hooks/useQueryGetApi.hook"
 import BalanceSheetTable from "./components/bs-table"
 import { IBalanceSheetData, IFormattedBalanceSheet } from "../../../types/balanceSheet/balanceSheet"
+import { yearsOptions } from "../../../config/years.data"
+import NormalDropdown from "../../../components/normalDropDown/NormalDropdown"
+import { useSearchParams } from "react-router-dom"
 
 const breadCrumbData = [
     { name: 'Dashboard', link: '/' },
     { name: 'All Reports' },
     { name: 'Balance Sheet' },
 ]
+
 const BalanceSheet = () => {
     const [formatedData, setFormatedData] = useState<IFormattedBalanceSheet | null>(null)
-    const url = `reports/balance-sheet`
+    const [dateData, setDateData] = useState<string>('2023-2024')
+    const url = `reports/balance-sheet?year=${dateData}`
     const { data, isPending } = useQueryGetApi(url)
+    const [, setSearchParams] = useSearchParams()
     const getFormatData = (data: IBalanceSheetData[]) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const store: any = {
@@ -48,6 +54,17 @@ const BalanceSheet = () => {
             getFormatData(data?.data)
         }
     }, [data])
+    const onChange = (value: string) => {
+
+        setDateData(value)
+    }
+
+    useEffect(() => {
+        setSearchParams(prevParams => {
+            prevParams.set('date', dateData);
+            return prevParams;
+        });
+    }, [dateData]);
     return (
         <>
             {
@@ -56,7 +73,7 @@ const BalanceSheet = () => {
             <main className="table-wrapper">
                 <Header title="Balance Sheet" breadCrumbData={breadCrumbData} />
                 <div className=" py-3 flex justify-end gap-3">
-                    {/* <DateFilter /> */}
+                    <NormalDropdown value={dateData} options={yearsOptions} onChange={onChange} />
                 </div>
                 <section className='pt-5 pb-2'>
                     <BalanceSheetTable data={formatedData} />
