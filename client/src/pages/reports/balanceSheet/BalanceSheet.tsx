@@ -4,8 +4,6 @@ import Loading from "../../../components/loading/Loading"
 import useQueryGetApi from "../../../hooks/useQueryGetApi.hook"
 import BalanceSheetTable from "./components/bs-table"
 import { IBalanceSheetData, IFormattedBalanceSheet } from "../../../types/balanceSheet/balanceSheet"
-import moment from "moment"
-import DateFilter from "../../../components/filterComponent/dateFilter/DateFilter"
 
 const breadCrumbData = [
     { name: 'Dashboard', link: '/' },
@@ -13,11 +11,8 @@ const breadCrumbData = [
     { name: 'Balance Sheet' },
 ]
 const BalanceSheet = () => {
-    const [fromDate, setFromDate] = useState(moment('2024-01-06').format('YYYY-MM-DD'));
-    const [toDate, setToDate] = useState(moment('2024-01-08').format('YYYY-MM-DD'));
-
     const [formatedData, setFormatedData] = useState<IFormattedBalanceSheet | null>(null)
-    const url = `reports/balance-sheet?fromDate=${fromDate}&toDate=${toDate}`
+    const url = `reports/balance-sheet`
     const { data, isPending } = useQueryGetApi(url)
     const getFormatData = (data: IBalanceSheetData[]) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -53,15 +48,6 @@ const BalanceSheet = () => {
             getFormatData(data?.data)
         }
     }, [data])
-    const handleDateFromChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const newFromDate = moment(event.target.value).format('YYYY-MM-DD');
-        setFromDate(newFromDate);
-    };
-
-    const handleDateToChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const newToDate = moment(event.target.value).format('YYYY-MM-DD');
-        setToDate(newToDate);
-    };
     return (
         <>
             {
@@ -70,18 +56,7 @@ const BalanceSheet = () => {
             <main className="table-wrapper">
                 <Header title="Balance Sheet" breadCrumbData={breadCrumbData} />
                 <div className=" py-3 flex justify-end gap-3">
-                    <DateFilter
-                        dateFromProps={{
-                            placeholder: 'Date From',
-                            onChange: handleDateFromChange,
-                            value: fromDate,
-                        }}
-                        dateToProps={{
-                            placeholder: 'Date To',
-                            onChange: handleDateToChange,
-                            value: toDate,
-                        }}
-                    />
+                    {/* <DateFilter /> */}
                 </div>
                 <section className='pt-5 pb-2'>
                     <BalanceSheetTable data={formatedData} />
