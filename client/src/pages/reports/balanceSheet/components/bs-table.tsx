@@ -16,7 +16,7 @@ const keys: any = {
 const BalanceSheetTable = ({ data }: IProps) => {
     console.log(data)
     return (
-        <div className="w-full border-2 border-gray-300 h-full rounded-lg bg-white-100 grid grid-rows-[80px_1fr_80px]">
+        <div className="w-full border-2 border-gray-300 h-full rounded-lg bg-white-100 grid grid-rows-[80px_1fr_40px_80px]">
             <header className="border-b-2 border-gray-300 grid grid-cols-2">
                 <div className="border-r-2 border-gray-300 grid place-items-center">
                     <h3 className="text-lg font-bold">Assets</h3>
@@ -74,10 +74,17 @@ const BalanceSheetTable = ({ data }: IProps) => {
                     </div>
                 </aside>
             </main>
-            <footer className="text-md  grid grid-cols-2 border-t-2 border-gray-300">
-                <div className=" px-3 flex items-center justify-between border-r-2 border-gray-300">
-                    <h4 className="text-md font-semibold">TOTAL ASSETS</h4>
+            <div className='grid grid-cols-2'>
+                <div className='border-r-2 border-gray-300'></div>
+                <div className="items-center flex justify-between w-full h-full px-3 bt-2" >
+                    <h4 className="text-md font-semibold">Total Profits</h4>
                     <h4 className="text-md font-semibold">₹{data?.asset?.balance}</h4>
+                </div>
+            </div>
+            <footer className="text-md  grid grid-cols-2 border-t-2 border-gray-300">
+                <div className="  px-3 flex items-center justify-between border-r-2 border-gray-300">
+                    <h4 className="pl-4 text-md font-semibold">Total Profits</h4>
+                    <h4 className="text-md font-semibold">₹--</h4>
                 </div>
                 <div className="px-3  flex items-center justify-between ">
                     <h4 className="text-md font-semibold">TOTAL LIABIILITIES & EQUITY</h4>
