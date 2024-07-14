@@ -539,90 +539,116 @@ UNION ALL select * from all_data where description NOT IN ('Closing Balance','Op
             const trialBalancequery = `
 
             WITH account_balances AS (
-                            SELECT
-                                a.account_id,
-                                a.name,
-                                p.pl_id AS account_type,
-                                p.type,
-                                COALESCE(SUM(CASE WHEN t.debit_account = a.account_id THEN t.amount ELSE 0 END), 0) AS total_debit,
-                                COALESCE(SUM(CASE WHEN t.credit_account = a.account_id THEN t.amount ELSE 0 END), 0) AS total_credit
-                            FROM
-                                accounts a
-                            LEFT JOIN
-                                transactions t ON (a.account_id = t.debit_account OR a.account_id = t.credit_account)
-                                AND t.transaction_date BETWEEN :startDate AND :endDate -- Adjust these dates as needed
-                            LEFT JOIN
-                                primary_ledger p ON a.head = p.pl_id
-                            GROUP BY
-                                a.account_id, a.name, p.pl_id
-                        ),
-                        group_by_account_type AS (
-                            SELECT account_type, SUM(total_debit) AS total_debit, SUM(total_credit) AS total_credit
-                            FROM account_balances 
-                            GROUP BY account_type
-                        ),
-                        join_ledger AS (
-                            SELECT total_debit, total_credit, type, ledger_name AS ledger
-                            FROM group_by_account_type gat
-                            LEFT JOIN primary_ledger pl ON pl.pl_id = gat.account_type WHERE ledger_name IN ('Sundry Debtors', 'Cash', 'Bank', 'Sundry Creditor', 'Other Payables', 'Salary Payables', 'Purchase', 'Cash') 
-                        ),
-                        total_category_all AS (
-                            SELECT SUM(total_debit) AS all_total_debit, SUM(total_credit) AS all_total_credit, type
-                            FROM join_ledger
-                            WHERE ledger IN ('Sundry Debtors', 'Cash', 'Bank', 'Sundry Creditor', 'Other Payables', 'Salary Payables', 'Purchase', 'Cash')
-                            GROUP BY type
-                        ),
-                    
-                        grand_total AS (
-                            SELECT SUM(all_total_debit) AS grand_total_debit, SUM(all_total_credit) AS grand_total_credit
-                            FROM total_category_all 
-                        ),
-            balance_total AS (
-                SELECT 
-                ledger,
-                    COALESCE(
-                        SUM(
-                            CASE 
-                                WHEN type IN ('liability', 'equity', 'revenue') THEN total_credit - total_debit
-                                WHEN type IN ('asset', 'expense') THEN total_debit - total_credit
-                                ELSE 0 
-                            END
-                        ), 
-                        0
-                    ) AS balance 
-                FROM join_ledger WHERE ledger IN ('Sundry Debtors', 'Cash', 'Bank', 'Sundry Creditor', 'Other Payables', 'Salary Payables', 'Purchase', 'Cash') 
-                GROUP BY total_credit, total_debit,ledger
-            ), result AS (
-              SELECT 
-                COALESCE(
-                    (SELECT SUM(CASE WHEN total_debit > total_credit THEN balance ELSE 0 END)
-                     FROM balance_total bt
-                     WHERE bt.ledger = jl.ledger), 0
-                ) AS total_debit,
-                COALESCE(
-                    (SELECT SUM(CASE WHEN total_credit > total_debit THEN balance ELSE 0 END)
-                     FROM balance_total bt
-                     WHERE bt.ledger = jl.ledger), 0
-                ) AS total_credit,
-                jl.type,
-                jl.ledger
-            FROM join_ledger jl
-            
-            ), total_category AS (
-                            SELECT SUM(total_debit) AS total_debit, SUM(total_credit) AS total_credit, type
-                            FROM result
-                            WHERE type IN ('asset', 'liability')
-                            GROUP BY type
-                        )
-            
-            
-                 SELECT total_debit,total_credit,type,ledger from result UNION ALL
-                        SELECT total_debit, total_credit, type, 'Total' AS ledger 
-                        FROM total_category 
-                        UNION ALL 
-                        SELECT grand_total_debit, grand_total_credit, NULL AS type, 'Grand Total' AS ledger 
-                        FROM grand_total 
-              
+                SELECT
+                    a.account_id,
+                    a.name,
+                    p.pl_id AS account_type,
+                    p.type,
+                    COALESCE(SUM(CASE WHEN t.debit_account = a.account_id THEN t.amount ELSE 0 END), 0) AS total_debit,
+                    COALESCE(SUM(CASE WHEN t.credit_account = a.account_id THEN t.amount ELSE 0 END), 0) AS total_credit
+                FROM
+                    accounts a
+                LEFT JOIN
+                    transactions t ON (a.account_id = t.debit_account OR a.account_id = t.credit_account)
+                    AND t.transaction_date BETWEEN :startDate AND :endDate -- Adjust these dates as needed
+                LEFT JOIN
+                    primary_ledger p ON a.head = p.pl_id
+                GROUP BY
+                    a.account_id, a.name, p.pl_id
+            ),
+            group_by_account_type AS (
+                SELECT account_type, SUM(total_debit) AS total_debit, SUM(total_credit) AS total_credit
+                FROM account_balances 
+                GROUP BY account_type
+            ),
+            join_ledger AS (
+                SELECT total_debit, total_credit, type, ledger_name AS ledger
+                FROM group_by_account_type gat
+                LEFT JOIN primary_ledger pl ON pl.pl_id = gat.account_type WHERE ledger_name IN ('Sundry Debtors', 'Cash', 'Bank', 'Sundry Creditor', 'Other Payables', 'Salary Payables', 'Purchase', 'Cash') 
+            ),
+            total_category_all AS (
+                SELECT SUM(total_debit) AS all_total_debit, SUM(total_credit) AS all_total_credit, type
+                FROM join_ledger
+                WHERE ledger IN ('Sundry Debtors', 'Cash', 'Bank', 'Sundry Creditor', 'Other Payables', 'Salary Payables', 'Purchase', 'Cash')
+                GROUP BY type
+            ),
+        
+            grand_total AS (
+                SELECT SUM(all_total_debit) AS grand_total_debit, SUM(all_total_credit) AS grand_total_credit
+                FROM total_category_all 
+            ),
+balance_total AS (
+    SELECT 
+    ledger,
+        COALESCE(
+            SUM(
+                CASE 
+                    WHEN type IN ('liability', 'equity', 'revenue') THEN total_credit - total_debit
+                    WHEN type IN ('asset', 'expense') THEN total_debit - total_credit
+                    ELSE 0 
+                END
+            ), 
+            0
+        ) AS balance 
+    FROM join_ledger WHERE ledger IN ('Sundry Debtors', 'Cash', 'Bank', 'Sundry Creditor', 'Other Payables', 'Salary Payables', 'Purchase', 'Cash') 
+    GROUP BY total_credit, total_debit,ledger
+), result AS (
+  SELECT 
+    COALESCE(
+        (SELECT SUM(CASE WHEN total_debit > total_credit THEN balance ELSE 0 END)
+         FROM balance_total bt
+         WHERE bt.ledger = jl.ledger), 0
+    ) AS total_debit,
+    COALESCE(
+        (SELECT SUM(CASE WHEN total_credit > total_debit THEN balance ELSE 0 END)
+         FROM balance_total bt
+         WHERE bt.ledger = jl.ledger), 0
+    ) AS total_credit,
+    jl.type,
+    jl.ledger
+FROM join_ledger jl
+
+), total_category AS (
+                SELECT SUM(total_debit) AS total_debit, SUM(total_credit) AS total_credit, type
+                FROM result
+                WHERE type IN ('asset', 'liability')
+                GROUP BY type
+            ),
+final_balance_total_category AS(
+select COALESCE(
+            SUM(
+                CASE 
+                    WHEN type IN ('liability', 'equity', 'revenue') THEN total_credit - total_debit
+                    WHEN type IN ('asset', 'expense') THEN total_debit - total_credit
+                    ELSE 0 
+                END
+            ), 
+            0
+        ) AS balance,type from total_category group by total_category.type),
+total_final AS (
+SELECT
+COALESCE(
+(SELECT SUM(CASE WHEN tc.total_debit > tc.total_credit THEN btf.balance ELSE 0 END)
+ FROM final_balance_total_category btf WHERE type IN ('asset', 'liability')
+ ), 
+0
+) AS total_debit,
+
+COALESCE(
+(SELECT SUM(CASE WHEN tc.total_credit > tc.total_debit THEN btf.balance ELSE 0 END)
+ FROM final_balance_total_category btf WHERE type IN ('asset', 'liability')
+ ), 
+0
+) AS total_credit,
+tc.type   FROM total_category tc
+)            
+
+     SELECT total_debit,total_credit,type,ledger from result UNION ALL
+            SELECT total_debit, total_credit, type,'total' 
+            FROM total_final 
+            UNION ALL 
+            SELECT grand_total_debit, grand_total_credit, NULL AS type, 'Grand Total' AS ledger 
+            FROM grand_total 
             `
 
             const [trialBalance] = await db.query(trialBalancequery, {
