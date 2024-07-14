@@ -5,9 +5,11 @@ import useQueryGetApi from '../../../hooks/useQueryGetApi.hook'
 // import DateFilter from '../../../components/filterComponent/dateFilter/DateFilter'
 import TrialTable from './components/trial-table'
 import { useEffect, useState } from 'react'
-import moment from 'moment'
-import DateFilter from '../../../components/filterComponent/dateFilter/DateFilter'
+// import moment from 'moment'
+// import DateFilter from '../../../components/filterComponent/dateFilter/DateFilter'
 import { IFormatedData, ITrialBalanceData } from '../../../types/trialBalance/trialBalance'
+import NormalDropdown from '../../../components/normalDropDown/NormalDropdown'
+import { yearsOptions } from '../../../config/years.data'
 
 
 
@@ -19,26 +21,27 @@ const breadCrumbData = [
 ]
 const TrailBalance = () => {
     const [, setSearchParams] = useSearchParams();
-    const [fromDate, setFromDate] = useState(moment('2024-04-01').format('YYYY-MM-DD'));
-    const [toDate, setToDate] = useState(moment('2025-03-31').format('YYYY-MM-DD'));
+    const [dateData, setDateData] = useState<string>('2023-2024')
+    // const [fromDate, setFromDate] = useState(moment('2024-04-01').format('YYYY-MM-DD'));
+    // const [toDate, setToDate] = useState(moment('2025-03-31').format('YYYY-MM-DD'));
     const [formatedData, setFormatedData] = useState<IFormatedData | null>(null)
-    const handleDateFromChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const newFromDate = moment(event.target.value).format('YYYY-MM-DD');
-        setFromDate(newFromDate);
-    };
+    // const handleDateFromChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     const newFromDate = moment(event.target.value).format('YYYY-MM-DD');
+    //     setFromDate(newFromDate);
+    // };
 
-    const handleDateToChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const newToDate = moment(event.target.value).format('YYYY-MM-DD');
-        setToDate(newToDate);
-    };
-    useEffect(() => {
-        setSearchParams(prevParams => {
-            prevParams.set('fromDate', fromDate);
-            prevParams.set('toDate', toDate);
-            return prevParams;
-        });
-    }, [fromDate, toDate, setSearchParams]);
-    const url = `reports/trial-balance?fromDate=${fromDate}&toDate=${toDate}`
+    // const handleDateToChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     const newToDate = moment(event.target.value).format('YYYY-MM-DD');
+    //     setToDate(newToDate);
+    // };
+    // useEffect(() => {
+    //     setSearchParams(prevParams => {
+    //         prevParams.set('fromDate', fromDate);
+    //         prevParams.set('toDate', toDate);
+    //         return prevParams;
+    //     });
+    // }, [fromDate, toDate, setSearchParams]);
+    const url = `reports/trial-balance?fromDate=${dateData.split('-')?.[0]}&toDate=${dateData.split('-')?.[1]}`
     const { data, isPending } = useQueryGetApi(url)
     const getFormatData = (data: ITrialBalanceData[]) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -74,12 +77,22 @@ const TrailBalance = () => {
         console.log(store)
         setFormatedData(store)
     }
+    const onChange = (value: string) => {
+
+        setDateData(value)
+    }
     useEffect(() => {
         console.log(data)
         if (data?.data?.result) {
             getFormatData(data?.data?.result)
         }
     }, [data])
+    useEffect(() => {
+        setSearchParams(prevParams => {
+            prevParams.set('date', dateData);
+            return prevParams;
+        });
+    }, [dateData]);
     return (
         <>
             {
@@ -89,7 +102,7 @@ const TrailBalance = () => {
                 <Header title="Trial Balance" breadCrumbData={breadCrumbData} />
                 <div className=" py-3 flex justify-end gap-3">
                     {/* <SelectFilter placeholder="Filter" onChange={() => { }} options={[]} /> */}
-                    <DateFilter
+                    {/* <DateFilter
                         dateFromProps={{
                             placeholder: "Date From",
                             onChange: handleDateFromChange,
@@ -100,7 +113,8 @@ const TrailBalance = () => {
                             onChange: handleDateToChange,
                             value: toDate,
                         }}
-                    />
+                    /> */}
+                    <NormalDropdown value={dateData} options={yearsOptions} onChange={onChange} />
                 </div>
                 <section className='pt-5 pb-2'>
                     <TrialTable total={data?.data?.total} data={formatedData} />

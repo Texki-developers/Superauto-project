@@ -27,9 +27,9 @@ const BalanceSheetTable = ({ data }: IProps) => {
                             <header className='p-3 bb-2 font-semibold text-lg'>
                                 <h3>Particulars</h3>
                             </header>
-                            <div className='p-3 h-[200px]'>
-                                <p className='py-1'>To Purchase</p>
+                            <div className='p-3 h-[180px]'>
                                 <p className='py-1'>To Opening Inventory</p>
+                                <p className='py-1'>To Purchase</p>
                                 <p className='py-1'>To Other Direct Expense</p>
                                 <p className='py-1'>To Gross Profit c/d</p>
                             </div>
@@ -45,13 +45,16 @@ const BalanceSheetTable = ({ data }: IProps) => {
                             <header className='p-3 bb-2 font-semibold text-lg'>
                                 <h3>Amount</h3>
                             </header>
-                            <div className='p-3 bb-2 h-[200px]'>
-                                <p className="py-1">{data?.["to_purchase"]?.total ?? "--"}</p>
+                            <div className='p-3 bb-2 h-[180px]'>
                                 <p className="py-1">{data?.["to_opening_inventory"]?.total ?? "--"}</p>
+                                <p className="py-1">{data?.["to_purchase"]?.total ?? "--"}</p>
                                 <p className="py-1">{data?.["to_other_direct_expense"]?.total ?? "--"}</p>
                                 <p className="py-1">{data?.["to_gross_profit_c/d"]?.total ?? "--"}</p>
                             </div>
-                            <div className='px-3 mt-7 bt-2 h-[100px]'>
+                            <div>
+                                <p className="py-1 px-3">{data?.["to_gross_loss"]?.total ?? "--"}</p>
+                            </div>
+                            <div className='px-3 bt-2 h-[100px]'>
                                 <p className="py-1">{data?.["to_gross_loss"]?.total ?? "--"}</p>
                                 <p className="py-1">{data?.["to_salaries"]?.total ?? "--"}</p>
                             </div>
@@ -72,7 +75,7 @@ const BalanceSheetTable = ({ data }: IProps) => {
                             </div>
                             <div className='px-3 mt-7 h-[100px]'>
                                 <p className='py-1'>By Gross Profit</p>
-
+                                <p className='py-1'>By Investment</p>
                             </div>
                         </div>
                     </section>
@@ -86,8 +89,12 @@ const BalanceSheetTable = ({ data }: IProps) => {
                                 <p className="py-1">{data?.["by_closing_inventory"]?.total ?? "--"}</p>
                                 <p className="py-1">{data?.["by_gross_loss"]?.total ?? "--"}</p>
                             </div>
-                            <div className='px-3 mt-7 bt-2 h-[100px]'>
+                            <div>
+                                <p className="py-1 px-3">{data?.["to_gross_loss"]?.total ?? "--"}</p>
+                            </div>
+                            <div className='px-3 bt-2 h-[100px]'>
                                 <p className="py-1">{data?.["by_gross_profit"]?.total ?? "--"}</p>
+                                <p className="py-1">{data?.["by_investment"]?.total ?? "--"}</p>
                             </div>
                         </div>
                     </section>
@@ -97,7 +104,7 @@ const BalanceSheetTable = ({ data }: IProps) => {
                 <div className=" grid grid-cols-[1fr_120px] items-center justify-between border-r-2 border-gray-300">
                     <h4 className=" px-3 text-md font-semibold text-lg">To Net Profit</h4>
                     <div className="bl-2 h-full grid place-items-center">
-                        <h4 className="text-md font-semibold text-lg">₹{data?.["by_net_loss"]?.total}</h4>
+                        <h4 className="text-md font-semibold text-lg">₹{data?.["to_net_profit"]?.total}</h4>
                     </div>
                 </div>
                 <div className=" items-center justify-between grid grid-cols-[1fr_120px]">

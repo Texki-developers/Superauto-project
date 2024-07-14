@@ -17,6 +17,7 @@ interface ITableProps {
   showFooterBalance?: boolean;
   balanceFooterComponent?: React.ReactNode;
   showRowColor?: boolean;
+  getClassNames?: (data: any) => string
 }
 
 const totalItemsPerPage = [5, 10, 20, 30];
@@ -85,10 +86,10 @@ const Table = (props: ITableProps) => {
           </tr>
         </thead>
         <tbody className='h-full overflow-auto'>
-          {props?.data?.length > 0 &&
+          {props?.data && props?.data?.length > 0 &&
             props?.data?.map((item: any, i: number) => {
               return (
-                <tr className={(props?.showRowColor && i % 2 == 1) ? 'bg-gray-100' : ""} key={i}>
+                <tr className={((props?.showRowColor && i % 2 == 1) ? 'bg-gray-100' : "") + ` ${props?.getClassNames && props?.getClassNames(item)}`} key={i}>
                   {props?.columnData?.map((keyItem) => (
                     <td className={(props?.showRowColor ? 'py-2 px-4 ' : 'p-4 ') + keyItem?.textAlign} key={uuidv4()}>
                       {keyItem?.columnData && keyItem?.key ? (
