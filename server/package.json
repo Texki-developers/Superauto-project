@@ -49,8 +49,11 @@
     "@types/cookie-session": "^2.0.49",
     "@types/cors": "^2.8.17",
     "@types/express-fileupload": "^1.5.0",
+    "@types/express-session": "^1.18.0",
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.14.9",
+    "@types/passport": "^1.0.16",
+    "@types/passport-local": "^1.0.38",
     "@types/sequelize": "^4.28.20",
     "sequelize-cli": "^6.6.2"
   }

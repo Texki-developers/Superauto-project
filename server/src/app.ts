@@ -1,11 +1,17 @@
 import express, { Application, Request, Response } from 'express';
 import logger from 'morgan';
 import cors from 'cors';
+// @ts-ignore
+import session from 'express-session';
 import { pool } from './config1/dbConfig';
 import { accountRoutes, authRouter, inventoryRoutes, reportRoutes } from './api/v1/routes';
 import Accounts from './models/accounts';
 import { E_ACCOUNT_CATEGORIES } from './utils/constants/constants';
 import fileUpload from 'express-fileupload';
+// @ts-ignore
+import passport from 'passport';
+import './config/passport-config';
+import { isAuthenticated } from './api/v1/middlewares/requestValidators/auth.middleware';
 
 const app: Application = express();
 
@@ -13,7 +19,7 @@ const app: Application = express();
 require('dotenv').config();
 
 const corsOptions = {
-  origin: '*',
+  origin: 'http://localhost:5173',
   credentials: true,
 };
 
@@ -26,16 +32,26 @@ app.use(logger('dev'));
 app.use(fileUpload({ limits: { fileSize: 50 * 1024 * 1024 } }));
 app.use(express.urlencoded({ limit: 50 * 1024 * 1024 }));
 app.use(express.json({ limit: '50mb' }));
+app.use(
+  session({
+    secret: 'your-secret-key', // Replace with a secure random string
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false, httpOnly: true, sameSite: 'strict', path: '/' }, // Set secure: true if using HTTPS
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 ///THE ROUTES
-app.use('/api/v1/accounts', accountRoutes);
-app.use('/api/v1/inventory', inventoryRoutes);
-app.use('/api/v1/reports', reportRoutes);
+app.use('/api/v1/accounts', isAuthenticated, accountRoutes);
+app.use('/api/v1/inventory', isAuthenticated, inventoryRoutes);
+app.use('/api/v1/reports', isAuthenticated, reportRoutes);
 app.use('/api/v1/auth', authRouter);
 ///THE ROUTES
 
 app.use('*/images', express.static('./public/uploads'));
-
 app.get('/', (_: Request, res: Response) => {
   res.send('Super Auto V1/..');
 });
