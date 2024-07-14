@@ -18,14 +18,14 @@ const breadCrumbData = [
 const DailyBook = () => {
     const [searchParams, setSearchParams] = useSearchParams()
     const { callApi } = useGetApis()
-    let url = `reports/daily-report`
-    if (searchParams.get('filter')) {
-        url = url + `?voucher=${searchParams.get('filter')}`
-    }
     const [fromDate, setFromDate] = useState(moment('2024-01-06').format('YYYY-MM-DD'));
     const [toDate, setToDate] = useState(moment('2024-01-08').format('YYYY-MM-DD'));
+    let url = `reports/daily-report?fromDate=${fromDate}&toDate=${toDate}`
+    if (searchParams.get('filter')) {
+        url = url + `&voucher=${searchParams.get('filter')}`
+    }
 
-    const selectUrl = `reports/list/dailybook-voucher?fromDate=${fromDate}&toDate=${toDate}`
+    const selectUrl = `reports/list/dailybook-voucher`
     const fetchDailyBook = () => callApi(url);
     const fetchDailyBookFilterData = () => callApi(selectUrl);
     const { data, isPending } = useQuery({ queryKey: [url, searchParams.get('filter')], queryFn: fetchDailyBook })
@@ -79,7 +79,21 @@ const DailyBook = () => {
                     />
                 </div>
                 <section className='pt-5 pb-2'>
-                    <Table showRowColor data={data?.data} columnData={ColumnData} hideFooter />
+                    <Table
+                        getClassNames={(data) => {
+                            if (data?.description === "Opening Balance") {
+                                return 'bg-[#43B4F7]'
+                            }
+                            if (data?.description === 'Closing Balance') {
+                                return 'bg-red-300'
+                            }
+                            return ''
+                        }}
+                        showRowColor
+                        data={data?.data}
+                        columnData={ColumnData}
+                        hideFooter
+                    />
                 </section>
             </main>
         </>

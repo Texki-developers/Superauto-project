@@ -15,12 +15,14 @@ const ProfitAndLoss = () => {
         { name: 'All Reports' },
         { name: 'Profit And Loss' },
     ]
-    const url = `reports/list/profit-loss?year=${dateData}`
+    const url = `reports/list/profit-loss?fromDate=${dateData.split('-')?.[0]}&toDate=${dateData.split('-')?.[1]}`
     const { data, isPending } = useQueryGetApi(url)
     const [, setSearchParams] = useSearchParams()
     const getFormatData = () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const formatted: any = {};
-        for (let item of data?.data) {
+        // eslint-disable-next-line no-unsafe-optional-chaining
+        for (const item of data?.data) {
             formatted[item.name] = { total: item.Total, account_id: item.account_id }
         }
         console.log(formatted)

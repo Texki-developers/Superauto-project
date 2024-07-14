@@ -17,7 +17,7 @@ const breadCrumbData = [
 const BalanceSheet = () => {
     const [formatedData, setFormatedData] = useState<IFormattedBalanceSheet | null>(null)
     const [dateData, setDateData] = useState<string>('2023-2024')
-    const url = `reports/balance-sheet?year=${dateData}`
+    const url = `reports/balance-sheet?fromDate=${dateData.split('-')?.[0]}&toDate=${dateData.split('-')?.[1]}`
     const { data, isPending } = useQueryGetApi(url)
     const [, setSearchParams] = useSearchParams()
     const getFormatData = (data: IBalanceSheetData[]) => {

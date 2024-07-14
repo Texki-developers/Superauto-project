@@ -46,6 +46,20 @@ const BalanceSheetTable = ({ data }: IProps) => {
                 <aside>
                     <div>
                         <div className="title">
+                            <h4 >Capital Accounts</h4>
+                        </div>
+                        {
+                            data?.equity?.children?.map((item) => (
+                                <Items type='first-level' value={item?.balance} key={uuidv4()} keyItem={keys[item?.ledger] ?? item?.ledger} />
+                            ))
+                        }
+                        <div className="total">
+                            <h4 className="text-md font-semibold">Total Current Liabilities</h4>
+                            <h4 className="text-md font-semibold">₹{data?.liability?.balance}</h4>
+                        </div>
+                    </div>
+                    <div>
+                        <div className="title">
                             <h4  >Current Liabilities</h4>
                         </div>
                         {
@@ -58,7 +72,7 @@ const BalanceSheetTable = ({ data }: IProps) => {
                             <h4 className="text-md font-semibold">₹{data?.liability?.balance}</h4>
                         </div>
                     </div>
-                    <div>
+                    {/* <div>
                         <div className="title">
                             <h4>Shareholder’s Equity</h4>
                         </div>
@@ -71,7 +85,7 @@ const BalanceSheetTable = ({ data }: IProps) => {
                             <h4 className="text-md font-semibold">Total shareholder’s Equity</h4>
                             <h4 className="text-md font-semibold">₹{data?.equity?.balance}</h4>
                         </div>
-                    </div>
+                    </div> */}
                 </aside>
             </main>
             <div className='grid grid-cols-2'>

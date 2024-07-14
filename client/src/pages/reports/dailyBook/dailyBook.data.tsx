@@ -9,27 +9,46 @@ export const ColumnData: ITableColumn[] = [
     }
   },
   {
-    name: 'Voucher',
+    name: '#',
     key: 'voucher_id',
     columnData: (item: string) => {
       return (<p className='text-primary-300'>{item}</p>);
     },
   },
   {
-    name: 'Dr. Account',
-    textAlign: 'text-start',
-    key: 'DebitAccount',
-    columnData: (item: { name: string }) => {
-      return item?.name;
+    name: 'Note',
+    key: 'description',
+    columnData: (item: string) => {
+      return (
+        <p className={["Opening Balance", "Closing Balance"].includes(item) ? 'uppercase font-semibold' : ''}>{item}</p>
+      );
     },
   },
   {
-    name: 'Cr. Account',
+    name: 'Dr',
     textAlign: 'text-start',
-    key: 'CreditAccount',
-    columnData: (item: { name: string }) => {
-      return item?.name;
+    key: 'debit',
+    returnData: true,
+    columnData: (item: string, data: { description: string }) => {
+      if (["Opening Balance", "Closing Balance"].includes(data?.description)) {
+        return ''
+      } else {
+        return item
+      }
     },
   },
-  { name: 'Amount(₹)', key: 'amount', textAlign: 'text-end' },
+  {
+    name: 'Cr',
+    textAlign: 'text-start',
+    key: 'credit',
+    returnData: true,
+    columnData: (item: string, data: { description: string }) => {
+      if (["Opening Balance", "Closing Balance"].includes(data?.description)) {
+        return ''
+      } else {
+        return item
+      }
+    },
+  },
+  { name: 'Amount(₹)', key: 'runningbalance', textAlign: 'text-end' },
 ];
