@@ -2,7 +2,7 @@ import express, { Application, Request, Response } from 'express';
 import logger from 'morgan';
 import cors from 'cors';
 import { pool } from './config1/dbConfig';
-import { accountRoutes, inventoryRoutes, reportRoutes } from './api/v1/routes';
+import { accountRoutes, authRouter, inventoryRoutes, reportRoutes } from './api/v1/routes';
 import Accounts from './models/accounts';
 import { E_ACCOUNT_CATEGORIES } from './utils/constants/constants';
 import fileUpload from 'express-fileupload';
@@ -31,6 +31,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use('/api/v1/accounts', accountRoutes);
 app.use('/api/v1/inventory', inventoryRoutes);
 app.use('/api/v1/reports', reportRoutes);
+app.use('/api/v1/auth', authRouter);
 ///THE ROUTES
 
 app.use('*/images', express.static('./public/uploads'));
@@ -54,14 +55,5 @@ app.get('/add', async (_: any, res: any) => {
 });
 
 // Endpoint to get data from the database
-app.get('/data', async (_: any, res: any) => {
-  try {
-    const result = await pool.query('SELECT * FROM your_table');
-    res.status(200).json(result.rows);
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    res.status(500).send('Error fetching data');
-  }
-});
 
 export { app };

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { responseHandler } from "../utils/responseHandler/responseHandler";
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { responseHandler } from "../../../utils/responseHandler/responseHandler";
 
 export const roleValidator = (roles: string[]) => async (req: Request, res: Response, next: NextFunction) => {
   try {
