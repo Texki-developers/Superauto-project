@@ -34,11 +34,25 @@ const BalanceSheet = () => {
             "equity": {
                 children: [],
                 balance: 0
+            },
+            "total_profit": {
+                balance: 0
+            },
+            "capitalAc":{
+                balance:0
             }
         }
         for (const item of data) {
             if (item?.ledger === 'Total') {
                 store[item?.category].balance = item?.balance
+                continue;
+            }
+            if(item?.ledger === "Capital A/C"){
+                store.capitalAc.balance = item?.balance
+                continue;
+            }
+            if (item?.name === 'to_net_profit') {
+                store.total_profit.balance = item?.Total
                 continue;
             }
             if (store[item?.category]) {

@@ -22,7 +22,7 @@ const LoginPage: React.FC = () => {
             userName: data.userName,
             password: data.password
         }
-        await auth('auth/login', body, "Account Creation Failed", "Logged Successfully", () => {
+        await auth('auth/login', body, " Invalid Credentials ", "Logged Successfully", () => {
             navigate('/')
         });
     };

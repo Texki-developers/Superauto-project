@@ -14,7 +14,6 @@ const keys: any = {
     'Capital A/C': 'Capital Stock',
 }
 const BalanceSheetTable = ({ data }: IProps) => {
-    console.log(data)
     return (
         <div className="w-full border-2 border-gray-300 h-full rounded-lg bg-white-100 grid grid-rows-[80px_1fr_40px_80px]">
             <header className="border-b-2 border-gray-300 grid grid-cols-2">
@@ -48,14 +47,10 @@ const BalanceSheetTable = ({ data }: IProps) => {
                         <div className="title">
                             <h4 >Capital Accounts</h4>
                         </div>
-                        {
-                            data?.equity?.children?.map((item) => (
-                                <Items type='first-level' value={item?.balance} key={uuidv4()} keyItem={keys[item?.ledger] ?? item?.ledger} />
-                            ))
-                        }
+                        <Items type='first-level' value={data?.capitalAc?.balance ?? 0} key={uuidv4()} keyItem={'Capital Account'} />
                         <div className="total">
-                            <h4 className="text-md font-semibold">Total Current Liabilities</h4>
-                            <h4 className="text-md font-semibold">₹{data?.liability?.balance}</h4>
+                            <h4 className="text-md font-semibold">Total Capital Accounts</h4>
+                            <h4 className="text-md font-semibold">₹{data?.capitalAc?.balance ?? 0}</h4>
                         </div>
                     </div>
                     <div>
@@ -92,7 +87,7 @@ const BalanceSheetTable = ({ data }: IProps) => {
                 <div className='border-r-2 border-gray-300'></div>
                 <div className="items-center flex justify-between w-full h-full px-3 bt-2" >
                     <h4 className="text-md font-semibold">Total Profits</h4>
-                    <h4 className="text-md font-semibold">₹{data?.asset?.balance}</h4>
+                    <h4 className="text-md font-semibold">₹{data?.total_profit?.balance}</h4>
                 </div>
             </div>
             <footer className="text-md  grid grid-cols-2 border-t-2 border-gray-300">
@@ -102,7 +97,7 @@ const BalanceSheetTable = ({ data }: IProps) => {
                 </div>
                 <div className="px-3  flex items-center justify-between ">
                     <h4 className="text-md font-semibold">TOTAL LIABIILITIES & EQUITY</h4>
-                    <h4 className="text-md font-semibold">₹{Number(data?.liability?.balance ?? 0) + Number(data?.equity?.balance ?? 0)}</h4>
+                    <h4 className="text-md font-semibold">₹{Number(data?.liability?.balance ?? 0) + Number(data?.capitalAc?.balance ?? 0) + Number(data?.total_profit?.balance ?? 0)} </h4>
                 </div>
             </footer>
         </div>
@@ -113,7 +108,7 @@ export default BalanceSheetTable
 
 interface IItems {
     type: 'first-level' | 'second-level';
-    value: string;
+    value: string | number;
     keyItem: string;
     amountColor?: string;
 }

@@ -52,7 +52,7 @@ const BalanceSheetTable = ({ data }: IProps) => {
                                 <p className="py-1">{data?.["to_gross_profit_c/d"]?.total ?? "--"}</p>
                             </div>
                             <div>
-                                <p className="py-1 px-3">{data?.["to_gross_loss"]?.total ?? "--"}</p>
+                                <p className="py-1 px-3 min-h-5">{data?.["to_gross_loss"]?.total ?? " "}</p>
                             </div>
                             <div className='px-3 bt-2 h-[100px]'>
                                 <p className="py-1">{data?.["to_gross_loss"]?.total ?? "--"}</p>
@@ -90,7 +90,7 @@ const BalanceSheetTable = ({ data }: IProps) => {
                                 <p className="py-1">{data?.["by_gross_loss"]?.total ?? "--"}</p>
                             </div>
                             <div>
-                                <p className="py-1 px-3">{data?.["to_gross_loss"]?.total ?? "--"}</p>
+                                <p className="py-1 px-3 min-h-5">{data?.["to_gross_loss"]?.total ?? " "}</p>
                             </div>
                             <div className='px-3 bt-2 h-[100px]'>
                                 <p className="py-1">{data?.["by_gross_profit"]?.total ?? "--"}</p>

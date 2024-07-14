@@ -12,6 +12,8 @@ import Loading from '../../../components/loading/Loading';
 import { ColumnData } from './ledger.data';
 import NormalDropdown from '../../../components/normalDropDown/NormalDropdown';
 import { yearsOptions } from '../../../config/years.data';
+import DateFilter from '../../../components/filterComponent/dateFilter/DateFilter';
+import moment from 'moment';
 
 
 const breadCrumbData = [
@@ -27,28 +29,28 @@ const Ledger = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [lastItem, setLastItem] = useState<any>()
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    // const [fromDate, setFromDate] = useState(moment('2024-04-01').format('YYYY-MM-DD'));
-    // const [toDate, setToDate] = useState(moment('2025-03-31').format('YYYY-MM-DD'));
-    const [dateData, setDateData] = useState<string>('2023-2024')
+    const [fromDate, setFromDate] = useState(moment('2024-04-01').format('YYYY-MM-DD'));
+    const [toDate, setToDate] = useState(moment('2025-03-31').format('YYYY-MM-DD'));
+    // const [dateData, setDateData] = useState<string>('2023-2024')
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSelectableFilter = (newValue: SingleValue<any>) => {
         searchParams.set('filter', newValue.account_id);
         searchParams.set('name', newValue.name);
         setSearchParams(searchParams);
     };
-    const onChange = (value: string) => {
+    // const onChange = (value: string) => {
 
-        setDateData(value)
-    }
+    //     setDateData(value)
+    // }
 
-    useEffect(() => {
-        setSearchParams(prevParams => {
-            prevParams.set('date', dateData);
-            return prevParams;
-        });
-    }, [dateData]);
+    // useEffect(() => {
+    //     setSearchParams(prevParams => {
+    //         prevParams.set('date', dateData);
+    //         return prevParams;
+    //     });
+    // }, [dateData]);
     const { callApi } = useGetApis();
-    let url = `reports/ledger-report?fromDate=${dateData.split('-')?.[0]}&toDate=${dateData.split('-')?.[1]}`;
+    let url = `reports/ledger-report?fromDate=${fromDate}&toDate=${toDate}`;
     if (searchParams.get('filter')) {
         url = `${url}&ledger=${searchParams.get('filter')}`;
     }
@@ -57,23 +59,23 @@ const Ledger = () => {
     const fetchLedgerFilterData = () => callApi(selectUrl);
     const { data, isPending } = useQuery({ queryKey: [url, searchParams.get('filter')], queryFn: fetchLedgerReport });
     const { data: options } = useQuery({ queryKey: [selectUrl], queryFn: fetchLedgerFilterData });
-    // const handleDateFromChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //     const newFromDate = moment(event.target.value).format('YYYY-MM-DD');
-    //     setFromDate(newFromDate);
-    // };
+    const handleDateFromChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newFromDate = moment(event.target.value).format('YYYY-MM-DD');
+        setFromDate(newFromDate);
+    };
 
-    // const handleDateToChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //     const newToDate = moment(event.target.value).format('YYYY-MM-DD');
-    //     setToDate(newToDate);
-    // };
+    const handleDateToChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newToDate = moment(event.target.value).format('YYYY-MM-DD');
+        setToDate(newToDate);
+    };
 
-    // useEffect(() => {
-    //     setSearchParams(prevParams => {
-    //         prevParams.set('fromDate', fromDate);
-    //         prevParams.set('toDate', toDate);
-    //         return prevParams;
-    //     });
-    // }, [fromDate, toDate, setSearchParams]);
+    useEffect(() => {
+        setSearchParams(prevParams => {
+            prevParams.set('fromDate', fromDate);
+            prevParams.set('toDate', toDate);
+            return prevParams;
+        });
+    }, [fromDate, toDate, setSearchParams]);
 
 
 
@@ -124,7 +126,7 @@ const Ledger = () => {
                         onChange={onSelectableFilter}
                         options={options?.data}
                     />
-                    {/* <DateFilter
+                    <DateFilter
                         dateFromProps={{
                             placeholder: "Date From",
                             onChange: handleDateFromChange,
@@ -135,8 +137,8 @@ const Ledger = () => {
                             onChange: handleDateToChange,
                             value: toDate,
                         }}
-                    /> */}
-                    <NormalDropdown value={dateData} options={yearsOptions} onChange={onChange} />
+                    />
+                    {/* <NormalDropdown value={dateData} options={yearsOptions} onChange={onChange} /> */}
 
                 </div>
                 <section className="pt-5 pb-2">
