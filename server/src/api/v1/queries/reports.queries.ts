@@ -167,21 +167,44 @@ class ReportQueries {
             cd.account_id
         FROM 
             combined_data cd
-    )
-    
+    ),
+FilteredData AS (
     SELECT 
-        Date,
-        Description,
-        VoucherID,
-        Debit,
-        Credit,
-        RunningBalance,
-        account_id
+        "date",
+description,
+        COALESCE(all_data.RunningBalance, 0) AS balance
     FROM 
         all_data
-    ORDER BY 
-        account_id, Date, VoucherID;
-    
+    WHERE 
+        "description" IN ('Opening Balance', 'Closing Balance')
+),
+AggregateData AS (
+    SELECT 
+        "date",
+description,
+        SUM(balance) AS balance
+    FROM 
+        FilteredData
+    GROUP BY 
+        "date",description
+),
+RunningTotal AS (
+    SELECT 
+        "date",
+description,
+        SUM(balance) OVER (ORDER BY "date" ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_balance
+    FROM 
+        AggregateData
+)
+SELECT 
+    "date",
+description,
+NULL AS VoucherID,NULL AS Debit,NULL AS Credit, running_balance as RunningBalance,
+     NULL as account_id
+FROM 
+    RunningTotal
+
+UNION ALL select * from all_data where description NOT IN ('Closing Balance','Opening Balance')
     `
     const [dailybook] = await db.query(query, {
         replacements: { startDate, endDate },
