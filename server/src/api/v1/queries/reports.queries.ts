@@ -210,7 +210,6 @@ UNION ALL select * from all_data where description NOT IN ('Closing Balance','Op
         replacements: { startDate, endDate },
         type: QueryTypes.RAW,
       });
-      
         return dailybook;
     }
 
@@ -713,8 +712,16 @@ UNION ALL select * from all_data where description NOT IN ('Closing Balance','Op
             // replacements: { startDate, endDate  },
             type: QueryTypes.RAW,
           })
-          
-            return balanceSheet;
+          const profit = await this.profitAndLoss()
+          let netProfit 
+        
+            profit.map((item:any)=>{
+            if(item.name  === 'to_net_profit'){
+                netProfit= item
+            }
+          })
+          balanceSheet.push(netProfit)
+            return balanceSheet
       }
 
       async profitAndLoss(){
