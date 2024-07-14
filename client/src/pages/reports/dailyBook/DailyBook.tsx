@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import SelectFilter from "../../../components/filterComponent/selectFilter/Select"
+// import SelectFilter from "../../../components/filterComponent/selectFilter/Select"
 import Header from "../../../components/header/Header"
 import Table from "../../../components/table/Table"
 import useGetApis from "../../../hooks/useGetApi.hook"
@@ -16,7 +16,7 @@ const breadCrumbData = [
     { name: 'DailyBook' },
 ]
 const DailyBook = () => {
-    const [searchParams, setSearchParams] = useSearchParams()
+    const [searchParams] = useSearchParams()
     const { callApi } = useGetApis()
     const [fromDate, setFromDate] = useState(moment('2024-01-06').format('YYYY-MM-DD'));
     const [toDate, setToDate] = useState(moment('2024-01-08').format('YYYY-MM-DD'));
@@ -25,21 +25,21 @@ const DailyBook = () => {
         url = url + `&voucher=${searchParams.get('filter')}`
     }
 
-    const selectUrl = `reports/list/dailybook-voucher`
+    // const selectUrl = `reports/list/dailybook-voucher`
     const fetchDailyBook = () => callApi(url);
-    const fetchDailyBookFilterData = () => callApi(selectUrl);
+    // const fetchDailyBookFilterData = () => callApi(selectUrl);
     const { data, isPending } = useQuery({ queryKey: [url, searchParams.get('filter')], queryFn: fetchDailyBook })
-    const { data: options } = useQuery({ queryKey: [selectUrl], queryFn: fetchDailyBookFilterData })
+    // const { data: options } = useQuery({ queryKey: [selectUrl], queryFn: fetchDailyBookFilterData })
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const onFilterChanged = (value: any) => {
-        if (value?.prefix !== 'All') {
-            searchParams.set('filter', value?.prefix)
-            setSearchParams(searchParams)
-        } else {
-            searchParams.delete('filter')
-            setSearchParams(searchParams)
-        }
-    }
+    // const onFilterChanged = (value: any) => {
+    //     if (value?.prefix !== 'All') {
+    //         searchParams.set('filter', value?.prefix)
+    //         setSearchParams(searchParams)
+    //     } else {
+    //         searchParams.delete('filter')
+    //         setSearchParams(searchParams)
+    //     }
+    // }
     const handleDateFromChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newFromDate = moment(event.target.value).format('YYYY-MM-DD');
         setFromDate(newFromDate);
@@ -57,14 +57,14 @@ const DailyBook = () => {
             <main className="table-wrapper">
                 <Header title="Daily Book" breadCrumbData={breadCrumbData} />
                 <div className=" py-3 flex justify-end gap-3">
-                    <SelectFilter
+                    {/* <SelectFilter
                         defaultValue={{ prefix: 'All' }}
                         showAllOption
                         labelName="prefix"
                         valueName="prefix"
                         placeholder="Filter"
                         onChange={onFilterChanged}
-                        options={options?.data} />
+                        options={options?.data} /> */}
                     <DateFilter
                         dateFromProps={{
                             placeholder: 'Date From',
