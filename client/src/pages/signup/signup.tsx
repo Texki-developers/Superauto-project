@@ -1,63 +1,62 @@
-// File path: src/components/LoginPage.tsx
-
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import InputBox from '../../components/formComponents/inputBox/InputBox';
 import Button from '../../components/button.tsx/Button';
-import { Link, useNavigate } from 'react-router-dom';
 import useAuthApi from '../../hooks/useAuthApi.hook';
-import AuthApiService from '../../services/api-services';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface LoginFormInputs {
-    userName: string;
+    email: string;
     password: string;
+    userName: string;
+    confirmPassword: string;
 }
 
-const LoginPage: React.FC = () => {
-    const { register, handleSubmit, formState: { errors } } = useForm<LoginFormInputs>();
+const SignupPage: React.FC = () => {
+    const { register, handleSubmit, setError, watch, formState: { errors } } = useForm<LoginFormInputs>();
     const navigate = useNavigate();
+    const password = watch("password");
+    const confirmPassword = watch("confirmPassword");
+
+
     const auth = useAuthApi()
     const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
+        if (confirmPassword && password !== confirmPassword) {
+            setError('confirmPassword', { type: 'validate', 'message': 'Passwords do not match' });
+            return
+        }
         const body = {
+            email: data.email,
             userName: data.userName,
             password: data.password
         }
-        await auth('auth/login', body, "Account Creation Failed", "Logged Successfully", () => {
-            navigate('/')
+        await auth('auth/register', body, "Account Creation Failed", "Account Created Successfully", () => {
+            navigate('/login')
         });
     };
-    const checkUser = async () => {
-        try {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const res: any = await AuthApiService.getApi('/auth/checkuser')
-            if (res.statusCode === 200) {
-                navigate('/')
-            } else {
-                navigate('/login')
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
-    useEffect(() => {
-        checkUser()
-    }, [])
-
     return (
         <div className="flex items-center justify-center min-h-screen bg-white-100">
             <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 bg-white p-6 rounded shadow-md w-full max-w-lg">
-                <h2 className="text-2xl font-bold">Login</h2>
+                <h2 className="text-2xl font-bold">Register</h2>
                 <div className="grid gap-4">
                     <InputBox
-                        label="User Name"
-                        name="userName"
-                        type="text"
-                        placeholder="Enter your user name"
+                        label="Email"
+                        name="email"
+                        type="email"
+                        placeholder="Enter your email"
                         required={true}
                         register={register}
                         error={errors}
                     />
-
+                    <InputBox
+                        label="User Name"
+                        name="userName"
+                        type="text"
+                        placeholder="Enter your User Name"
+                        required={true}
+                        register={register}
+                        error={errors}
+                    />
                     <InputBox
                         label="Password"
                         name="password"
@@ -67,10 +66,19 @@ const LoginPage: React.FC = () => {
                         register={register}
                         error={errors}
                     />
+                    <InputBox
+                        label="Confirm Password"
+                        name="confirmPassword"
+                        type="password"
+                        placeholder="Confirm your password"
+                        required={true}
+                        register={register}
+                        error={errors}
+                    />
                 </div>
 
                 <Button
-                    text="Login"
+                    text="Register"
                     type="submit"
                     className="mt-4"
                     bg="primary"
@@ -78,11 +86,11 @@ const LoginPage: React.FC = () => {
                     hoverColor="blue-700"
                 />
                 <p className="text-center text-sm text-gray-600">
-                    Don't have an account? <Link to={'/register'}>Sign up</Link>
+                    Already have an account? <Link to={'/login'}>Login</Link>
                 </p>
             </form>
         </div>
     );
 };
 
-export default LoginPage;
+export default SignupPage;

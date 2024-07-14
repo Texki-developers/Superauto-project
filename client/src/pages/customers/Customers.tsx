@@ -41,9 +41,7 @@ const Customers = () => {
     refetch()
   };
   const { data, isPending, refetch } = useGetCategoryApi(ICategory.CUSTOMER)
-  const onActionClick = (type: string, id: string) => {
-    console.log(type, id)
-  }
+
   // const columnData: ITableColumn[] = useMemo(() => {
   //   return [
   //     ...ColumnData,

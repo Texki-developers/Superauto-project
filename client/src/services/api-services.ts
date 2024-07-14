@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosInstance } from 'axios';
 import { IApiError } from '../types/apimodal/apimodal';
 
@@ -7,6 +8,7 @@ export default class AuthApiService {
     headers: {
       'Content-Type': 'application/json',
     },
+    withCredentials: true,
   });
 
   static async postApi<T, R>(url: string, body: T): Promise<R | IApiError> {
@@ -18,7 +20,7 @@ export default class AuthApiService {
       console.log(response);
       return response.data;
     } catch (error: any) {
-      console.error('Error posting to API:', error.message);
+      console.log(error);
       return {
         message: error?.response?.data?.message ?? 'Something went wrong',
         status: 'error',

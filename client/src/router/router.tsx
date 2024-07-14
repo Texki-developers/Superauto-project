@@ -4,6 +4,7 @@ import DashboardLayout from '../layouts/dashboardLayout/DashboardLayout';
 import { ISidebarItem } from '../types/sidebar/sidebar';
 import sidebarData from '../config/sidebar.data';
 import LoginPage from '../pages/login/Login';
+import SignupPage from '../pages/signup/signup';
 
 const generateRoutes = (sidebarItems: ISidebarItem[]) => {
   return sidebarItems.map((item) => {
@@ -33,6 +34,11 @@ export const router = createBrowserRouter([
   {
     path: '/login',
     element: <LoginPage />,
+    errorElement: <ErrorPage />
+  },
+  {
+    path: '/register',
+    element: <SignupPage />,
     errorElement: <ErrorPage />
   }
 ]);
