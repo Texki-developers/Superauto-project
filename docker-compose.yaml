@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   superauto_db:
@@ -27,7 +27,7 @@ services:
     networks:
       - superauto_network
     ports:
-      - 8080:8080
+      - 8080:8087
   client:
     depends_on:
       - server

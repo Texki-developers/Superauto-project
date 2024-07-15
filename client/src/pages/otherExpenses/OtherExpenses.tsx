@@ -7,6 +7,7 @@ import { ColumnData, dummyData } from './otherExpenses.data';
 import Table from '../../components/table/Table';
 import { IOtherExpense } from '../../types/otherExpenses/otherExpenses';
 import { useForm } from 'react-hook-form';
+import useGetDropdownData from '../../hooks/useGetDropdownData.hook';
 
 
 const defaultValues: IOtherExpense = {
@@ -22,6 +23,7 @@ const OtherExpenses = () => {
   const { register, handleSubmit, reset, formState: { errors }, control } = useForm({
     defaultValues
   })
+
   const onCancelClick = useCallback(() => {
     setShowOtherExpensesPopup(false);
   }, [])

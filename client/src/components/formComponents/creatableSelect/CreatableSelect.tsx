@@ -3,7 +3,7 @@ import Creatable from 'react-select/creatable'
 import { Controller } from "react-hook-form";
 import { SetStateAction } from 'react';
 interface IOption {
-    value: string;
+    value: string | number;
     label: string;
 }
 interface ISelectInputProps {
@@ -18,12 +18,26 @@ interface ISelectInputProps {
     name?: string;
     isDisabled?: boolean;
     isSearchable?: boolean;
+    labelName?: string;
+    valueName?: string;
+    isLoading?: boolean;
     control: any
     error: any
 }
 
 export default function CreateSelectInput(props: ISelectInputProps) {
-
+    const customStyles = {
+        menu: (provided: any) => ({
+            ...provided,
+            maxHeight: '150px',
+            zIndex: 999
+        }),
+        menuList: (provided: any) => ({
+            ...provided,
+            maxHeight: 150, // or '150px'
+            zIndex: 999
+        }),
+    };
     return (
         <div className='grid gap-1 w-full relative'>
             {!props?.hideLabel && (
@@ -47,6 +61,9 @@ export default function CreateSelectInput(props: ISelectInputProps) {
                             // @ts-expect-error
                             value={props?.value}
                             {...field}
+                            isLoading={props?.isLoading}
+                            getOptionLabel={(data) => { return props?.labelName ? data[props?.labelName] : data?.label }}
+                            getOptionValue={(data) => { return props?.valueName ? data[props?.valueName] : data?.value }}
                             onChange={(value) => {
                                 field.onChange(value)
                                 if (value?.__isNew__) {
@@ -55,6 +72,7 @@ export default function CreateSelectInput(props: ISelectInputProps) {
                                     props?.setIsNew && props.setIsNew(false)
                                 }
                             }}
+                            styles={customStyles}
                             options={props?.options}
                             aria-invalid={props?.error?.[props?.name ?? ''] ? "true" : "false"}
                         />

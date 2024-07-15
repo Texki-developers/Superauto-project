@@ -4,6 +4,7 @@ import {
     Optional
   } from 'sequelize';
   import { db } from '../config/database';
+import Transaction from './transaction';
   
   // Define the interface for model attributes
   interface OtherExpenseAttributes {
@@ -11,8 +12,7 @@ import {
     due_date: Date;
     transaction_id: number;
     amount: number;
-    createdAt: Date;
-    updatedAt: Date;
+   
   }
   
   interface OtherExpenseCreationAttributes extends Optional<OtherExpenseAttributes, 'ot_expense_id'> {}
@@ -22,8 +22,7 @@ import {
     public due_date!: Date;
     public transaction_id!: number;
     public amount!: number;
-    public readonly createdAt!: Date;
-    public readonly updatedAt!: Date;
+ 
   }
   
   OtherExpense.init({
@@ -38,21 +37,15 @@ import {
     },
     transaction_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references:{
+        model: Transaction,
+        key: 'transaction_id'
+      }
     },
     amount: {
       type: DataTypes.INTEGER,
       allowNull: false
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
     }
   }, {
     sequelize: db,

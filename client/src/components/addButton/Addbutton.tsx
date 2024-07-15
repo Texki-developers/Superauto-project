@@ -1,34 +1,52 @@
 import AddIcon from '../../assets/header-icons/add-icon.svg';
 import Button from '../button.tsx/Button';
-import ReceiptIcon from '../../assets/icons/receipt.png'
-import PaymentIcon from '../../assets/icons/payment.png'
-import { useState } from 'react';
-import PaymentForm from '../paymentFrom.tsx/PaymentForm';
-import ReceiptForm from '../receiptForm.tsx copy/ReceiptForm';
+import ReceiptIcon from '../../assets/icons/addReceipt.svg'
+import PaymentIcon from '../../assets/icons/addPayment.svg'
+import AddExpenses from '../../assets/icons/addExpense.svg'
+import { SetStateAction, useState } from 'react';
+import PaymentForm, { IProps } from '../paymentFrom/PaymentForm';
+import ReceiptForm from '../receiptForm/ReceiptForm';
+import ExpenseForm from '../expenseForm/ExpenseForm';
+import JournalForm from '../journal/journalForm';
 
+
+const addForms: { [key: string]: ({ setShow }: IProps) => JSX.Element } = {
+    "payment": PaymentForm,
+    "receipt": ReceiptForm,
+    "expense": ExpenseForm,
+    "journal": JournalForm
+}
+const getForm = (form: string, setShowForm: React.Dispatch<SetStateAction<string>>) => {
+    const Component = addForms[form]
+    return <Component setShow={setShowForm} />
+}
 const Addbutton = () => {
-    const [showAddPaymentModal, setShowPaymentModal] = useState(false)
-    const [showAddReceiptModal, setShowReceiptModal] = useState(false)
+    const [showForm, setShowForm] = useState('')
     return (
         <>
             {
-                showAddPaymentModal &&
-                <PaymentForm setShow={setShowPaymentModal} />
+                showForm !== "" &&
+                getForm(showForm, setShowForm)
+
             }
-            {
-                showAddReceiptModal &&
-                <ReceiptForm setShow={setShowReceiptModal} />
-            }
-            <div className=" shadow-[0px_0px_5px_#00000044] cursor-pointer group addIcon grid place-items-center absolute w-14 h-14 right-3 bottom-3 rounded-full bg-primary-300">
+            <div className=" shadow-[0px_0px_5px_#00000044] cursor-pointer group addIcon grid place-items-center fixed w-14 h-14 right-3 bottom-3 rounded-full bg-[#4c5ce9d1]">
                 <img alt='AddIcon' className='w-5' src={AddIcon} />
                 <div className="group-hover:grid hidden absolute bottom-[100%]  right-2 p-2 gap-2 ">
-                    <Button onClick={() => setShowReceiptModal(true)} icon={
+                    <Button onClick={() => setShowForm('expense')} className='!w-[180px]' icon={<img
+                        className='w-5 h-5'
+                        src={AddExpenses} />
+                    } text='Add Expense' bg='primary' />
+                    <Button onClick={() => setShowForm('receipt')} icon={
                         <img className='w-5 h-5' src={ReceiptIcon} />
                     } text='Add Receipt' bg='primary' />
-                    <Button onClick={() => setShowPaymentModal(true)} className='!w-[180px]' icon={<img
+                    <Button onClick={() => setShowForm('payment')} className='!w-[180px]' icon={<img
                         className='w-5 h-5'
                         src={PaymentIcon} />
                     } text='Add Payment' bg='primary' />
+                    <Button onClick={() => setShowForm('journal')} className='!w-[180px]' icon={<img
+                        className='w-5 h-5'
+                        src={PaymentIcon} />
+                    } text='Add Journal' bg='primary' />
                 </div>
             </div>
         </>

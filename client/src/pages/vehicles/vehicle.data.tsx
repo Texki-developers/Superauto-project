@@ -1,109 +1,29 @@
 import DoneIcon from '../../assets/icons/Done.svg';
 import Error from '../../assets/icons/error.svg';
+import { ITableColumn } from '../../types/table/table';
 
-export const dummyData = [
-  {
-    id: '23',
-    vehicle_no: 'KL 07 BT 8889',
-    customer: 'Marshad',
-    mobile: '8866143005',
-    rc: true,
-    insurance: false,
-    proof: true,
-    date: '19/11/2024',
-  },
-  {
-    id: '33',
-    vehicle_no: 'KL 08 ZY 1234',
-    customer: 'Anjali',
-    mobile: '9867543210',
-    rc: false,
-    insurance: true,
-    proof: false,
-    date: '20/11/2024',
-  },
-  {
-    id: '43',
-    vehicle_no: 'KL 09 AB 4321',
-    customer: 'Rohan',
-    mobile: '7766554433',
-    rc: true,
-    insurance: true,
-    proof: true,
-    date: '21/11/2024',
-  },
-  {
-    id: '53',
-    vehicle_no: 'KL 10 CD 5678',
-    customer: 'Sofia',
-    mobile: '9988776655',
-    rc: false,
-    insurance: false,
-    proof: true,
-    date: '22/11/2024',
-  },
-  {
-    id: '63',
-    vehicle_no: 'KL 11 EF 6789',
-    customer: 'Arun',
-    mobile: '8899776655',
-    rc: true,
-    insurance: false,
-    proof: false,
-    date: '23/11/2024',
-  },
-  {
-    id: '43',
-    vehicle_no: 'KL 09 AB 4321',
-    customer: 'Rohan',
-    mobile: '7766554433',
-    rc: true,
-    insurance: true,
-    proof: true,
-    date: '21/11/2024',
-  },
-  {
-    id: '53',
-    vehicle_no: 'KL 10 CD 5678',
-    customer: 'Sofia',
-    mobile: '9988776655',
-    rc: false,
-    insurance: false,
-    proof: true,
-    date: '22/11/2024',
-  },
-  {
-    id: '63',
-    vehicle_no: 'KL 11 EF 6789',
-    customer: 'Arun',
-    mobile: '8899776655',
-    rc: true,
-    insurance: false,
-    proof: false,
-    date: '23/11/2024',
-  },
-];
 
-export const ColumnData = [
+export const ColumnData: ITableColumn[] = [
+  { name: 'ID', key: 'inventory_id' },
+  { name: 'Vehicle No', key: 'registration_number' },
   {
-    name: 'ID',
-    key: 'id',
+    name: 'Customer', key: 'Account', columnData: (value: { name: string }) => {
+      return (
+        <p>{value?.name}</p>
+      )
+    }
   },
   {
-    name: 'Vehicle No',
-    key: 'vehicle_no',
-  },
-  {
-    name: 'Customer',
-    key: 'customer',
-  },
-  {
-    name: 'Mobile',
-    key: 'mobile',
+    name: 'Mobile', key: 'Account',
+    columnData: (value: { contact_info: string }) => {
+      return (
+        <p>{value?.contact_info}</p>
+      )
+    }
   },
   {
     name: 'RC',
-    key: 'rc',
+    key: 'rc_book',
     columnData: (value: string) => {
       return value ? (
         <img className="w-[20px] h-[20px]" src={DoneIcon} alt='done' />
@@ -114,7 +34,7 @@ export const ColumnData = [
   },
   {
     name: 'Insurance',
-    key: 'insurance',
+    key: 'insurance_doc',
     columnData: (value: string) => {
       return value ? (
         <img className="w-[20px] h-[20px]" src={DoneIcon} alt='done' />
@@ -125,7 +45,7 @@ export const ColumnData = [
   },
   {
     name: 'Proof',
-    key: 'proof',
+    key: 'proof_doc',
     columnData: (value: string) => {
       return value ? (
         <img className="w-[20px] h-[20px]" src={DoneIcon} alt='done' />
@@ -136,6 +56,6 @@ export const ColumnData = [
   },
   {
     name: 'Date',
-    key: 'date',
+    key: 'date_of_purchase',
   },
 ];

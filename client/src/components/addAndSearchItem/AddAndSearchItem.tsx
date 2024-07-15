@@ -5,11 +5,15 @@ import AddIcon from '../../assets/header-icons/add-icon.svg';
 interface IAddAndSearchItemProps {
   onAddButtonClick?: () => void;
   addButtonText: string;
+  onSearch?: (search: string) => void
+  hideSearch?: boolean;
 }
 const AddAndSearchItem = (props: IAddAndSearchItemProps) => {
   return (
     <div className='flex justify-between'>
-      <SearchInput />
+      <div>
+        {!props?.hideSearch && <SearchInput onSearch={props.onSearch} />}
+      </div>
       <div>
         <Button
           onClick={props?.onAddButtonClick}

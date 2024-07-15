@@ -4,10 +4,11 @@ import {
     Optional
   } from 'sequelize';
   import { db } from '../config/database';
+import Inventory from './inventory';
   
   // Define the interface for model attributes
   interface BrandModelAttributes {
-    brand_model_id: number;
+    brand_model_id?: number;
     brand: string;
     model: string;
   }
@@ -30,7 +31,8 @@ import {
     },
     brand: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+   
     },
     model: {
       type: DataTypes.STRING,

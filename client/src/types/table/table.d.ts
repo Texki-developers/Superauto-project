@@ -2,6 +2,11 @@ import React from 'react';
 
 export interface ITableColumn {
   name: string;
-  key: string;
-  columnData?: (value: string) => string | React.ReactNode;
+  align?: string;
+  key?: string;
+  index?: boolean;
+  textAlign?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  columnData?: (value: any, data?: any) => string | React.ReactNode;
+  returnData?: boolean;
 }

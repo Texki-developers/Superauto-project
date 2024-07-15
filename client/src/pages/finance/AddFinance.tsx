@@ -35,7 +35,7 @@ const AddFinance = ({ onCancelClick, reset, register, errors }: IProps) => {
       <SaveCancelButtons
         onCancelClick={onCancelClick}
         onResetClick={() => { reset() }}
-        type='button'
+        type='submit'
         hideReset
       />
     </div>

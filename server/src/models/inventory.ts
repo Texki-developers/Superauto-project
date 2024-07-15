@@ -2,6 +2,10 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import { db } from '../config/database';
 import { IInventoryAttributes } from '../types/db.type';
 import Accounts from './accounts';
+import BrandModel from './brand';
+import FileStore from './documents';
+import SaleReturn from './salesReturn';
+import DsTransaction from './dsTransactions';
 
 // Define the interface for model attributes
 
@@ -13,7 +17,7 @@ interface InventoryCreationAttributes
 
 class Inventory extends Model<IInventoryAttributes, InventoryCreationAttributes> implements IInventoryAttributes {
   public inventory_id!: number;
-  public account_id?: number | undefined;
+  public account_id!: number ;
   public brand_model_id!: number;
   public year_of_manufacture!: number;
   public registration_number!: string;
@@ -21,13 +25,12 @@ class Inventory extends Model<IInventoryAttributes, InventoryCreationAttributes>
   public purchase_rate!: number;
   public insurance_date!: string | null;
   public sale_status!: boolean;
-  public rc_book!: string | null;
-  public insurance_doc!: string | null;
-  public proof_doc!: string | null;
-  public date_of_purchase!: string | null;
+  public rc_book!: number | null;
+  public insurance_doc!: number | null;
+  public proof_doc!: number | null;
+  public date_of_purchase!: Date;
   public sold_price!: number | null;
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+
 }
 
 Inventory.init(
@@ -48,6 +51,10 @@ Inventory.init(
     brand_model_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: BrandModel,
+        key: 'brand_model_id',
+      },
     },
     year_of_manufacture: {
       type: DataTypes.INTEGER,
@@ -62,7 +69,7 @@ Inventory.init(
       allowNull: false,
     },
     insurance_date: {
-      type: DataTypes.STRING,
+      type: DataTypes.DATE,
       allowNull: true,
     },
     registration_number: {
@@ -74,16 +81,28 @@ Inventory.init(
       allowNull: false,
     },
     rc_book: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: true,
+      references:{
+        model:FileStore,
+        key:'file_id'
+      }
     },
     insurance_doc: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: true,
+      references:{
+        model:FileStore,
+        key:'file_id'
+      }
     },
     proof_doc: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: true,
+      references:{
+        model:FileStore,
+        key:'file_id'
+      }
     },
     date_of_purchase: {
       type: DataTypes.STRING,
@@ -92,17 +111,7 @@ Inventory.init(
     sold_price: {
       type: DataTypes.INTEGER,
       allowNull: true,
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
-    },
+    }
   },
   {
     sequelize: db,
@@ -111,4 +120,10 @@ Inventory.init(
   }
 );
 
+Inventory.belongsTo(Accounts, { foreignKey: 'account_id' });
+Inventory.belongsTo(BrandModel, { foreignKey: 'brand_model_id' });
+Inventory.belongsTo(FileStore, { as: 'rcBook', foreignKey: 'rc_book' });
+Inventory.belongsTo(FileStore, { as: 'insuranceDoc', foreignKey: 'insurance_doc' });
+Inventory.belongsTo(FileStore, { as: 'proofDoc', foreignKey: 'proof_doc' });
+Inventory.hasOne(SaleReturn, {  foreignKey: 'inventory_id' });
 export default Inventory;

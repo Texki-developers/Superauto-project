@@ -4,26 +4,20 @@ import {
     Optional
   } from 'sequelize';
   import { db } from '../config/database';
+import { IFinancerTransactionAttributes } from '../types/db.type';
+import Transaction from './transaction';
   
   // Define the interface for model attributes
-  interface FinancerTransactionAttributes {
-    financer_transaction_id: number;
-    financer_id: number;
-    vehicle_id: number;
-    transaction_id: number;
-    createdAt: Date;
-    updatedAt: Date;
-  }
+
   
-  interface FinancerTransactionCreationAttributes extends Optional<FinancerTransactionAttributes, 'financer_transaction_id'> {}
+  interface FinancerTransactionCreationAttributes extends Optional<IFinancerTransactionAttributes, 'financer_transaction_id'> {}
   
-  class FinancerTransaction extends Model<FinancerTransactionAttributes, FinancerTransactionCreationAttributes> implements FinancerTransactionAttributes {
+  class FinancerTransaction extends Model<IFinancerTransactionAttributes, FinancerTransactionCreationAttributes> implements IFinancerTransactionAttributes {
     public financer_transaction_id!: number;
     public financer_id!: number;
     public vehicle_id!: number;
     public transaction_id!: number;
-    public readonly createdAt!: Date;
-    public readonly updatedAt!: Date;
+   
   }
   
   FinancerTransaction.init({
@@ -42,17 +36,11 @@ import {
     },
     transaction_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    createdAt: {
-      type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
+      references:{
+        model:Transaction,
+        key: 'transaction_id'
+      }
     }
   }, {
     sequelize: db,

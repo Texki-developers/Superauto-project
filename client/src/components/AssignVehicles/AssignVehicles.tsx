@@ -11,8 +11,13 @@ import {
 import { SubmitHandler, useForm, useFieldArray } from 'react-hook-form';
 import SaveCancelButtons from '../../components/save-cancel-buttons/SaveCancelButtons';
 import { useState } from 'react';
+import useToast from '../../hooks/useToast.hook';
+import AuthApiService from '../../services/api-services';
+import { IAssignApiBody } from '../../types/apimodal/apimodal';
+import { useQuery } from '@tanstack/react-query';
+import useGetApis from '../../hooks/useGetApi.hook';
 
-export default function AssignVehicles({ setAssign }: AssignVehiclesProps) {
+export default function AssignVehicles({ setAssign, itemId, parent, apiUrl }: AssignVehiclesProps) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const {
@@ -32,21 +37,36 @@ export default function AssignVehicles({ setAssign }: AssignVehiclesProps) {
     name: 'vehicle',
   });
 
-  const selectOption = [
-    {
-      value: 'kl 47 k 3300',
-      label: 'Kl 47 k 3300',
-    },
-    {
-      value: 'kl 47 p 3300',
-      label: 'Kl 47 k 3300',
-    },
-  ];
+  const { toastError, toastLoading, toastSuccess } = useToast()
+  const { callApi } = useGetApis()
+  const url = `inventory/list/vehicle/registration-number`
+  const fetchData = () => callApi(url);
+  const { data } = useQuery({ queryKey: [url], queryFn: fetchData })
+  const onSubmit: SubmitHandler<IassignFormInput> = async (data: any) => {
+    const id = toastLoading('Loading...')
+    // creating the body
+    const Vehicles = data?.vehicle?.map((item: any) => (
+      {
+        regNum: item?.regNum?.registration_number,
+        amount: Number(item?.amount),
+        [parent]: itemId
+      }
+    ))
+    try {
+      const data = await AuthApiService.postApi<IAssignApiBody, any>(`inventory/assign-vehicle${apiUrl}`, { Vehicles })
+      console.log(data)
+      if (data?.status === "error") {
+        toastError(id, data?.message)
+        setAssign(false)
+        return
+      }
+      setAssign(false);
+      toastSuccess(id, 'Vehicle added successfully')
+    } catch (error) {
+      setAssign(false);
+      toastError(id, 'Something went wrong')
+    }
 
-  const onSubmit: SubmitHandler<IassignFormInput> = (data: any) => {
-    console.log(data, 'The data');
-
-    setAssign(false);
   };
 
   const handleAddField = () => {
@@ -68,7 +88,6 @@ export default function AssignVehicles({ setAssign }: AssignVehiclesProps) {
       setErrorMsg('Cannot remove the last field.');
     }
   };
-  const handleFormSubmit = handleSubmit(onSubmit);
   return (
     <div className='flex flex-col gap-6'>
       <form
@@ -79,12 +98,15 @@ export default function AssignVehicles({ setAssign }: AssignVehiclesProps) {
           {fields.map((field, index) => (
             <div key={field.id} className='flex w-full items-end gap-6'>
               <SelectInput
-                options={selectOption}
+                options={data?.data}
                 name={`vehicle[${index}].regNum`}
                 label='Registration Number'
                 control={control}
+                valueName='inventory_id'
+                labelName='registration_number'
                 required={true}
                 error={errors}
+                minH={80}
               />
 
               <InputBox
@@ -102,7 +124,7 @@ export default function AssignVehicles({ setAssign }: AssignVehiclesProps) {
                   iconStyle={{ width: '1rem', textAlign: 'center' }}
                   text=''
                   type='button'
-                  bg='primary'
+                  bg={index === fields.length - 1 ? 'primary' : 'red'}
                   onClick={
                     index === fields.length - 1
                       ? handleAddField
@@ -123,7 +145,6 @@ export default function AssignVehicles({ setAssign }: AssignVehiclesProps) {
         </div>
         <SaveCancelButtons
           onCancelClick={() => setAssign(false)}
-          onSaveClick={handleFormSubmit}
           type='submit'
           hideReset
         />

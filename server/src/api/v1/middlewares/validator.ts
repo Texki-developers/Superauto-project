@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Schema } from "yup";
-import { responseHandler } from "../utils/responseHandler/responseHandler";
-import { yupErrorMessageFormatter } from "../utils/yupErrorMessageFormatter/yupErrorMessageFormatter";
+import { responseHandler } from "../../../utils/responseHandler/responseHandler";
+import { yupErrorMessageFormatter } from "../../../utils/yupErrorMessageFormatter/yupErrorMessageFormatter";
 
 export const validator = (schema: Schema) => async (req: Request, res: Response, next: NextFunction) => {
   try {

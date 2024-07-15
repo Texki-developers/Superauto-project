@@ -4,30 +4,23 @@ import {
     Optional
   } from 'sequelize';
   import { db } from '../config/database';
+import Transaction from './transaction';
   
   // Define the interface for model attributes
   interface ReceiptAttributes {
     receipt_id: number;
-    recipient_id: number;
     date: Date;
     description: string;
-    mode: string;
     transaction_id: number;
-    createdAt: Date;
-    updatedAt: Date;
   }
   
   interface ReceiptCreationAttributes extends Optional<ReceiptAttributes, 'receipt_id'> {}
   
   class Receipt extends Model<ReceiptAttributes, ReceiptCreationAttributes> implements ReceiptAttributes {
     public receipt_id!: number;
-    public recipient_id!: number;
     public date!: Date;
     public description!: string;
-    public mode!: string;
     public transaction_id!: number;
-    public readonly createdAt!: Date;
-    public readonly updatedAt!: Date;
   }
   
   Receipt.init({
@@ -35,10 +28,6 @@ import {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true
-    },
-    recipient_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
     },
     date: {
       type: DataTypes.DATE,
@@ -48,26 +37,13 @@ import {
       type: DataTypes.STRING,
       allowNull: false
     },
-    mode: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        isIn: [['cash', 'bank']]
-      }
-    },
     transaction_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    createdAt: {
-      type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
+      references: {
+        model: Transaction,
+        key: 'transaction_id'
+      }
     }
   }, {
     sequelize: db,

@@ -1,52 +1,138 @@
-import { pool } from "../../../config1/dbConfig";
-import Accounts from "../../../models/accounts";
-import PrimaryLedger from "../../../models/primaryLedger";
-import Transaction from "../../../models/transaction";
-import { ITransactionParams } from "../../../types/db.type";
+import { Op, where } from 'sequelize';
+import { pool } from '../../../config1/dbConfig';
+import Accounts from '../../../models/accounts';
+import Employee from '../../../models/employee';
+import OtherExpense from '../../../models/otherExpense';
+import Payment from '../../../models/payments';
+import PrimaryLedger from '../../../models/primaryLedger';
+import Receipt from '../../../models/receipents';
+import Transaction from '../../../models/transaction';
+import Voucher from '../../../models/vouchers';
+import { ITransactionParams } from '../../../types/db.type';
+import returnDataValues from '../../../utils/commonUtils/returnDataValues';
+import { E_ACCOUNT_CATEGORIES } from '../../../utils/constants/constants';
 
 class AccountQueries {
-    async createAccount(body: { name: string, contact_info: string, category: string, head: number }) {
-        const query = `INSERT INTO account (name, contact_info, category, head) VALUES ($1, $2, $3, $4) RETURNING *`;
-        const values = [body.name, body.contact_info, body.category, body.head];
-        return await  pool.query(query, values);
+  async createAccount(body: { name: string; contact_info: string; category: E_ACCOUNT_CATEGORIES; head: number }) {
+    return await Accounts.create(body, { returning: true });
+  }
+
+  async createEmployee(body: { account_id: number; salary: number }) {
+    return await Employee.create(body);
+  }
+
+  async getHead(primaryLedger: string) {
+    try {
+      const ledger = await PrimaryLedger.findOne({
+        where: {
+          ledger_name: primaryLedger,
+        },
+      });
+      return ledger;
+    } catch (error) {
+      console.error('Error fetching ledger:', error);
     }
-    
-    
-    async createEmployee(body: { account_id: number, salary: number }) {
-        const query = `INSERT INTO employee (account_id, salary) VALUES ($1, $2) RETURNING *`;
-        const values = [body.account_id, body.salary];
-        return await  pool.query(query, values);
+  }
+
+  async generateTransaction(data: ITransactionParams[], options?: any) {
+    try {
+      console.log(data, 'TRAN');
+      const TransactionResult = await Transaction.bulkCreate(data, { returning: true, ...options });
+      return returnDataValues(TransactionResult);
+    } catch (error) {
+      console.log(error);
+
+      throw new Error('Failed To Generate Transaction');
     }
+  }
 
-    async getHead(primaryLedger: string) {
-        try {
-          const ledger = await PrimaryLedger.findOne({
-            where: {
-              ledger_name: primaryLedger
-            }
-          });
-          return ledger;
-        } catch (error) {
-          console.error('Error fetching ledger:', error);
-        }
-      }
+  async findAccount(name: string) {
+    const result = await Accounts.findOne({ where: { name: name } });
+    return result?.account_id;
+  }
 
-      async generateTransaction (data:ITransactionParams[],options?:any){
-            try{
-              const TransactionResult  = await Transaction.bulkCreate(data,options)
-              return TransactionResult
-            }catch(error){
-              throw new Error('Failed To Generate Transaction')
-            }
-      }
+  async getVoucher(type: string) {
+    const result = await Voucher.findOne({ where: { voucher_name: type } });
+    await Voucher.update(
+      { last_invoice_number: (result?.last_invoice_number as number) + 1 },
+      { where: { voucher_name: type } }
+    );
 
+    return {
+      prefix: result?.prefix,
+      last_invoice_number: result?.last_invoice_number,
+    };
+  }
 
-      async findAccount (name:string) {
-        const result =  await Accounts.findOne({ where: { name:name } })
+  async addOtherExpense(
+    data: {
+      transaction_id: number;
+      amount: number;
+      due_date: Date;
+    },
+    options?: any
+  ) {
+    const result = await OtherExpense.create(data, { returning: true, ...options });
+    return result;
+  }
 
-        return result?.account_id
-      }
-      
+  // async addPaymadentData(data: {date: Date, transaction_id: number, description: string}, options?:any){
+  //   const result = await Payment.create(data,{returning: true, ...options})
+  //   return result;
+  // }
+
+  async addRecieptData(data: { date: Date; transaction_id: number; description: string }, options?: any) {
+    const result = await Receipt.create(data, { returning: true, ...options });
+    return result;
+  }
+
+  async findAccountsByCategory(category: any, attributes: string[]) {
+    const { rows: accounts, count: totalCount } = await Accounts.findAndCountAll({
+      ...category,
+      include: [
+        {
+          model: Employee,
+          required: false,
+          attributes: ['salary'],
+        },
+      ],
+      attributes: attributes,
+    });
+
+    const result = {
+      accounts: accounts,
+      meta: {
+        totalCount: totalCount,
+        perPage: accounts.length,
+      },
+    };
+
+    return result;
+  }
+
+  async getAccountsByid(option: any) {
+    const result = await Accounts.findAll({
+      where: option.where,
+      attributes: ['account_id', 'name', 'contact_info', 'category'],
+    });
+
+    return result;
+  }
+
+  async SearchCategory(whereCondition: any) {
+    console.log(whereCondition, 'where condition');
+    const accounts = await Accounts.findAll({
+      where: whereCondition,
+      attributes: ['account_id', 'name'],
+    });
+    return accounts;
+  }
+
+  async getAllAccounts() {
+    return await Accounts.findAll({
+      attributes: ['account_id', 'name'],
+    });
+  }
 }
 
 export default new AccountQueries();

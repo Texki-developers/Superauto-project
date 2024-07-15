@@ -1,4 +1,4 @@
-import React, { SetStateAction } from 'react';
+import React, { SetStateAction, useState } from 'react';
 import { Control, FieldErrors, UseFormRegister } from 'react-hook-form';
 import Button from "../../components/button.tsx/Button";
 import InputBox from "../../components/formComponents/inputBox/InputBox";
@@ -6,6 +6,10 @@ import SelectInput from "../../components/formComponents/selectInput/SelectInput
 import AddButton from '../../assets/icons/addButton.svg';
 import CheckBox from "../formComponents/checkBox/CheckBox";
 import { IVehicleSellFormValues } from '../../types/vehicle/sellVehicle';
+import { ICategory } from '../../types/apimodal/apimodal.d';
+import useGetDropdownData from '../../hooks/useGetDropdownData.hook';
+import CreateSelectInput from '../formComponents/creatableSelect/CreatableSelect';
+import { paymentTypes } from '../../config/paymentTypes.data';
 
 
 interface IProps {
@@ -15,15 +19,23 @@ interface IProps {
   control: Control<IVehicleSellFormValues>;
   errors: FieldErrors<IVehicleSellFormValues>;
   reset: (values?: IVehicleSellFormValues) => void;
+  setValue: (
+    name: keyof IVehicleSellFormValues,
+    value: IVehicleSellFormValues[keyof IVehicleSellFormValues],
+    options?: {
+      shouldValidate?: boolean;
+      shouldDirty?: boolean;
+    }
+  ) => void; // SetValue function for setting form values
+  showFinance: boolean;
+  total: number,
+  setShowFinance: React.Dispatch<SetStateAction<boolean>>;
 }
 
-const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, control, errors }: IProps) => {
-  const options = [
-    { value: 'chocolate', label: 'Chocolate' },
-    { value: 'strawberry', label: 'Strawberry' },
-    { value: 'vanilla', label: 'Vanilla' },
-  ];
-
+const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, control, errors, total, setValue, showFinance, setShowFinance }: IProps) => {
+  const [newCustomer, setNewCustomer] = useState(false)
+  const { formatedData: customers, isPending: customerPending } = useGetDropdownData(ICategory.CUSTOMER)
+  console.log(customers)
   return (
     <>
       {
@@ -32,16 +44,30 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
             <div className='col-span-2 grid gap-4'>
               <h1 className='primary-heading'>Basic Details</h1>
               <div className='grid grid-cols-3 gap-4'>
-                <SelectInput
+                <CreateSelectInput
                   name='customer'
                   label='Customer'
                   isSearchable
                   placeholder='Search customer name'
-                  options={options}
+                  options={customers}
+                  isLoading={customerPending}
                   control={control}
                   error={errors}
+                  setIsNew={setNewCustomer}
                   required
                 />
+                {
+                  newCustomer &&
+                  <InputBox
+                    name='customerPhoneNumber'
+                    label='Phone Number'
+                    placeholder='Customer Phone'
+                    register={register}
+                    error={errors}
+                    type='tel'
+                    required
+                  />
+                }
                 <InputBox
                   name='saleRate'
                   label='Sale Rate'
@@ -75,7 +101,7 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
                   label='Payment Type'
                   isSearchable
                   placeholder='Cash'
-                  options={options}
+                  options={paymentTypes}
                   control={control}
                   error={errors}
                   required
@@ -84,9 +110,15 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
 
               <div className="flex gap-2">
                 <h1 className='primary-heading'>Finance Details</h1>
-                <CheckBox register={register} error={errors} name='Finance' label="" />
+                <CheckBox checked={showFinance} onChange={(e) => {
+                  if (!e.target.checked) {
+                    setValue('financeAmount', '')
+                    setValue('financeServiceCharge', '')
+                  }
+                  setShowFinance(e.target.checked)
+                }} error={errors} name='Finance' label="" />
               </div>
-              <div className="grid grid-cols-[2fr_1fr]">
+              {showFinance && <div className="grid grid-cols-[2fr_1fr]">
                 <div className='grid grid-cols-2 gap-4'>
                   <InputBox
                     name='financeAmount'
@@ -95,17 +127,19 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
                     type='number'
                     register={register}
                     error={errors}
+                    required
                   />
                   <InputBox
                     name='financeServiceCharge'
                     label='Finance Service Charge'
                     placeholder='Value'
+                    required
                     type='number'
                     register={register}
                     error={errors}
                   />
                 </div>
-              </div>
+              </div>}
 
               <div className="flex justify-between">
                 <h1 className='primary-heading'>Exchange Details</h1>
@@ -119,10 +153,10 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
                   <InputBox
                     name='registrationNumber'
                     label='Registration Number'
-                    placeholder='KL55AE5570'
+                    placeholder='Registration Number'
                     register={register}
+                    isDisabled
                     error={errors}
-                    required
                   />
                   <InputBox
                     name='rate'
@@ -130,6 +164,7 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
                     placeholder='0'
                     type='number'
                     register={register}
+                    isDisabled
                     error={errors}
                   />
                 </div>
@@ -159,6 +194,7 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
                   name='balance'
                   label='Balance'
                   placeholder='0'
+                  isDisabled
                   type='number'
                   register={register}
                   error={errors}
@@ -170,13 +206,14 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
           <div>
             <div>
               <div className='grand-total flex justify-end font-bold text-lg py-4'>
-                Grand Total: 2237/-
+                Grand Total: {total}/-
               </div>
               <div className='button-wrapper flex h-full w-full items-center justify-between'>
                 <Button
                   className='bg-gray-300 font-semibold text-black-400'
                   w='100px'
                   text='Reset'
+                  type='button'
                   onClick={() => reset()}
                 />
                 <div className='save-cancel-btn flex gap-3'>
@@ -185,6 +222,7 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
                     w='150px'
                     className='bg-failureRed'
                     text='Cancel'
+                    type='button'
                   />
                   <Button
                     bg='primary'

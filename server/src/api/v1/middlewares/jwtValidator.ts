@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { responseHandler } from '../utils/responseHandler/responseHandler';
+import { responseHandler } from '../../../utils/responseHandler/responseHandler';
 
 
 // Middleware function to validate JWT token

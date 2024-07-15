@@ -2,9 +2,11 @@ import { Control, FieldErrors, UseFormRegister } from 'react-hook-form';
 import Button from '../button.tsx/Button';
 import DragAndDrop from '../formComponents/dragAndDrop/DragAndDrop';
 import InputBox from '../formComponents/inputBox/InputBox';
-import SelectInput from '../formComponents/selectInput/SelectInput';
-import { IVehicleAddFormValues } from '../../types/vehicle/addVehicle';
+import { IBranAndModel, IVehicleAddFormValues } from '../../types/vehicle/addVehicle';
 import CreateSelectInput from '../formComponents/creatableSelect/CreatableSelect';
+import { useEffect, useState } from 'react';
+import useGetDropdownData from '../../hooks/useGetDropdownData.hook';
+import { ICategory } from '../../types/apimodal/apimodal.d';
 
 interface IProps {
   onCancelClick: () => void;
@@ -21,14 +23,49 @@ interface IProps {
       shouldDirty?: boolean;
     }
   ) => void; // SetValue function for setting form values
+  brands?: IBranAndModel[] | undefined;
+  brandLoading?: boolean
+  hideDeliveryServices?: boolean
 }
 
-const AddvehicleForm = ({ onCancelClick, register, reset, control, errors, watch, setValue }: IProps) => {
-  const options = [
-    { value: 'chocolate', label: 'Chocolate' },
-    { value: 'strawberry', label: 'Strawberry' },
-    { value: 'vanilla', label: 'Vanilla' },
-  ];
+const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, control, errors, watch, setValue, brands, brandLoading }: IProps) => {
+  const [isNewParty, setIsNewParty] = useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [modelsData, setModelsData] = useState<any>([])
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [brandData, setBrandData] = useState<any>([])
+  const [isNewDelivery, setIsNewDelivery] = useState(false)
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const brand: any = watch('brand')
+    setValue('model', '')
+    if (brands && brands?.length > 0) {
+      const models = Array.from(new Set(brands?.filter(item => {
+        return item.brand === brand.value;
+      }).map(item => item.model)))
+        .map(model => ({ value: model, label: model }));
+      console.log(models)
+      setModelsData(models)
+    }
+  }, [watch('brand')])
+
+  useEffect(() => {
+    if (brands && brands.length > 0) {
+      const brandOptionsMap = new Map();
+      brands.forEach((item: IBranAndModel) => {
+        brandOptionsMap.set(item.brand, { label: item.brand, value: item.brand });
+      });
+      const brandOptions = Array.from(brandOptionsMap.values());
+
+      console.log(brandOptions);
+      setBrandData(brandOptions);
+    }
+
+  }, [brands])
+
+  const { formatedData: brokers, isPending: brokerPending } = useGetDropdownData(ICategory.BROKER)
+  const { formatedData: deliveryService, isPending: deliveryServicePending } = useGetDropdownData(ICategory.DELIVERY_SERVICE)
 
   return (
     <div className='bg-white-100 grid w-full grid-rows-[1fr_80px] rounded p-5'>
@@ -38,16 +75,29 @@ const AddvehicleForm = ({ onCancelClick, register, reset, control, errors, watch
           <div className='grid grid-cols-2 gap-3'>
             <div className='first-section grid gap-3'>
               <div className='form-items grid gap-2'>
-                <SelectInput
+                <CreateSelectInput
                   name='party'
                   label='Party'
                   isSearchable
                   placeholder='Select Party Name'
-                  options={options}
+                  options={brokers}
+                  isLoading={brokerPending}
                   control={control}
+                  setIsNew={setIsNewParty}
                   error={errors}
                   required
                 />
+                {
+                  isNewParty &&
+                  < InputBox
+                    name='partyPhoneNumber'
+                    label='Phone Number'
+                    placeholder='Enter Phone Number'
+                    register={register}
+                    error={errors}
+                    required
+                  />
+                }
                 <InputBox
                   name='registrationNumber'
                   label='Registration Number'
@@ -60,7 +110,7 @@ const AddvehicleForm = ({ onCancelClick, register, reset, control, errors, watch
                   name='model'
                   label='Model'
                   isSearchable
-                  options={options}
+                  options={modelsData}
                   placeholder='Select Model'
                   control={control}
                   error={errors}
@@ -82,6 +132,7 @@ const AddvehicleForm = ({ onCancelClick, register, reset, control, errors, watch
                   type='number'
                   register={register}
                   error={errors}
+                  isDisabled
                 />
                 <InputBox
                   name='purchaseDate'
@@ -109,7 +160,8 @@ const AddvehicleForm = ({ onCancelClick, register, reset, control, errors, watch
                   label='Brand'
                   isSearchable
                   placeholder='Select Brand'
-                  options={options}
+                  options={brandData}
+                  isLoading={brandLoading}
                   control={control}
                   error={errors}
                   required
@@ -145,17 +197,31 @@ const AddvehicleForm = ({ onCancelClick, register, reset, control, errors, watch
               </div>
             </div>
           </div>
-          <div>
+          {!hideDeliveryServices && <div>
             <h1 className='primary-heading'>Delivery Services</h1>
             <div className='grid grid-cols-2 gap-3 pt-1'>
-              <SelectInput
+              <CreateSelectInput
                 name='deliveryService'
                 label='Delivery Service'
                 placeholder='Select Delivery Service'
-                options={options}
+                options={deliveryService}
+                setIsNew={setIsNewDelivery}
                 control={control}
+                isLoading={deliveryServicePending}
                 error={errors}
               />
+              {
+                isNewDelivery &&
+                <InputBox
+                  name='deliveryServicePhoneNumber'
+                  label='Phone Number'
+                  placeholder='Delivery Service Phone Number'
+                  type='number'
+                  required
+                  register={register}
+                  error={errors}
+                />
+              }
               <InputBox
                 name='deliveryAmount'
                 label='Delivery Amount'
@@ -165,7 +231,7 @@ const AddvehicleForm = ({ onCancelClick, register, reset, control, errors, watch
                 error={errors}
               />
             </div>
-          </div>
+          </div>}
         </div>
         <div className='documents'>
           <h1 className='primary-heading'>Documents</h1>
@@ -190,11 +256,12 @@ const AddvehicleForm = ({ onCancelClick, register, reset, control, errors, watch
               onClick={() => {
                 onCancelClick();
               }}
+              type='button'
               w='150px'
               className='bg-failureRed'
               text='Cancel'
             />
-            <Button bg='primary' w='150px' text='Save' />
+            <Button bg='primary' type='submit' w='150px' text='Save' />
           </div>
         </div>
       </div>

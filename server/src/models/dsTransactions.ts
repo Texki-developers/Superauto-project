@@ -4,20 +4,16 @@ import {
     Optional
   } from 'sequelize';
   import { db } from '../config/database';
+import { IDsTransactionAttributes } from '../types/db.type';
+import Transaction from './transaction';
+import Inventory from './inventory';
   
   // Define the interface for model attributes
-  interface DsTransactionAttributes {
-    ds_txn_id: number;
-    ds_id: number;
-    vehicle_id: number;
-    transaction_id: number;
-    createdAt: Date;
-    updatedAt: Date;
-  }
+
   
-  interface DsTransactionCreationAttributes extends Optional<DsTransactionAttributes, 'ds_txn_id'> {}
+  interface DsTransactionCreationAttributes extends Optional<IDsTransactionAttributes, 'ds_txn_id'> {}
   
-  class DsTransaction extends Model<DsTransactionAttributes, DsTransactionCreationAttributes> implements DsTransactionAttributes {
+  class DsTransaction extends Model<IDsTransactionAttributes, DsTransactionCreationAttributes> implements IDsTransactionAttributes {
     public ds_txn_id!: number;
     public ds_id!: number;
     public vehicle_id!: number;
@@ -38,21 +34,19 @@ import {
     },
     vehicle_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references:{
+        model:Inventory,
+        key:'inventory_id'
+      }
     },
     transaction_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    createdAt: {
-      type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
+      references:{
+        model:Transaction,
+        key: 'transaction_id'
+      }
     }
   }, {
     sequelize: db,
