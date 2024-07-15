@@ -27,15 +27,19 @@ class InventoryService {
       const fileType = 'doc';
       try {
         const docs = [data.rc_book, data.proof_doc, data.insurance_doc];
-        console.log(docs, 'THE DC');
+      
         const dbTransaction = await db.transaction();
 
-        const docsResult: any = await Promise.all(docs.map((file) => uploadFile(file, fileType, allowedExtension)));
-        console.log(docsResult, 'Doc result');
+        let docsResult: any = await Promise.all(docs.map((file) => file === null ?  null : uploadFile(file, fileType, allowedExtension)));
+   
         let uploadDocs;
 
         let brandID;
+
+        console.log(docsResult,'docResult')
         if (docsResult && docsResult.length > 0) {
+          docsResult = docsResult.filter((item: any) => item !== null);
+          console.log(docsResult,'DOC entering lt')
           uploadDocs = await inventoryQueries.uploadManyDocs(docsResult);
         }
 

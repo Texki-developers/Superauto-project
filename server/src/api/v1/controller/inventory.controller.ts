@@ -10,9 +10,7 @@ class InventoryController {
     const rcBook = getFile(req, 'rcBook');
     const insuranceDoc = getFile(req, 'insuranceDoc');
     const proofDoc = getFile(req, 'proofDoc');
-    if (!rcBook && !insuranceDoc && !proofDoc) {
-      throw new Error('The Required Docs are not provided');
-    }
+    
     const data: IInventoryBody = {
       account_id: body.accountId,
       ownership_name: body.ownershipName,
