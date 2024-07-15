@@ -17,7 +17,7 @@ import useGetCategoryApi from '../../hooks/useGetCategoryApi.hook';
 const defaultValues: IEmployee = {
   name: '', // Default value for name
   phoneNumber: '', // Default value for phoneNumber
-  salary: 0, // Default value for salary
+  salary: undefined, // Default value for salary
 };
 
 const Employees = () => {
