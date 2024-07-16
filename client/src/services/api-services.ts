@@ -11,6 +11,22 @@ export default class AuthApiService {
     withCredentials: true,
   });
 
+  private static initializeInterceptor() {
+    AuthApiService.instance.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login';
+        }
+        return Promise.reject(error);
+      },
+    );
+  }
+
+  static {
+    AuthApiService.initializeInterceptor();
+  }
+
   static async postApi<T, R>(url: string, body: T): Promise<R | IApiError> {
     try {
       const response = await AuthApiService.instance.post<R>(
