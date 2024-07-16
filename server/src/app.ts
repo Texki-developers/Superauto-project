@@ -37,7 +37,7 @@ app.use(
     secret: 'your-secret-key', // Replace with a secure random string
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, httpOnly: true, sameSite: 'strict', path: '/' }, // Set secure: true if using HTTPS
+    cookie: { secure: false, httpOnly: true, sameSite: 'strict', path: '/', maxAge: 1 * 60 * 60 * 1000 },
   })
 );
 
