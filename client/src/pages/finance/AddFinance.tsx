@@ -29,6 +29,7 @@ const AddFinance = ({ onCancelClick, reset, register, errors }: IProps) => {
           register={register}
           placeholder='Mobile'
           error={errors}
+          required
           name='phoneNumber'
         />
       </div>

@@ -126,7 +126,7 @@ const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, 
                   type='number'
                   register={register}
                   error={errors}
-                  required
+                // required
                 />
                 <InputBox
                   name='balance'
