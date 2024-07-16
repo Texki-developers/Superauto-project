@@ -23,7 +23,7 @@ interface ISelectInputProps {
     isLoading?: boolean;
     control: any
     error: any;
-    validation?: (value: any) => any
+    // validation?: (value: any) => any
 }
 
 export default function CreateSelectInput(props: ISelectInputProps) {
@@ -51,13 +51,7 @@ export default function CreateSelectInput(props: ISelectInputProps) {
                 name={props.name as string}
                 control={props.control}
                 rules={props.required ? {
-                    required: `${props.label} is required`, validate: (value) => {
-                        if (props?.required) {
-                            return value?.value.length > 0 || `${props.label} is required`
-                        } else {
-                            return true
-                        }
-                    }
+                    required: `${props.label} is required`, validate: value => props?.required ? String(value?.value || "").length > 0 || `${props.label} is required` : true
                 } : {}}
                 defaultValue={props.defaultValue}
                 render={({ field }) => (
