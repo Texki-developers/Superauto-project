@@ -130,7 +130,7 @@ class AccountQueries {
 
   async getAllAccounts() {
     return await Accounts.findAll({
-      attributes: ['account_id', 'name'],
+      attributes: ['account_id', 'name', 'contact_info', 'category'],
     });
   }
 }

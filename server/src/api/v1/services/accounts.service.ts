@@ -17,7 +17,7 @@ class AccountService {
         const primaryLedger = E_PRIMARY_LEDGERS[category];
         if (primaryLedger) {
           const accountResult = await authQueries.createAccount({ ...data, head: primaryLedger });
-         
+
           if (category === E_ACCOUNT_CATEGORIES.EMPLOYEE) {
             const account_id = accountResult?.account_id;
             console.log(account_id, 'ACcount id');
@@ -64,7 +64,7 @@ class AccountService {
               debit_account: expenseAcResult,
               description: data.description,
               voucher_id: voucher,
-              transaction_date:data.date
+              transaction_date: data.date,
             },
           ],
           { transaction: dbTransaction }
@@ -101,7 +101,7 @@ class AccountService {
             debit_account: creditAc,
             description: data.description,
             voucher_id: voucher,
-            transaction_date:data.date
+            transaction_date: data.date,
           },
         ]);
         resolve('Updated successully');
@@ -125,7 +125,7 @@ class AccountService {
             debit_account: data.payment_to,
             description: data.description,
             voucher_id: voucher,
-            transaction_date:data.date
+            transaction_date: data.date,
           },
         ]);
         resolve('Updated successully');
@@ -135,8 +135,6 @@ class AccountService {
       }
     });
   };
-
-
 
   getFinancerDetails(data: number) {
     return new Promise(async (resolve, reject) => {
@@ -170,7 +168,7 @@ class AccountService {
             [Op.eq]: data.trim(),
           };
         }
-  
+
         if (search.trim() !== '') {
           whereCondition[Op.or] = [
             { name: { [Op.iLike]: `%${search}%` } },
@@ -178,16 +176,21 @@ class AccountService {
             Sequelize.literal(`to_char("Accounts"."createdAt", 'YYYY-MM-DD HH24:MI:SS') ILIKE '%${search}%'`),
           ];
         }
-  
+
         const option = {
           where: whereCondition,
           limit: perPage,
           offset: (page - 1) * perPage,
         };
-  
-        const categoryResult = await accountsQueries.findAccountsByCategory(option, ['account_id', 'name', 'contact_info', 'category']);
+
+        const categoryResult = await accountsQueries.findAccountsByCategory(option, [
+          'account_id',
+          'name',
+          'contact_info',
+          'category',
+        ]);
         categoryResult.meta.perPage = perPage;
-  
+
         return resolve(categoryResult);
       } catch (err) {
         console.error(err);
@@ -195,12 +198,15 @@ class AccountService {
       }
     });
   }
-  
 
-  getDropDownCategoryList(category:string) {
+  getDropDownCategoryList(category: string) {
     return new Promise(async (resolve, reject) => {
       try {
-        const getFinanceResult = await accountsQueries.findAccountsByCategory({ where: { category: category} },["account_id","name"]);
+        const getFinanceResult = await accountsQueries.findAccountsByCategory({ where: { category: category } }, [
+          'account_id',
+          'name',
+          'contact_info',
+        ]);
         return resolve(getFinanceResult);
       } catch (err) {
         console.log(err);
@@ -209,8 +215,7 @@ class AccountService {
     });
   }
 
-
-  getAllAccounts(){
+  getAllAccounts() {
     return new Promise(async (resolve, reject) => {
       try {
         const getAllAccounts = await accountsQueries.getAllAccounts();

@@ -84,10 +84,9 @@ const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, 
                   isLoading={brokerPending}
                   control={control}
                   setIsNew={setIsNewParty}
-                  validation={(value) => {
-                    console.log(value)
-                    return String(value?.value || "").length > 0 || 'Party Name is required'
-                  }}
+                  // validation={(value) => {
+                  //   return  || 'Party Name is required'
+                  // }}
                   error={errors}
                   required
                 />
@@ -127,7 +126,7 @@ const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, 
                   type='number'
                   register={register}
                   error={errors}
-                  required
+                // required
                 />
                 <InputBox
                   name='balance'
