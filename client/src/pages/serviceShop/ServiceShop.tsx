@@ -33,6 +33,7 @@ const ServiceShop = () => {
     defaultValues
   })
   const onCancelClick = useCallback(() => {
+    reset()
     setShowServiceShopPopup(false);
   }, [])
   const accountApi = useAccountApi()

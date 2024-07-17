@@ -60,6 +60,7 @@ const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
 
   }, [])
   const onCancelClick = () => {
+    reset()
     setShowAddPage(false);
   };
   const breadCrumbData = [

@@ -33,6 +33,7 @@ const Finance = () => {
   })
 
   const onCancelClick = useCallback(() => {
+    reset()
     setShowAddFinancerPopup(false);
   }, [])
   const accountApi = useAccountApi()
@@ -59,7 +60,7 @@ const Finance = () => {
         name: 'Action',
         key: 'account_id',
         columnData: (id: string) => (
-          <div className='flex gap-2 *:h-[20px] *:w-[20px]'>
+          <div className='flex gap-2 *:h-[20px] *:w-[20px] cursor-pointer'>
             <img
               onClick={() => onActionClick('assign', id)}
               src={addProduct}

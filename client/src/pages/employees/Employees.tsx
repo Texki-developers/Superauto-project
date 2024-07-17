@@ -38,6 +38,7 @@ const Employees = () => {
     refetch()
   };
   const onCancelClick = useCallback(() => {
+    reset()
     setShowEmployeesPopup(false);
   }, [])
   const onAddItemClick = () => {

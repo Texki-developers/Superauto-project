@@ -24,9 +24,10 @@ const defaultValues: IFormData = {
 
 const JournalForm = ({ setShow }: IProps) => {
     // const [isNew, _setIsNew] = useState<boolean>(false)
-    const { register, handleSubmit, control, formState: { errors } } = useForm({ defaultValues });
+    const { register, handleSubmit, reset, control, formState: { errors } } = useForm({ defaultValues });
     const { data } = useGetDropdownData(null, 'accounts/list/getAllAccounts')
     const onClose = () => {
+        reset()
         setShow('')
     }
     const { toastError, toastLoading, toastSuccess } = useToast()
@@ -48,6 +49,7 @@ const JournalForm = ({ setShow }: IProps) => {
             }
             toastSuccess(id, "Journal Added successfully")
             setShow("")
+            reset()
         } catch (error) {
             toastError(id, "Something went wrong")
         }
