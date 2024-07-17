@@ -26,6 +26,7 @@ const Customers = () => {
     defaultValues
   })
   const onCancelClick = useCallback(() => {
+    reset()
     setShowCustomersPopup(false);
   }, [])
   const accountApi = useAccountApi()
