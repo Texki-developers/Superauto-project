@@ -9,6 +9,7 @@ interface IInputProps {
   name: string;
   isDisabled?: boolean;
   register: any;
+  validation?: (value?: string | number) => void
   error: any;
 }
 const InputBox = (props: IInputProps) => {
@@ -22,12 +23,12 @@ const InputBox = (props: IInputProps) => {
         placeholder={props?.placeholder}
         className='input-normal w-full '
         type={props?.type ?? 'text'}
-        autoComplete={false}
         value={props.value}
         name={props?.name}
         disabled={props?.isDisabled}
         defaultValue={props?.defaultValue}
-        {...props.register(props?.name, { required: props?.required ? `${props.label} is Required` : false })}
+        {...props.register(props?.name, { required: props?.required ? `${props.label} is Required` : false, validate: props?.validation })}
+        autoComplete="off"
         aria-invalid={props.error?.[props.name ?? ''] ? "true" : "false"}
       />
       <div className="h-3">

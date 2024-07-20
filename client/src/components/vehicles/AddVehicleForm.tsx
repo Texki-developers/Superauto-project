@@ -84,6 +84,9 @@ const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, 
                   isLoading={brokerPending}
                   control={control}
                   setIsNew={setIsNewParty}
+                  // validation={(value) => {
+                  //   return  || 'Party Name is required'
+                  // }}
                   error={errors}
                   required
                 />

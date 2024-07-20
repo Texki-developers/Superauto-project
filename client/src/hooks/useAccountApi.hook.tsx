@@ -10,6 +10,7 @@ const useAccountApi = () => {
         console.log(id)
         try {
             const data = await AuthApiService.postApi<IAccountApiBody, IAccountApiBodyResponseBody>('accounts/create/account', body)
+            console.log(data)
             if (data?.status === 'error') {
                 toastError(id, errorMessage)
                 onFailure && onFailure()

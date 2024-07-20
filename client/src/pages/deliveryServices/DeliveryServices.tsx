@@ -29,6 +29,7 @@ const DeliveryServices = () => {
     defaultValues
   })
   const onCancelClick = useCallback(() => {
+    reset()
     setShowDeliveryServicesPopup(false);
   }, [])
   const accountApi = useAccountApi()

@@ -67,7 +67,7 @@ class AccountController {
 
   addPayment(req: Request, res: Response) {
     const { body } = req;
-    
+
     const data: IPaymentBody = {
       payment_from: body?.paymentFrom,
       payment_to: body?.paymentTo,
@@ -118,14 +118,20 @@ class AccountController {
       });
   }
 
-
-
   getDropDownCategory(req: Request, res: Response) {
     const { category } = req.params;
     accountsService
       .getDropDownCategoryList(category)
       .then((response: any) => {
-        responseHandler(res, 'OK', response.accounts, { message: 'RETRIEVED' });
+        const data = response?.accounts?.map(
+          (acc: { dataValues: { name: string; contact_info: string; account_id: number } }) => {
+            return {
+              name: `${acc?.dataValues?.name}-${acc?.dataValues?.contact_info}`,
+              account_id: acc?.dataValues?.account_id,
+            };
+          }
+        );
+        responseHandler(res, 'OK', data, { message: 'RETRIEVED' });
       })
       .catch((error: any) => {
         console.log(error);
@@ -133,16 +139,27 @@ class AccountController {
       });
   }
 
-  getAllAccounts(req: Request, res: Response){
+  getAllAccounts(req: Request, res: Response) {
+    const contactInfoCategories = ['BROKER', 'DELIVERY_SERVICE', 'EMPLOYEE', 'FINANCER', 'CUSTOMER', 'SERVICE_SHOP'];
     accountsService
-    .getAllAccounts()
-    .then((response: any) => {
-      responseHandler(res, 'OK', response, { message: 'RETRIEVED' });
-    })
-    .catch((error: any) => {
-      console.log(error);
-      responseHandler(res, 'INTERNAL_SERVER_ERROR');
-    });
+      .getAllAccounts()
+      .then((response: any) => {
+        const data = response?.map(
+          (acc: { dataValues: { name: string; contact_info: string; account_id: number; category: 'string' } }) => {
+            return {
+              name: contactInfoCategories.includes(acc?.dataValues?.category)
+                ? `${acc?.dataValues?.name}-${acc?.dataValues?.contact_info}`
+                : acc?.dataValues?.name,
+              account_id: acc?.dataValues?.account_id,
+            };
+          }
+        );
+        responseHandler(res, 'OK', data, { message: 'RETRIEVED' });
+      })
+      .catch((error: any) => {
+        console.log(error);
+        responseHandler(res, 'INTERNAL_SERVER_ERROR');
+      });
   }
 
 

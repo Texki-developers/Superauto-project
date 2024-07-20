@@ -60,6 +60,7 @@ const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
 
   }, [])
   const onCancelClick = () => {
+    reset()
     setShowAddPage(false);
   };
   const breadCrumbData = [
@@ -114,6 +115,7 @@ const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
       setValue('balance', `${Number(purchaseRate ?? 0) - Number(purchaseAmount ?? 0)}`)
     }
   }, [watch('purchaseRate'), watch('purchaseAmount')])
+  console.log(watch('party'))
   return (
     <div>
       <Header breadCrumbData={breadCrumbData} />

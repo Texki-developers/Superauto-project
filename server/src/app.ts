@@ -37,7 +37,7 @@ app.use(
     secret: 'your-secret-key', // Replace with a secure random string
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, httpOnly: true, sameSite: 'strict', path: '/' }, // Set secure: true if using HTTPS
+    cookie: { secure: false, httpOnly: true, sameSite: 'strict', path: '/', maxAge: 1 * 60 * 60 * 1000 },
   })
 );
 
@@ -46,8 +46,8 @@ app.use(passport.session());
 
 ///THE ROUTES
 app.use('/api/v1/accounts', isAuthenticated, accountRoutes);
-app.use('/api/v1/inventory', inventoryRoutes);
-app.use('/api/v1/reports', reportRoutes);
+app.use('/api/v1/inventory', isAuthenticated, inventoryRoutes);
+app.use('/api/v1/reports', isAuthenticated, reportRoutes);
 app.use('/api/v1/auth', authRouter);
 ///THE ROUTES
 

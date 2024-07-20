@@ -26,9 +26,10 @@ const defaultValues: IFormData = {
 
 const PaymentForm = ({ setShow }: IProps) => {
     const [isNew, setIsNew] = useState<boolean>(false)
-    const { register, handleSubmit, control, formState: { errors } } = useForm({ defaultValues });
+    const { register, handleSubmit, control, reset, formState: { errors } } = useForm({ defaultValues });
     const { data, isPending } = useGetDropdownData(null, 'accounts/list/getAllAccounts')
     const onClose = () => {
+        reset()
         setShow('')
     }
     const { toastError, toastLoading, toastSuccess } = useToast()
@@ -50,6 +51,7 @@ const PaymentForm = ({ setShow }: IProps) => {
             }
             toastSuccess(id, "Payment Added successfully")
             setShow("")
+            reset()
         } catch (error) {
             toastError(id, "Something went wrong")
         }
