@@ -234,7 +234,7 @@ class AccountService {
       try {
         const query = {
           where: {
-            id:id
+            account_id:id
           }
         }
         const vehicle = await accountsQueries.deleteItem(Accounts,query)
