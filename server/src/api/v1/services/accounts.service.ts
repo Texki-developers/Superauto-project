@@ -234,7 +234,7 @@ class AccountService {
       try {
         const query = {
           where: {
-            id:id
+            account_id:id
           }
         }
         const vehicle = await accountsQueries.deleteItem(Accounts,query)
@@ -242,6 +242,19 @@ class AccountService {
         return resolve(vehicle);
       } catch (err) {
         reject({ message: `Failed to Delete this Account: ${err}` });
+      }
+    });
+  }
+
+  EditAccount(data:IAccountAttributes){
+    return new Promise(async (resolve, reject) => {
+      try {
+        
+        const vehicle = await accountsQueries.EditAccount(data,Number(data.account_id))
+
+        return resolve(vehicle);
+      } catch (err) {
+        reject({ message: `Failed to edit this Account: ${err}` });
       }
     });
   }
