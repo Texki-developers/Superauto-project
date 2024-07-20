@@ -1,4 +1,4 @@
-import { Op, where } from 'sequelize';
+import { Op, where ,Model, Options} from 'sequelize';
 import { pool } from '../../../config1/dbConfig';
 import Accounts from '../../../models/accounts';
 import Employee from '../../../models/employee';
@@ -11,6 +11,7 @@ import Voucher from '../../../models/vouchers';
 import { ITransactionParams } from '../../../types/db.type';
 import returnDataValues from '../../../utils/commonUtils/returnDataValues';
 import { E_ACCOUNT_CATEGORIES } from '../../../utils/constants/constants';
+
 
 class AccountQueries {
   async createAccount(body: { name: string; contact_info: string; category: E_ACCOUNT_CATEGORIES; head: number }) {
@@ -132,6 +133,13 @@ class AccountQueries {
     return await Accounts.findAll({
       attributes: ['account_id', 'name'],
     });
+  }
+
+  async deleteItem (model:any,query:any){
+    
+    return await model.destroy(
+     query
+    )
   }
 }
 

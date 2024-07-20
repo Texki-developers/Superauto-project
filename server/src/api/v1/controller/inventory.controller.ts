@@ -231,6 +231,59 @@ console.log(data.is_sales_return,"IS SALES")
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
       });
   }
+
+  deleteVehicle (req: Request, res: Response){
+    const {id,type} = req.query
+    inventoryService.deleteVehicle({id:Number(id),type:type as string}) .then((data: any) => {
+      responseHandler(res, 'MODIFIED', data, { message: data.message });
+    })
+    .catch((error) => {
+      responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+    });
+
+  }
+
+  EditVehicle (req: Request, res: Response){
+    const { body } = req;
+    const rcBook = getFile(req, 'rcBook');
+    const insuranceDoc = getFile(req, 'insuranceDoc');
+    const proofDoc = getFile(req, 'proofDoc');
+    
+    const data: IInventoryBody = {
+      account_id: body.accountId,
+      ownership_name: body.ownershipName,
+      registration_number: body?.registrationNumber,
+      brand_model_id: body?.brand,
+      year_of_manufacture: body.yearOfManufacture,
+      purchase_rate: body.purchaseRate,
+      purchase_amount:body.purchaseAmount,
+      sale_status: false,
+      insurance_date: body.insuranceDate,
+      delivery_service: body.deliveryService,
+      delivery_amount: body.deliveryAmount,
+      rc_book: rcBook,
+      insurance_doc: insuranceDoc,
+      proof_doc: proofDoc,
+      date_of_purchase: body.dateOfPurchase,
+      model: body.model,
+      brand: body.brand,
+      isNew: body.isNew,
+      is_delivery: body.isDelivery,
+      party_phone_number:body.partyPhoneNumber,
+      party_name:body.partyName,
+      delivery_service_phone_number:body.deliveryServicePhoneNumber,
+      delivery_name:body.deliveryName,
+      vehicle_id:body.vehicleId
+        };
+
+    inventoryService.EditVehicle(data) .then((data: any) => {
+      responseHandler(res, 'MODIFIED', data, { message: data.message });
+    })
+    .catch((error) => {
+      responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+    });
+
+  }
 }
 
 export default new InventoryController();

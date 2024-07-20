@@ -4,7 +4,7 @@ import { IApiError } from '../types/apimodal/apimodal';
 
 export default class AuthApiService {
   private static instance: AxiosInstance = axios.create({
-    baseURL: 'http://localhost:8080/api/v1/',
+    baseURL: 'http://localhost:5200/',
     headers: {
       'Content-Type': 'application/json',
     },
