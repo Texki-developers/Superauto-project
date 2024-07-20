@@ -6,6 +6,7 @@ const router: Router = express.Router();
 
 router.post('/add/vehicle', inventoryController.addInventory);
 router.delete('/delete/vehicle', inventoryController.deleteVehicle);
+router.post('/edit/vehicle', inventoryController.EditVehicle);
 router.get('/list/vehicle', inventoryController.listVehicle);
 router.post('/exchange/vehicle', inventoryController.exchangeVehicle);
 router.get('/list/vehicle/registration-number', inventoryController.listVehicleRegNumber);

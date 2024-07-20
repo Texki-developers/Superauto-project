@@ -41,6 +41,7 @@ const AddEmployees = ({ onCancelClick, reset, register, errors }: IProps) => {
           label='Salary (Per Month)'
           type='number'
           required
+          validation={(value) => (value && Number(value) > 0 || "The Salary must be greater than 0")}
           register={register}
           placeholder='Salary'
           error={errors}
