@@ -61,7 +61,7 @@ class InventoryQueries {
 
   async addTodeliveryServiceTable(data: IDsTransactionAttributes[], options?: any) {
     try {
-      const deliveryService = await DsTransaction.bulkCreate(data, options);
+      const deliveryService = await DsTransaction.bulkCreate(data, {...options,updateOnDuplicate:['ds_id','vehicle_id']});
       return deliveryService;
     } catch (error) {
       throw new Error('Failed To Generate Transaction');
@@ -202,9 +202,17 @@ GROUP BY
     return await DsTransaction.findAll(query)
   }
 
-  async editVehicle(data,query){
+  async editVehicle(data:IInventoryAttributes,query:any){
       return await Inventory.update(data,query)
+  }
+
+  async findDs_Txn_id (id:number){
+    return await DsTransaction.findOne({
+      where:{
+        transaction_id:id
+      }
+    })
   }
 }
 
-export default new InventoryQueries();
+export default new InventoryQueries()

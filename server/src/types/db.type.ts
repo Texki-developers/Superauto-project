@@ -39,6 +39,7 @@ interface ITransactionParams {
   description?: string;
   voucher_id?: string;
   transaction_date:Date
+  transaction_id?:number
 }
 
 interface IDeliveryAttributes {

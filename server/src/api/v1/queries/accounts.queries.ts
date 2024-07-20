@@ -38,7 +38,8 @@ class AccountQueries {
   async generateTransaction(data: ITransactionParams[], options?: any) {
     try {
       console.log(data, 'TRAN');
-      const TransactionResult = await Transaction.bulkCreate(data, { returning: true, ...options });
+      const TransactionResult = await Transaction.bulkCreate(data, { returning: true, ...options ,updateOnDuplicate:['amount','credit_account','debit_account']});
+      console.log(TransactionResult,"RESULT")
       return returnDataValues(TransactionResult);
     } catch (error) {
       console.log(error);
@@ -46,6 +47,8 @@ class AccountQueries {
       throw new Error('Failed To Generate Transaction');
     }
   }
+
+ 
 
   async findAccount(name: string) {
     const result = await Accounts.findOne({ where: { name: name } });
@@ -141,6 +144,17 @@ class AccountQueries {
      query
     )
   }
+
+  async getVoucherWithTransaction_id (id:number){
+    return await Transaction.findOne({
+      where:{
+        transaction_id:id
+      }
+    })
+  }
+
+  
 }
+
 
 export default new AccountQueries();
