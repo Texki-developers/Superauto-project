@@ -16,6 +16,7 @@ import {
 } from '../../../types/db.type';
 import SaleReturn from '../../../models/salesReturn';
 import { db } from '../../../config/database';
+import TransactionConnectors from '../../../models/transactionConnecter';
 
 class InventoryQueries {
   async addVehicle(data: IInventoryAttributes, options?: any): Promise<IInventoryAttributes> {
@@ -182,6 +183,27 @@ GROUP BY
     });
 
     return mrp[0]
+  }
+
+  async insertBulkTsConnectors(data:any,options:any) {
+    return await TransactionConnectors.bulkCreate(data, options);
+  }
+
+  async getTransactionConnectors(data:any) {
+    return await TransactionConnectors.findAll({
+      where:{
+        entity_id:data.entity_id,
+        entity_type:data.entity_type
+      }
+    });
+  }
+
+  async findVehicleDeliveryTransaction(query:FindOptions){
+    return await DsTransaction.findAll(query)
+  }
+
+  async editVehicle(data,query){
+      return await Inventory.update(data,query)
   }
 }
 

@@ -15,6 +15,7 @@ interface IInventoryBody extends IInventoryAttributes,IDeliveryAttributes {
     party_name?:string
     delivery_name?:string,
     purchase_amount:number,
+    vehicle_id?:number
 }
 interface IassignVehicle {
     amount:number;

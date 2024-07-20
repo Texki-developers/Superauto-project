@@ -3,7 +3,7 @@ import { httpStatus } from "../constants/httpStatusCodes";
 
 export const responseHandler = (
   res: Response,
-  status: 'OK' | 'CREATED' | 'NO_CONTENT' | 'UNAUTHORIZED' | 'NOT_FOUND' | 'INTERNAL_SERVER_ERROR' | 'BAD_REQUEST',
+  status: 'OK' | 'CREATED' | 'NO_CONTENT' | 'UNAUTHORIZED' | 'NOT_FOUND' | 'INTERNAL_SERVER_ERROR' | 'BAD_REQUEST'|'MODIFIED',
   data?: any,
   addOns?: { [key: string]: any },
 ) => {
