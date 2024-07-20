@@ -381,7 +381,6 @@ UNION ALL select * from all_data where description NOT IN ('Closing Balance','Op
 
       async cashbookReport(query:string,startDate:string, endDate:string,accountId:number){
 
-        console.log(startDate,endDate,accountId)
         const ledgerQuery = `
         WITH account_type AS (
             SELECT 

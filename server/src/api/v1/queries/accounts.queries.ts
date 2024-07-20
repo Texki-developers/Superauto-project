@@ -1,4 +1,4 @@
-import { Op, where } from 'sequelize';
+import { Op, where ,Model, Options} from 'sequelize';
 import { pool } from '../../../config1/dbConfig';
 import Accounts from '../../../models/accounts';
 import Employee from '../../../models/employee';
@@ -11,6 +11,7 @@ import Voucher from '../../../models/vouchers';
 import { ITransactionParams } from '../../../types/db.type';
 import returnDataValues from '../../../utils/commonUtils/returnDataValues';
 import { E_ACCOUNT_CATEGORIES } from '../../../utils/constants/constants';
+
 
 class AccountQueries {
   async createAccount(body: { name: string; contact_info: string; category: E_ACCOUNT_CATEGORIES; head: number }) {
@@ -37,7 +38,8 @@ class AccountQueries {
   async generateTransaction(data: ITransactionParams[], options?: any) {
     try {
       console.log(data, 'TRAN');
-      const TransactionResult = await Transaction.bulkCreate(data, { returning: true, ...options });
+      const TransactionResult = await Transaction.bulkCreate(data, { returning: true, ...options ,updateOnDuplicate:['amount','credit_account','debit_account']});
+      console.log(TransactionResult,"RESULT")
       return returnDataValues(TransactionResult);
     } catch (error) {
       console.log(error);
@@ -45,6 +47,8 @@ class AccountQueries {
       throw new Error('Failed To Generate Transaction');
     }
   }
+
+ 
 
   async findAccount(name: string) {
     const result = await Accounts.findOne({ where: { name: name } });
@@ -133,6 +137,24 @@ class AccountQueries {
       attributes: ['account_id', 'name', 'contact_info', 'category'],
     });
   }
+
+  async deleteItem (model:any,query:any){
+    
+    return await model.destroy(
+     query
+    )
+  }
+
+  async getVoucherWithTransaction_id (id:number){
+    return await Transaction.findOne({
+      where:{
+        transaction_id:id
+      }
+    })
+  }
+
+  
 }
+
 
 export default new AccountQueries();

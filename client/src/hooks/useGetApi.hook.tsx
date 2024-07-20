@@ -1,4 +1,3 @@
-import { toast } from "react-toastify"
 import AuthApiService from "../services/api-services"
 const useGetApis = () => {
   const callApi = async (url: string) => {
@@ -8,7 +7,7 @@ const useGetApis = () => {
       return response
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      toast.error(error.data?.response.message ?? 'Something went wrong')
+     console.log(error)
     }
   }
   return { callApi }

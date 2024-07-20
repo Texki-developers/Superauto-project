@@ -33,6 +33,11 @@ export const httpStatus = {
     status: 'Internal Server Error',
     statusCode: 500,
     message: 'Internal server error!'
+  },
+  MODIFIED:{
+    status: 'Data modified',
+    statusCode: 200,
+    message: 'Data modified'
   }
   
 }

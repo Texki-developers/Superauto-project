@@ -8,6 +8,7 @@ import { db } from '../../../config/database';
 import { performTransaction } from '../../../utils/PerformTransaction/PerformTransaction';
 import getVoucher from '../../../utils/getVoucher/getVoucher';
 import { Op } from 'sequelize';
+import Accounts from '../../../models/accounts';
 
 class AccountService {
   createAccount = (data: IAccountBody) => {
@@ -223,6 +224,24 @@ class AccountService {
       } catch (err) {
         console.log(err);
         reject({ message: `Failed to List accounts..: ${err}` });
+      }
+    });
+  }
+
+
+  deleteAccount(id:Number){
+    return new Promise(async (resolve, reject) => {
+      try {
+        const query = {
+          where: {
+            id:id
+          }
+        }
+        const vehicle = await accountsQueries.deleteItem(Accounts,query)
+
+        return resolve(vehicle);
+      } catch (err) {
+        reject({ message: `Failed to Delete this Account: ${err}` });
       }
     });
   }

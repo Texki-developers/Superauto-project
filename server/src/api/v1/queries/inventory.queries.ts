@@ -16,6 +16,7 @@ import {
 } from '../../../types/db.type';
 import SaleReturn from '../../../models/salesReturn';
 import { db } from '../../../config/database';
+import TransactionConnectors from '../../../models/transactionConnecter';
 
 class InventoryQueries {
   async addVehicle(data: IInventoryAttributes, options?: any): Promise<IInventoryAttributes> {
@@ -60,7 +61,7 @@ class InventoryQueries {
 
   async addTodeliveryServiceTable(data: IDsTransactionAttributes[], options?: any) {
     try {
-      const deliveryService = await DsTransaction.bulkCreate(data, options);
+      const deliveryService = await DsTransaction.bulkCreate(data, {...options,updateOnDuplicate:['ds_id','vehicle_id']});
       return deliveryService;
     } catch (error) {
       throw new Error('Failed To Generate Transaction');
@@ -183,6 +184,35 @@ GROUP BY
 
     return mrp[0]
   }
+
+  async insertBulkTsConnectors(data:any,options:any) {
+    return await TransactionConnectors.bulkCreate(data, options);
+  }
+
+  async getTransactionConnectors(data:any) {
+    return await TransactionConnectors.findAll({
+      where:{
+        entity_id:data.entity_id,
+        entity_type:data.entity_type
+      }
+    });
+  }
+
+  async findVehicleDeliveryTransaction(query:FindOptions){
+    return await DsTransaction.findAll(query)
+  }
+
+  async editVehicle(data:IInventoryAttributes,query:any){
+      return await Inventory.update(data,query)
+  }
+
+  async findDs_Txn_id (id:number){
+    return await DsTransaction.findOne({
+      where:{
+        transaction_id:id
+      }
+    })
+  }
 }
 
-export default new InventoryQueries();
+export default new InventoryQueries()

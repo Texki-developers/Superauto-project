@@ -161,6 +161,18 @@ class AccountController {
         responseHandler(res, 'INTERNAL_SERVER_ERROR');
       });
   }
+
+
+  deleteAccount (req: Request, res: Response){
+    const {id} = req.query
+    accountsService.deleteAccount(Number(id)) .then((data: any) => {
+      responseHandler(res, 'MODIFIED', data, { message: data.message });
+    })
+    .catch((error) => {
+      responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+    });
+
+  }
 }
 
 export default new AccountController();
