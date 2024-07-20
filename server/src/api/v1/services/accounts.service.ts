@@ -245,6 +245,19 @@ class AccountService {
       }
     });
   }
+
+  EditAccount(data:IAccountAttributes){
+    return new Promise(async (resolve, reject) => {
+      try {
+        
+        const vehicle = await accountsQueries.EditAccount(data,Number(data.account_id))
+
+        return resolve(vehicle);
+      } catch (err) {
+        reject({ message: `Failed to edit this Account: ${err}` });
+      }
+    });
+  }
 }
 
 export default new AccountService();

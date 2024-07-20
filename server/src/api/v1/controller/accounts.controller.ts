@@ -3,6 +3,7 @@ import { responseHandler } from '../../../utils/responseHandler/responseHandler'
 import AccountService from '../services/accounts.service';
 import { IAccountBody, IOtherExpenseBody, IPaymentBody, IRecieptBody } from '../../../types/request.type';
 import accountsService from '../services/accounts.service';
+import { IAccountAttributes } from '../../../types/db.type';
 
 class AccountController {
   createAccount = (req: Request, res: Response) => {
@@ -162,16 +163,33 @@ class AccountController {
       });
   }
 
+  deleteAccount(req: Request, res: Response) {
+    const { id } = req.query;
+    accountsService
+      .deleteAccount(Number(id))
+      .then((data: any) => {
+        responseHandler(res, 'MODIFIED', data, { message: data.message });
+      })
+      .catch((error) => {
+        responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+      });
+  }
 
-  deleteAccount (req: Request, res: Response){
-    const {id} = req.query
-    accountsService.deleteAccount(Number(id)) .then((data: any) => {
-      responseHandler(res, 'MODIFIED', data, { message: data.message });
-    })
-    .catch((error) => {
-      responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
-    });
-
+  editAccount(req: Request, res: Response) {
+    const { body } = req;
+    const data:any = {
+      account_id: body.id,
+      name: body.name,
+      contact_info: body.contactInfo,
+    };
+    accountsService
+      .EditAccount(data)
+      .then((data: any) => {
+        responseHandler(res, 'MODIFIED', data, { message: data.message });
+      })
+      .catch((error) => {
+        responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+      });
   }
 }
 

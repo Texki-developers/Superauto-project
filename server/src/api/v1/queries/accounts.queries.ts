@@ -1,4 +1,4 @@
-import { Op, where ,Model, Options} from 'sequelize';
+import { Op, where ,Model, Options, QueryTypes} from 'sequelize';
 import { pool } from '../../../config1/dbConfig';
 import Accounts from '../../../models/accounts';
 import Employee from '../../../models/employee';
@@ -8,9 +8,10 @@ import PrimaryLedger from '../../../models/primaryLedger';
 import Receipt from '../../../models/receipents';
 import Transaction from '../../../models/transaction';
 import Voucher from '../../../models/vouchers';
-import { ITransactionParams } from '../../../types/db.type';
+import { IAccountAttributes, ITransactionParams } from '../../../types/db.type';
 import returnDataValues from '../../../utils/commonUtils/returnDataValues';
 import { E_ACCOUNT_CATEGORIES } from '../../../utils/constants/constants';
+import { db } from '../../../config/database';
 
 
 class AccountQueries {
@@ -151,6 +152,31 @@ class AccountQueries {
         transaction_id:id
       }
     })
+  }
+
+  async  EditAccount(data: IAccountAttributes, id: number) {
+    // Build the SET clause dynamically
+    const setClause = Object.keys(data)
+      .filter(key => key !== 'account_id') // Exclude account_id from the set clause
+      .map(key => `${key} = :${key}`)
+      .join(', ');
+  
+    // Perform the update query
+    const [affectedRows] = await db.query(
+      `UPDATE Accounts
+       SET ${setClause}
+       WHERE account_id = :id AND category != 'Built-In'`,
+      {
+        replacements: { ...data, id },
+        type: QueryTypes.UPDATE
+      }
+    );
+  
+    if (affectedRows === 0) {
+      throw new Error('Account not found or category is "Built-In"');
+    }
+  
+    return affectedRows;
   }
 
   
