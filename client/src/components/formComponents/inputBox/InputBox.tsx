@@ -9,7 +9,7 @@ interface IInputProps {
   name: string;
   isDisabled?: boolean;
   register: any;
-  validation?: (value?: string | number) => void
+  validation?: (value?: string | number) => boolean
   error: any;
 }
 const InputBox = (props: IInputProps) => {

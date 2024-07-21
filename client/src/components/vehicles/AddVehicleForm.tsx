@@ -28,7 +28,7 @@ interface IProps {
   hideDeliveryServices?: boolean
 }
 
-const AddvehicleForm = ({ vehicleDataonCancelClick, hideDeliveryServices, register, reset, control, errors, watch, setValue, brands, brandLoading }: IProps) => {
+const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, control, errors, watch, setValue, brands, brandLoading }: IProps) => {
   const [isNewParty, setIsNewParty] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [modelsData, setModelsData] = useState<any>([])
@@ -36,11 +36,17 @@ const AddvehicleForm = ({ vehicleDataonCancelClick, hideDeliveryServices, regist
   const [brandData, setBrandData] = useState<any>([])
   const [isNewDelivery, setIsNewDelivery] = useState(false)
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   if (!canEdit) {
+
+  //   }
+  // }, [watch('brand'), canEdit])
+  const onBrandChange = (item: { value: string, label: string, __isNew?: string }) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const brand: any = watch('brand')
+    const brand: any = item
     setValue('model', '')
     if (brands && brands?.length > 0) {
+      console.log({ brands, brand, item })
       const models = Array.from(new Set(brands?.filter(item => {
         return item.brand === brand.value;
       }).map(item => item.model)))
@@ -48,7 +54,7 @@ const AddvehicleForm = ({ vehicleDataonCancelClick, hideDeliveryServices, regist
       console.log(models)
       setModelsData(models)
     }
-  }, [watch('brand')])
+  }
 
   useEffect(() => {
     if (brands && brands.length > 0) {
@@ -161,6 +167,7 @@ const AddvehicleForm = ({ vehicleDataonCancelClick, hideDeliveryServices, regist
                 <CreateSelectInput
                   name='brand'
                   label='Brand'
+                  onChange={onBrandChange}
                   isSearchable
                   placeholder='Select Brand'
                   options={brandData}

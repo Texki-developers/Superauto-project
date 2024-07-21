@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useDropzone } from 'react-dropzone';
 import UploadIcon from '../../../assets/icons/upload-icon';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import DoneIcon from '../../../assets/icons/Done.icon';
 
 interface iDragAndDropProps {
@@ -14,11 +14,9 @@ interface iDragAndDropProps {
 }
 
 const DragAndDrop = (props: iDragAndDropProps) => {
-  const [fileName, setFileName] = useState<string>('')
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onDrop = useCallback((acceptedFiles: any) => {
     props.setValue(props?.name, acceptedFiles?.[0]);
-    setFileName(acceptedFiles?.[0]?.name)
   }, [props])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
@@ -40,7 +38,7 @@ const DragAndDrop = (props: iDragAndDropProps) => {
           <input {...getInputProps()} name={props.name} />
           {!props?.watchValue ? <UploadIcon /> :
             <DoneIcon />}
-          <p className='text-center text-[.7rem]'>{!props?.watchValue ? (props?.placeholder ?? 'Click here or drop files to upload') : fileName}</p>
+          <p className='text-center text-[.7rem]'>{!props?.watchValue ? (props?.placeholder ?? 'Click here or drop files to upload') : props?.watchValue?.name ?? props?.watchValue}</p>
         </div>
       </div>
     </>

@@ -76,4 +76,19 @@ export default class AuthApiService {
       };
     }
   }
+
+  static async deleteApi<T, R>(url: string, body: T): Promise<R | IApiError> {
+    try {
+      const response = await AuthApiService.instance.delete<R>(url, {
+        data: body ?? {},
+      });
+      return response.data;
+    } catch (error: any) {
+      console.log(error);
+      return {
+        message: error?.response?.data?.message ?? 'Something went wrong',
+        status: 'error',
+      };
+    }
+  }
 }

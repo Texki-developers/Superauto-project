@@ -24,7 +24,7 @@ const defaultValues: IFormData = {
 };
 const ReceiptForm = ({ setShow }: IProps) => {
     const [isNew, setIsNew] = useState<boolean>(false)
-    const { register, handleSubmit,reset, control, formState: { errors } } = useForm({ defaultValues });
+    const { register, handleSubmit, reset, control, formState: { errors } } = useForm({ defaultValues });
     const onClose = () => {
         reset()
         setShow("")
@@ -32,7 +32,6 @@ const ReceiptForm = ({ setShow }: IProps) => {
     const { data, isPending } = useGetDropdownData(null, 'accounts/list/getAllAccounts')
     const { toastError, toastLoading, toastSuccess } = useToast()
     const onSubmit = async (data: IFormData) => {
-        console.log(data)
         const body = {
             "paymentFrom": Number(data?.paymentFrom?.account_id),
             "paymentTo": data?.paymentTo?.value,

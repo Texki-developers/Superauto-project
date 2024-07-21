@@ -34,7 +34,6 @@ const Header = ({ breadCrumbData, title }: IBreadCrumbData) => {
       }
     } catch (error) {
       toastError(id, 'Failed to Logout')
-      console.log(error)
     }
   }
 

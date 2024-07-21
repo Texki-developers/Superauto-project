@@ -54,7 +54,6 @@ export default function AssignVehicles({ setAssign, itemId, parent, apiUrl }: As
     ))
     try {
       const data = await AuthApiService.postApi<IAssignApiBody, any>(`inventory/assign-vehicle${apiUrl}`, { Vehicles })
-      console.log(data)
       if (data?.status === "error") {
         toastError(id, data?.message)
         setAssign(false)

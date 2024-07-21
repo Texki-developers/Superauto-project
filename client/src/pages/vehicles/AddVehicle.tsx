@@ -9,11 +9,12 @@ import useGetApis from '../../hooks/useGetApi.hook';
 import { useQuery } from '@tanstack/react-query';
 // import useQueryGetApi from '../../hooks/useQueryGetApi.hook';
 import Loading from '../../components/loading/Loading';
+import moment from 'moment';
 
 interface IProps {
   setShowAddPage: React.Dispatch<SetStateAction<boolean>>;
   refetch: () => void;
-  selectedItem?: string;
+  selectedItem?: string | number;
   isEdit?: boolean;
   setIsEdit?: React.Dispatch<SetStateAction<boolean>>;
 }
@@ -64,7 +65,7 @@ const AddVehicle = ({ setShowAddPage, refetch, setIsEdit, selectedItem, isEdit }
   const fetchBrandModal = (): Promise<{ data: IBranAndModel[] } | undefined> => callApi(url)
   const { data: brandData, isPending: brandLoading } = useQuery({ queryKey: ['brand/model-brand'], queryFn: fetchBrandModal })
   useEffect(() => {
-    if (vehicleData?.data) {
+    if (vehicleData?.data && isEdit) {
       const mappedValues = {
         ...defaultValues,
         party: {
@@ -82,19 +83,20 @@ const AddVehicle = ({ setShowAddPage, refetch, setIsEdit, selectedItem, isEdit }
         registrationNumber: vehicleData?.data?.registration_number,
         purchaseRate: vehicleData?.data?.purchase_rate.toString(),
         purchaseDate: vehicleData?.data?.date_of_purchase,
-        insurance: vehicleData?.data?.insuranceDoc,
-        proof: vehicleData?.data?.proofDoc,
-        rcBook: vehicleData?.data?.rcBook,
+        insurance: vehicleData?.data?.insuranceDoc?.name,
+        proof: vehicleData?.data?.proofDoc?.name,
+        rcBook: vehicleData?.data?.rcBook?.name,
         ownership: vehicleData?.data?.ownership_name,
         yearOfManufacture: vehicleData?.data?.year_of_manufacture.toString(),
-        insuranceDate: vehicleData?.data?.insurance_date,
+        insuranceDate: moment(vehicleData?.data?.insurance_date0)?.format('YYYY-MM-DD'),
       };
-
+      console.log(mappedValues?.rcBook, mappedValues?.insurance, mappedValues?.proof)
       reset(mappedValues);
       setValue('model', {
         label: vehicleData?.data?.BrandModel.model,
         value: vehicleData?.data?.brand_model_id.toString(),
       })
+
     }
   }, [vehicleData, brandData])
   const onCancelClick = () => {
@@ -164,7 +166,7 @@ const AddVehicle = ({ setShowAddPage, refetch, setIsEdit, selectedItem, isEdit }
       <Header breadCrumbData={breadCrumbData} />
       <div className='pt-5'>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <AddvehicleForm vehicleData={vehicleData.data} brands={brandData?.data} brandLoading={brandLoading} reset={reset} setValue={setValue} watch={watch} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
+          <AddvehicleForm brands={brandData?.data} brandLoading={brandLoading} reset={reset} setValue={setValue} watch={watch} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
         </form>
       </div>
     </div>
