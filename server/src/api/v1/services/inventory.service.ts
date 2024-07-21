@@ -751,7 +751,6 @@ class InventoryService {
     return new Promise(async (resolve, reject) => {
       const dbTransaction = await db.transaction();
       try {
-        
         const query = {
           where: {
             inventory_id: data.id,
@@ -770,10 +769,9 @@ class InventoryService {
             transaction_id: {
               [Op.in]: entitiesId,
             },
-           
           },
-      
-          transaction: dbTransaction
+
+          transaction: dbTransaction,
         };
 
         const vehicleTransaction = await inventoryQueries.findVehicleDeliveryTransaction({
@@ -789,14 +787,11 @@ class InventoryService {
             transaction_id: {
               [Op.in]: dsTransactionID,
             },
-                    
           },
-          transaction: dbTransaction
+          transaction: dbTransaction,
         };
 
-       
-
-        console.log(dsTransactionQuery,"QUEYRRR")
+        console.log(dsTransactionQuery, 'QUEYRRR');
 
         await accountsQueries.deleteItem(DsTransaction, {
           where: {
@@ -805,27 +800,25 @@ class InventoryService {
           transaction: dbTransaction,
         });
         await accountsQueries.deleteItem(Inventory, query);
-        await accountsQueries.deleteItem(TransactionConnectors,{
-          where:{
-            entity_id :data.id
+        await accountsQueries.deleteItem(TransactionConnectors, {
+          where: {
+            entity_id: data.id,
           },
           transaction: dbTransaction,
-        },
-        
-        )
+        });
         await accountsQueries.deleteItem(Transaction, transactionTableDeleteQuery);
 
         await accountsQueries.deleteItem(Transaction, dsTransactionQuery);
-       
+
         await performTransaction(dbTransaction);
-        return resolve({message:'Deleted Successfully'});
+        return resolve({ message: 'Deleted Successfully' });
       } catch (err) {
         reject({ message: `Failed to List Brands: ${err}` });
       }
     });
   }
-  
-  EditVehicle(data:IInventoryBody) {
+
+  EditVehicle(data: IInventoryBody) {
     return new Promise(async (resolve, reject) => {
       try {
         const dbTransaction = await db.transaction();
@@ -840,163 +833,237 @@ class InventoryService {
           entity_type: 'delivery',
         });
 
-        const entitiesId:Array<Number> = entities.map((items) => items.transaction_id);
-
-      
+        const entitiesId: Array<Number> = entities.map((items) => items.transaction_id);
 
         const allowedExtension = ['pdf', 'jpg', 'jpeg', 'png'];
         const fileType = 'doc';
-          const docs = [data.rc_book, data.proof_doc, data.insurance_doc];
-  
+        const docs = [data.rc_book, data.proof_doc, data.insurance_doc];
 
-  
-          let docsResult: any = await Promise.all(
-            docs.map((file) => (file === null ? null : uploadFile(file, fileType, allowedExtension)))
+        let docsResult: any = await Promise.all(
+          docs.map((file) => (file === null ? null : uploadFile(file, fileType, allowedExtension)))
+        );
+
+        let uploadDocs;
+        let DeliverServiceTransactionResult: any;
+        let brandID;
+
+        console.log(docsResult, 'docResult');
+        if (docsResult && docsResult.length > 0) {
+          docsResult = docsResult.filter((item: any) => item !== null);
+          console.log(docsResult, 'DOC entering lt');
+          uploadDocs = await inventoryQueries.uploadManyDocs(docsResult);
+        }
+
+        if (data.isNew) {
+          const brandResult = await inventoryQueries.uploadBrandModel(data.brand, data.model);
+          if (brandResult) {
+            brandID = brandResult.brand_model_id;
+          }
+        } else {
+          brandID = data?.brand_model_id;
+        }
+
+        if (data.party_phone_number && data?.party_phone_number?.length > 0) {
+          if (data.party_name) {
+            const newAccountResult = await accountsService.accountHelper(
+              { party_name: data.party_name, party_phone_number: data.party_phone_number },
+              'BROKER'
+            );
+            data.account_id = newAccountResult.account_id;
+          }
+        }
+
+        const insertInventoryData: IInventoryAttributes = {
+          account_id: data.account_id,
+          brand_model_id: brandID || 0,
+          year_of_manufacture: data.year_of_manufacture,
+          ownership_name: data.ownership_name,
+          purchase_rate: data.purchase_rate,
+          insurance_date: data.insurance_date,
+          sale_status: data.sale_status,
+          rc_book: uploadDocs?.[0]?.file_id ?? null,
+          insurance_doc: uploadDocs?.[2]?.file_id ?? null,
+          proof_doc: uploadDocs?.[1]?.file_id ?? null,
+          date_of_purchase: data.date_of_purchase,
+          registration_number: data.registration_number,
+        };
+
+        const EditQuery = {
+          where: { inventory_id: data.vehicle_id },
+          transaction: dbTransaction,
+        };
+        const purchaseResult = await accountsQueries.findAccount('Purchase');
+        const cashResult = await accountsQueries.findAccount('Cash');
+        if (purchaseResult && cashResult && brandID) {
+          const addInventoryresult = await inventoryQueries.editVehicle(insertInventoryData, EditQuery);
+
+          if (data.is_delivery) {
+            if (data.delivery_service_phone_number) {
+              if (data.delivery_name) {
+                const newAccountResult = await accountsService.accountHelper(
+                  { party_name: data.delivery_name, party_phone_number: data.delivery_service_phone_number },
+                  E_ACCOUNT_CATEGORIES.DELIVERY_SERVICE
+                );
+
+                data.delivery_service = newAccountResult.account_id;
+              }
+            }
+            const directExpense = await accountsQueries.findAccount(E_LEDGERS_BASIC.DIRECT_EXPENSE);
+            const deliveryTransaction: ITransactionParams[] = [];
+            const dsTransactions: IDsTransactionAttributes[] = [];
+
+            const findVoucher = await accountsQueries.getVoucherWithTransaction_id(
+              Number(deliveryTRANS[0].transaction_id)
+            );
+            if (directExpense) {
+              deliveryTransaction.push({
+                amount: data.delivery_amount,
+                credit_account: data.delivery_service,
+                debit_account: directExpense,
+                transaction_date: data.date_of_purchase,
+                voucher_id: findVoucher?.voucher_id,
+                description: '',
+                transaction_id: deliveryTRANS[0].transaction_id,
+              });
+
+              const findDs_txn_id = await inventoryQueries.findDs_Txn_id(deliveryTRANS[0].transaction_id);
+              dsTransactions.push({
+                ds_txn_id: findDs_txn_id?.ds_txn_id,
+                ds_id: data.delivery_service,
+                vehicle_id: Number(data.vehicle_id),
+                transaction_id: deliveryTRANS[0].transaction_id,
+              });
+
+              console.log(deliveryTransaction, 'TRANSCA');
+              const resultTransaction = await accountsQueries.generateTransaction(deliveryTransaction, {
+                transaction: dbTransaction,
+              });
+
+              DeliverServiceTransactionResult = await inventoryQueries.addTodeliveryServiceTable(dsTransactions, {
+                transaction: dbTransaction,
+              });
+            } else {
+              throw new Error('Delivery Expense Is not Found Try again...');
+            }
+          }
+          const findVoucherforPurchase = await accountsQueries.getVoucherWithTransaction_id(
+            Number(entities[0].transaction_id)
           );
+          const findVoucherforPayment = await accountsQueries.getVoucherWithTransaction_id(
+            Number(entities[1].transaction_id)
+          );
+
+          const transactionResult = await accountsQueries.generateTransaction(
+            [
+              {
+                amount: data.purchase_rate,
+                credit_account: data.account_id,
+                debit_account: purchaseResult,
+                transaction_date: data.date_of_purchase,
+                description: '',
+                voucher_id: findVoucherforPurchase?.voucher_id,
+                transaction_id: entities[0].transaction_id,
+              },
+              {
+                amount: data.purchase_amount,
+                credit_account: cashResult,
+                debit_account: data.account_id,
+                transaction_date: data.date_of_purchase,
+                description: '',
+                voucher_id: findVoucherforPayment?.voucher_id,
+                transaction_id: entities[1].transaction_id,
+              },
+            ],
+            { transaction: dbTransaction }
+          );
+          console.log(transactionResult, 'RRRRRR');
+          await performTransaction(dbTransaction);
+        }
+
+        return resolve({ message: 'Vehicle Edited Successfully' });
+      } catch (err) {
+        reject({ message: `Failed to List Brands: ${err}` });
+      }
+    });
+  }
+
+  createOpeningStock(data: any) {
+    return new Promise(async (resolve, reject) => {
+      const allowedExtension = ['pdf', 'jpg', 'jpeg', 'png'];
+      const fileType = 'doc';
+      try {
+        const docs = [data.rc_book, data.proof_doc, data.insurance_doc];
+
+        const dbTransaction = await db.transaction();
+
+        let docsResult: any = await Promise.all(
+          docs.map((file) => (file === null ? null : uploadFile(file, fileType, allowedExtension)))
+        );
+
+        let uploadDocs;
+        let brandID;
+
   
-          let uploadDocs;
-          let DeliverServiceTransactionResult: any;
-          let brandID;
+        if (docsResult && docsResult.length > 0) {
+          docsResult = docsResult.filter((item: any) => item !== null);
   
-          console.log(docsResult, 'docResult');
-          if (docsResult && docsResult.length > 0) {
-            docsResult = docsResult.filter((item: any) => item !== null);
-            console.log(docsResult, 'DOC entering lt');
-            uploadDocs = await inventoryQueries.uploadManyDocs(docsResult);
+          uploadDocs = await inventoryQueries.uploadManyDocs(docsResult);
+        }
+ 
+        if (data.isNew === 'true') {
+          const brandResult = await inventoryQueries.uploadBrandModel(data.brand, data.model);
+          if (brandResult) {
+            brandID = brandResult.brand_model_id;
           }
-  
-          if (data.isNew) {
-            const brandResult = await inventoryQueries.uploadBrandModel(data.brand, data.model);
-            if (brandResult) {
-              brandID = brandResult.brand_model_id;
-            }
-          } else {
-            brandID = data?.brand_model_id;
-          }
-  
-          if (data.party_phone_number && data?.party_phone_number?.length > 0) {
-            if (data.party_name) {
-              const newAccountResult = await accountsService.accountHelper(
-                { party_name: data.party_name, party_phone_number: data.party_phone_number },
-                'BROKER'
-              );
-              data.account_id = newAccountResult.account_id;
-            }
-          }
-  
-          const insertInventoryData: IInventoryAttributes = {
-            account_id: data.account_id,
-            brand_model_id: brandID || 0,
-            year_of_manufacture: data.year_of_manufacture,
-            ownership_name: data.ownership_name,
-            purchase_rate: data.purchase_rate,
-            insurance_date: data.insurance_date,
-            sale_status: data.sale_status,
-            rc_book: uploadDocs?.[0]?.file_id ?? null,
-            insurance_doc: uploadDocs?.[2]?.file_id ?? null,
-            proof_doc: uploadDocs?.[1]?.file_id ?? null,
-            date_of_purchase: data.date_of_purchase,
-            registration_number: data.registration_number,
-          };
-  
-          const EditQuery = {
-            where: { inventory_id: data.vehicle_id },
+        } else {
+          brandID = data?.brand_model_id;
+        }
+        const insertInventoryData: any = {
+          brand_model_id: Number(brandID) || 0,
+          year_of_manufacture: data.year_of_manufacture,
+          ownership_name: data.ownership_name,
+          purchase_rate: data.purchase_rate,
+          insurance_date: data.insurance_date,
+          sale_status: data.sale_status,
+          rc_book: uploadDocs?.[0]?.file_id ?? null,
+          insurance_doc: uploadDocs?.[2]?.file_id ?? null,
+          proof_doc: uploadDocs?.[1]?.file_id ?? null,
+          date_of_purchase: data.date_of_purchase,
+          registration_number: data.registration_number,
+        };
+        const differenceOpening = await accountsQueries.findAccount(E_LEDGERS_BASIC.DIFFERENCE_OPENING);
+        if (brandID && differenceOpening) {
+          const addInventoryresult = await inventoryQueries.addVehicle(insertInventoryData, {
             transaction: dbTransaction,
-          }
-          const purchaseResult = await accountsQueries.findAccount('Purchase');
-          const cashResult = await accountsQueries.findAccount('Cash');
-          if (purchaseResult && cashResult && brandID) {
-            const addInventoryresult = await inventoryQueries.editVehicle(insertInventoryData,EditQuery);
-  
-            if (data.is_delivery) {
-              if (data.delivery_service_phone_number) {
-                if (data.delivery_name) {
-                  const newAccountResult = await accountsService.accountHelper(
-                    { party_name: data.delivery_name, party_phone_number: data.delivery_service_phone_number },
-                    E_ACCOUNT_CATEGORIES.DELIVERY_SERVICE
-                  );
-  
-                  data.delivery_service = newAccountResult.account_id;
-                }
-              }
-              const directExpense = await accountsQueries.findAccount(E_LEDGERS_BASIC.DIRECT_EXPENSE);
-              const deliveryTransaction: ITransactionParams[] = [];
-              const dsTransactions: IDsTransactionAttributes[] = [];
-  
-              const findVoucher = await accountsQueries.getVoucherWithTransaction_id(Number(deliveryTRANS[0].transaction_id))
-              if (directExpense) {
-                deliveryTransaction.push({
-                  amount: data.delivery_amount,
-                  credit_account: data.delivery_service,
-                  debit_account: directExpense,
-                  transaction_date: data.date_of_purchase,
-                  voucher_id:findVoucher?.voucher_id,
-                  description: '',
-                  transaction_id:deliveryTRANS[0].transaction_id
-                });
-  
-                const findDs_txn_id = await inventoryQueries.findDs_Txn_id(deliveryTRANS[0].transaction_id)
-                  dsTransactions.push({
-                    ds_txn_id:findDs_txn_id?.ds_txn_id,
-                    ds_id: data.delivery_service,
-                    vehicle_id: Number(data.vehicle_id),
-                    transaction_id: deliveryTRANS[0].transaction_id
-                  });
-                
-                console.log(deliveryTransaction, 'TRANSCA');
-                const resultTransaction = await accountsQueries.generateTransaction(deliveryTransaction, {
-                  transaction: dbTransaction,
-                });
-  
-                DeliverServiceTransactionResult = await inventoryQueries.addTodeliveryServiceTable(dsTransactions, {
-                  transaction: dbTransaction,
-                });
-                
+          });
 
-              } else {
-                throw new Error('Delivery Expense Is not Found Try again...');
-              }
-            }
-            const findVoucherforPurchase = await accountsQueries.getVoucherWithTransaction_id(Number(entities[0].transaction_id))
-            const findVoucherforPayment = await accountsQueries.getVoucherWithTransaction_id(Number(entities[1].transaction_id))
-
-
-
-          const transactionResult =  await accountsQueries.generateTransaction(
+          if (addInventoryresult.inventory_id) {
+            await accountsQueries.generateTransaction(
               [
                 {
                   amount: data.purchase_rate,
-                  credit_account: data.account_id,
-                  debit_account: purchaseResult,
+                  credit_account: differenceOpening,
+                  debit_account: addInventoryresult.inventory_id,
+                  voucher_id: await getVoucher(E_VOUCHERS.Purchase),
                   transaction_date: data.date_of_purchase,
                   description: '',
-                  voucher_id:findVoucherforPurchase?.voucher_id,
-                  transaction_id:entities[0].transaction_id
-                },
-                {
-                  amount: data.purchase_amount,
-                  credit_account: cashResult,
-                  debit_account: data.account_id,
-                  transaction_date: data.date_of_purchase,
-                  description: '',
-                  voucher_id:findVoucherforPayment?.voucher_id,
-                  transaction_id:entities[1].transaction_id
                 },
               ],
               { transaction: dbTransaction }
             );
-            console.log(transactionResult,"RRRRRR")
             await performTransaction(dbTransaction);
+            return resolve({ message: 'Opening Stock Added Successfully' });
+          } else {
+            throw new Error('Failed to Retrieve Inventory Id ');
           }
-  
-
-
-        return resolve({message:'Vehicle Edited Successfully'});
+        } else {
+          throw new Error('This Brand is Not Exist or Failed to Create');
+        }
       } catch (err) {
-        reject({ message: `Failed to List Brands: ${err}` });
+        reject({ message: `Failed to Create opening Stock: ${err}` });
       }
-    })}
-    
+    });
+  }
 }
 
 export default new InventoryService();
