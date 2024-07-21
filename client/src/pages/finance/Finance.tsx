@@ -27,6 +27,7 @@ const Finance = () => {
   const [showAddFinancerPopup, setShowAddFinancerPopup] = useState(false);
   const [showAssignVehiclePopup, setAssignVehiclePopup] = useState(false);
   const [showDeletePage, setShowDeletePage] = useState(false)
+  const [isEdit, setIsEdit] = useState(false)
   const [selectedAccountData, setSelectedAccountData] = useState<IListAccountData | null>(null)
 
   const [assignId, setAssignId] = useState(0)
@@ -41,6 +42,7 @@ const Finance = () => {
   const onCancelClick = useCallback(() => {
     reset()
     setShowAddFinancerPopup(false);
+    setIsEdit(false)
   }, [])
   const accountApi = useAccountApi()
   const onSubmit = async (data: IFinance) => {
@@ -49,8 +51,18 @@ const Finance = () => {
       "contactInfo": data?.phoneNumber,
       category: ICategory.FINANCER
     }
+    if (isEdit && selectedAccountData) {
+      body['id'] = selectedAccountData?.account_id
+    }
+    setIsEdit(false)
     setShowAddFinancerPopup(false);
-    await accountApi(body, 'Financer creation Failed', 'Financer Successfully Created', () => { reset() })
+    await accountApi({
+      body: body,
+      errorMessage: isEdit ? 'Failed to edit financier' : 'Financer creation Failed',
+      successMessage: isEdit ? 'Financer Edited Successfully' : 'Financer Successfully Created',
+      onSuccess: () => { reset(); },
+      url: isEdit ? 'accounts/edit/account' : null
+    })
     refetch()
   };
   const onActionClick = (type: string, id: string, data: IListAccountData) => {
@@ -60,6 +72,10 @@ const Finance = () => {
     } else if (type === 'delete') {
       setShowDeletePage(true)
       setSelectedAccountData(data)
+    } else {
+      setIsEdit(true)
+      setSelectedAccountData(data)
+      setShowAddFinancerPopup(true)
     }
   }
   const columnData = useMemo(() => {
@@ -133,11 +149,10 @@ const Finance = () => {
           onClose={() => {
             setShowAddFinancerPopup(false);
           }}
-          title='Add Financer'
+          title={`${isEdit ? 'Edit' : "Add"} Financer`}
         >
           <form onSubmit={handleSubmit(onSubmit)}>
-            <AddFinance reset={reset} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
-
+            <AddFinance financeData={selectedAccountData} isEdit={isEdit} reset={reset} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
           </form>
         </ModalWrapper>
       )}

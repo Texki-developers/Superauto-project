@@ -11,6 +11,7 @@ import { IServiceShop } from '../../types/serviceShop/serviceShop';
 import { IAccountApiBody, ICategory } from '../../types/apimodal/apimodal.d';
 import useAccountApi from '../../hooks/useAccountApi.hook';
 import { ITableColumn } from '../../types/table/table';
+import EditIcon from '../../assets/icons/edit.svg';
 import addProduct from '../../assets/icons/vehicle.png';
 import DeleteIcon from '../../assets/icons/delete.svg';
 import useGetCategoryApi from '../../hooks/useGetCategoryApi.hook';
@@ -28,6 +29,7 @@ const ServiceShop = () => {
   const [assignId, setAssignId] = useState(0);
   const [showDeletePage, setShowDeletePage] = useState(false);
   const [selectedAccountData, setSelectedAccountData] = useState<IListAccountData | null>(null);
+  const [isEdit, setIsEdit] = useState(false)
 
   const onAddItemClick = () => {
     setShowServiceShopPopup(true);
@@ -39,11 +41,12 @@ const ServiceShop = () => {
 
   const onCancelClick = useCallback(() => {
     reset();
+    setIsEdit(false)
     setShowServiceShopPopup(false);
   }, [reset]);
 
   const accountApi = useAccountApi();
-  
+
   const onSubmit = async (data: IServiceShop) => {
     const body: IAccountApiBody = {
       "name": data?.name,
@@ -51,7 +54,17 @@ const ServiceShop = () => {
       category: ICategory.SERVICE_SHOP
     };
     setShowServiceShopPopup(false);
-    await accountApi(body, 'Service Shop creation Failed', 'Service Shop Successfully Created', () => { reset(); });
+    if (isEdit && selectedAccountData) {
+      body['id'] = selectedAccountData?.account_id
+    }
+    setIsEdit(false)
+    await accountApi({
+      body: body,
+      errorMessage: isEdit ? 'Failed to edit service shop' : 'Service Shop creation Failed',
+      successMessage: isEdit ? 'Service Shop Edited Successfully' : 'Service Shop Successfully Created',
+      onSuccess: () => { reset(); },
+      url: isEdit ? 'accounts/edit/account' : null,
+    });
     refetch();
   };
 
@@ -64,6 +77,10 @@ const ServiceShop = () => {
     } else if (type === 'delete') {
       setShowDeletePage(true);
       setSelectedAccountData(data);
+    } else {
+      setIsEdit(true)
+      setSelectedAccountData(data)
+      setShowServiceShopPopup(true)
     }
   };
 
@@ -80,6 +97,11 @@ const ServiceShop = () => {
               onClick={() => onActionClick('assign', id, data)}
               src={addProduct}
               alt='Assign'
+            />
+            <img
+              onClick={() => onActionClick('edit', id, data)}
+              src={EditIcon}
+              alt='Edit'
             />
             <img
               onClick={() => onActionClick('delete', id, data)}
@@ -102,7 +124,7 @@ const ServiceShop = () => {
               title='Add Service Shop'
             >
               <form onSubmit={handleSubmit(onSubmit)}>
-                <AddServiceShop reset={reset} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
+                <AddServiceShop data={selectedAccountData} isEdit={isEdit} reset={reset} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
               </form>
             </ModalWrapper>
           )}

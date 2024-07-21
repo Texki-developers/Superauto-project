@@ -16,6 +16,7 @@ import EditIcon from '../../assets/icons/edit.svg';
 import useGetCategoryApi from '../../hooks/useGetCategoryApi.hook';
 import DeleteModal from '../../components/deleteModal/DeleteModal';
 import { IListAccountData } from '../../types/common/common';
+import Loading from '../../components/loading/Loading';
 
 const defaultValues: IDeliveryService = {
   name: '', // Default value for name
@@ -28,6 +29,7 @@ const DeliveryServices = () => {
   const [showDeletePage, setShowDeletePage] = useState(false);
   const [selectedServiceData, setSelectedServiceData] = useState<IListAccountData | null>(null);
   const [assignId, setAssignId] = useState(0);
+  const [isEdit, setIsEdit] = useState(false)
 
   const { register, handleSubmit, reset, formState: { errors }, control } = useForm({
     defaultValues
@@ -43,11 +45,22 @@ const DeliveryServices = () => {
       category: ICategory.DELIVERY_SERVICE
     };
     setShowDeliveryServicesPopup(false);
-    await accountApi(body, 'Delivery Service creation Failed', 'Delivery Service Successfully Created', () => { reset() });
+    setIsEdit(false)
+    if (isEdit && selectedServiceData) {
+      body['id'] = selectedServiceData?.account_id
+    }
+    await accountApi({
+      body: body,
+      errorMessage: isEdit ? 'Failed to edit delivery service' : 'Delivery Service creation Failed',
+      successMessage: isEdit ? 'Delivery Service Edited Successfully' : 'Delivery Service Successfully Created',
+      onSuccess: () => { reset(); },
+      url: isEdit ? 'accounts/edit/account' : null,
+    });
     refetch();
   };
 
   const onCancelClick = useCallback(() => {
+    setIsEdit(false)
     reset();
     setShowDeliveryServicesPopup(false);
   }, [reset]);
@@ -61,8 +74,9 @@ const DeliveryServices = () => {
       setAssignId(Number(data?.account_id));
       setAssignVehiclePopup(true);
     } else if (type === 'edit') {
-      // Implement edit functionality here
-      console.log('Edit action for id:', id);
+      setIsEdit(true)
+      setSelectedServiceData(data)
+      setShowDeliveryServicesPopup(true)
     } else if (type === 'delete') {
       setShowDeletePage(true);
       setSelectedServiceData(data);
@@ -101,7 +115,7 @@ const DeliveryServices = () => {
   console.log(assignId)
   return (
     <>
-      {isPending ? <p>Loading...</p> : (
+      {(
         <>
           {showDeliveryServicesPopup && (
             <ModalWrapper
@@ -109,10 +123,13 @@ const DeliveryServices = () => {
               title='Add Delivery Service'
             >
               <form onSubmit={handleSubmit(onSubmit)}>
-                <AddDeliveryServices reset={reset} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
+                <AddDeliveryServices data={selectedServiceData} isEdit={isEdit} reset={reset} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
               </form>
             </ModalWrapper>
           )}
+          {
+            isPending && <Loading />
+          }
           {showAssignVehiclePopup && (
             <ModalWrapper
               onClose={() => setAssignVehiclePopup(false)}

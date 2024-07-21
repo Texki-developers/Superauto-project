@@ -14,6 +14,7 @@ import EditIcon from '../../assets/icons/edit.svg';
 import DeleteIcon from '../../assets/icons/delete.svg';
 import DeleteModal from '../../components/deleteModal/DeleteModal';
 import { IListAccountData } from '../../types/common/common';
+import Loading from '../../components/loading/Loading';
 
 const defaultValues: IEmployee = {
   name: '', // Default value for name
@@ -24,6 +25,7 @@ const defaultValues: IEmployee = {
 const Employees = () => {
   const [showEmployeesPopup, setShowEmployeesPopup] = useState(false);
   const [showDeletePage, setShowDeletePage] = useState(false);
+  const [isEdit, setIsEdit] = useState(false)
   const [selectedEmployeeData, setSelectedEmployeeData] = useState<IListAccountData | null>(null);
 
   const { register, handleSubmit, reset, formState: { errors }, control } = useForm({
@@ -40,12 +42,23 @@ const Employees = () => {
       category: ICategory.EMPLOYEE
     };
     setShowEmployeesPopup(false);
-    await accountApi(body, 'Employee creation Failed', 'Employee Successfully Created', () => { reset(); });
+    if (isEdit && selectedEmployeeData) {
+      body['id'] = selectedEmployeeData?.account_id
+    }
+    setIsEdit(false)
+    await accountApi({
+      body: body,
+      errorMessage: isEdit ? 'Failed to edit employee' : 'Employee creation Failed',
+      successMessage: isEdit ? 'Employee Edited Successfully' : 'Employee Successfully Created',
+      onSuccess: () => { reset(); },
+      url: isEdit ? 'accounts/edit/account' : null,
+    });
     refetch();
   };
 
   const onCancelClick = useCallback(() => {
     reset();
+    setIsEdit(false);
     setShowEmployeesPopup(false);
   }, [reset]);
 
@@ -57,7 +70,9 @@ const Employees = () => {
 
   const onActionClick = (type: string, id: string, data: IListAccountData) => {
     if (type === 'edit') {
-      console.log('Edit action for id:', id); // Handle edit action
+      setIsEdit(true)
+      setSelectedEmployeeData(data)
+      setShowEmployeesPopup(true)// Handle edit action// Handle edit action
     } else if (type === 'delete') {
       setShowDeletePage(true);
       setSelectedEmployeeData(data);
@@ -91,45 +106,48 @@ const Employees = () => {
 
   return (
     <>
-      {isPending ? <p>Loading...</p> : (
-        <>
-          {showEmployeesPopup && (
-            <ModalWrapper
-              onClose={onCancelClick}
-              title='Add Employee'
-            >
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <AddEmployees reset={reset} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
-              </form>
-            </ModalWrapper>
-          )}
 
-          {showDeletePage && selectedEmployeeData && (
-            <DeleteModal
-              refetch={refetch}
-              apiUrl={`accounts/delete/account?id=${selectedEmployeeData.account_id}`}
-              category='Employee'
-              onClose={() => setShowDeletePage(false)}
-              verifyText={selectedEmployeeData.name}
-              label={`Enter the Name ( ${selectedEmployeeData.name} )`}
+      <>
+        {showEmployeesPopup && (
+          <ModalWrapper
+            onClose={onCancelClick}
+            title='Add Employee'
+          >
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <AddEmployees data={selectedEmployeeData} isEdit={isEdit} reset={reset} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
+            </form>
+          </ModalWrapper>
+        )}
+        {
+          isPending && <Loading />
+        }
+
+        {showDeletePage && selectedEmployeeData && (
+          <DeleteModal
+            refetch={refetch}
+            apiUrl={`accounts/delete/account?id=${selectedEmployeeData.account_id}`}
+            category='Employee'
+            onClose={() => setShowDeletePage(false)}
+            verifyText={selectedEmployeeData.name}
+            label={`Enter the Name ( ${selectedEmployeeData.name} )`}
+          />
+        )}
+
+        <div className='table-wrapper'>
+          <Header />
+          <section className='pt-[50px]'>
+            <AddAndSearchItem
+              hideSearch
+              addButtonText='Add Employee'
+              onAddButtonClick={onAddItemClick}
             />
-          )}
+          </section>
+          <section className='pt-5 pb-2'>
+            <Table meta={data?.meta} data={data?.data} columnData={columnData} />
+          </section>
+        </div>
+      </>
 
-          <div className='table-wrapper'>
-            <Header />
-            <section className='pt-[50px]'>
-              <AddAndSearchItem
-                hideSearch
-                addButtonText='Add Employee'
-                onAddButtonClick={onAddItemClick}
-              />
-            </section>
-            <section className='pt-5 pb-2'>
-              <Table meta={data?.meta} data={data?.data} columnData={columnData} />
-            </section>
-          </div>
-        </>
-      )}
     </>
   );
 };

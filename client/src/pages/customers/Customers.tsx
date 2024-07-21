@@ -25,6 +25,7 @@ const Customers = () => {
   const [showCustomersPopup, setShowCustomersPopup] = useState(false);
   const [showDeletePage, setShowDeletePage] = useState(false);
   const [selectedAccountData, setSelectedAccountData] = useState<IListAccountData | null>(null);
+  const [isEdit, setIsEdit] = useState(false)
 
   const onAddItemClick = () => {
     setShowCustomersPopup(true);
@@ -35,6 +36,7 @@ const Customers = () => {
   });
 
   const onCancelClick = useCallback(() => {
+    setIsEdit(false)
     reset();
     setShowCustomersPopup(false);
   }, [reset]);
@@ -48,7 +50,18 @@ const Customers = () => {
       category: data?.isBroker ? ICategory.BROKER : ICategory.CUSTOMER
     };
     setShowCustomersPopup(false);
-    await accountApi(body, 'Customer creation Failed', 'Customer Successfully Created', () => { reset(); });
+    if (isEdit && selectedAccountData) {
+      body['id'] = selectedAccountData?.account_id
+    }
+    setIsEdit(false)
+    await accountApi({
+      body: body,
+      errorMessage: isEdit ? 'Failed to edit customer' : 'Customer creation Failed',
+      successMessage: isEdit ? 'Customer Edited Successfully' : 'Customer Successfully Created',
+      onSuccess: () => { reset(); },
+      url: isEdit ? 'accounts/edit/account' : null,
+    });
+
     refetch();
   };
 
@@ -56,7 +69,10 @@ const Customers = () => {
 
   const onActionClick = (type: string, id: string, data: IListAccountData) => {
     if (type === 'edit') {
-      console.log('Edit action for id:', id);  // Handle edit action
+      console.log('Edit action for id:', id);
+      setIsEdit(true)
+      setSelectedAccountData(data)
+      setShowCustomersPopup(true)// Handle edit action
     } else if (type === 'delete') {
       setShowDeletePage(true);
       setSelectedAccountData(data);
@@ -98,7 +114,7 @@ const Customers = () => {
               title='Add Customer'
             >
               <form onSubmit={handleSubmit(onSubmit)}>
-                <AddCustomers reset={reset} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
+                <AddCustomers data={selectedAccountData} isEdit={isEdit} reset={reset} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
               </form>
             </ModalWrapper>
           )}
