@@ -42,7 +42,7 @@ Inventory.init(
     },
     account_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: Accounts,
         key: 'account_id',
@@ -62,7 +62,7 @@ Inventory.init(
     },
     ownership_name: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     purchase_rate: {
       type: DataTypes.INTEGER,

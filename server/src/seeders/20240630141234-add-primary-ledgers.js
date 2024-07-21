@@ -142,6 +142,14 @@ module.exports = {
           updatedAt: new Date(),
           type: 'revenue',
         },
+        {
+          pl_id: 18,
+          ledger_name: 'Difference Opening',
+          account_head: 17,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          type: 'asset',
+        },
       ],
       {}
     );

@@ -108,6 +108,14 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       },
+      {
+        name: 'Difference Opening',
+        contact_info: '',
+        category: 'Built-In',
+        head: 18,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
     ])
   },
 

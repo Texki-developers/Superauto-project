@@ -5,6 +5,7 @@ import inventoryController from '../controller/inventory.controller';
 const router: Router = express.Router();
 
 router.post('/add/vehicle', inventoryController.addInventory);
+router.post('/opening-stock', inventoryController.createOpeningStock);
 router.delete('/delete/vehicle', inventoryController.deleteVehicle);
 router.post('/edit/vehicle', inventoryController.EditVehicle);
 router.get('/list/vehicle', inventoryController.listVehicle);

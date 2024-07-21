@@ -46,6 +46,7 @@ enum E_LEDGERS_BASIC {
   ADMINISTRATION_EXPENSE = 'Administration Expense',
   PURCHASE = 'Purchase',
   SALE = 'Sale',
+  DIFFERENCE_OPENING = 'Difference Opening'
 }
 
 enum E_VOUCHERS {
