@@ -92,7 +92,7 @@ const Vehicles = () => {
         />
       }
       <main className='table-wrapper'>
-        {showAddPage && selectedVehicleData ? (
+        {showAddPage ? (
           <AddVehicle setIsEdit={setIsEdit} isEdit={isEdit} selectedItem={selectedVehicleData?.inventory_id} setShowAddPage={setShowAddPage} refetch={refetch} />
         ) :
           showSellPage && selectedVehicleData ? (
