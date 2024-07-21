@@ -15,7 +15,7 @@ class InventoryController {
       account_id: body.accountId,
       ownership_name: body.ownershipName,
       registration_number: body?.registrationNumber,
-      brand_model_id: body?.brand,
+      brand_model_id: body?.brandModel_id,
       year_of_manufacture: body.yearOfManufacture,
       purchase_rate: body.purchaseRate,
       purchase_amount:body.purchaseAmount,
@@ -165,7 +165,7 @@ class InventoryController {
       account_id: body.accountId,
       ownership_name: body.ownershipName,
       registration_number: body?.registrationNumber,
-      brand_model_id: body?.brand,
+      brand_model_id: body?.brandModel_id,
       year_of_manufacture: body.yearOfManufacture,
       purchase_rate: body.purchaseRate,
       sale_status: false,
@@ -253,7 +253,7 @@ console.log(data.is_sales_return,"IS SALES")
       account_id: body.accountId,
       ownership_name: body.ownershipName,
       registration_number: body?.registrationNumber,
-      brand_model_id: body?.brand,
+      brand_model_id: body?.brandModel_id,
       year_of_manufacture: body.yearOfManufacture,
       purchase_rate: body.purchaseRate,
       purchase_amount:body.purchaseAmount,
@@ -277,6 +277,40 @@ console.log(data.is_sales_return,"IS SALES")
         };
 
     inventoryService.EditVehicle(data) .then((data: any) => {
+      responseHandler(res, 'MODIFIED', data, { message: data.message });
+    })
+    .catch((error) => {
+      responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+    });
+
+  }
+
+  createOpeningStock (req: Request, res: Response){
+    const { body } = req;
+    const rcBook = getFile(req, 'rcBook');
+    const insuranceDoc = getFile(req, 'insuranceDoc');
+    const proofDoc = getFile(req, 'proofDoc');
+    
+    console.log(body)
+    const data = {
+      ownership_name: body.ownershipName,
+      registration_number: body?.registrationNumber,
+      brand_model_id: body?.brandModel_id,
+      year_of_manufacture: body.yearOfManufacture,
+      purchase_rate: body.purchaseRate,
+      sale_status: false,
+      insurance_date: body.insuranceDate,
+      rc_book: rcBook,
+      insurance_doc: insuranceDoc,
+      proof_doc: proofDoc,
+      date_of_purchase: body.dateOfPurchase,
+      model: body.model,
+      brand: body.brand,
+      isNew: body.isNew,
+
+        }
+
+    inventoryService.createOpeningStock(data) .then((data: any) => {
       responseHandler(res, 'MODIFIED', data, { message: data.message });
     })
     .catch((error) => {
