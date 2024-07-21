@@ -1031,6 +1031,8 @@ class InventoryService {
           date_of_purchase: data.date_of_purchase,
           registration_number: data.registration_number,
         };
+
+        console.log(insertInventoryData,"DATA")
         const differenceOpening = await accountsQueries.findAccount(E_LEDGERS_BASIC.DIFFERENCE_OPENING);
         if (brandID && differenceOpening) {
           const addInventoryresult = await inventoryQueries.addVehicle(insertInventoryData, {
@@ -1059,6 +1061,7 @@ class InventoryService {
         } else {
           throw new Error('This Brand is Not Exist or Failed to Create');
         }
+        
       } catch (err) {
         reject({ message: `Failed to Create opening Stock: ${err}` });
       }

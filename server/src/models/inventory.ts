@@ -62,7 +62,7 @@ Inventory.init(
     },
     ownership_name: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     purchase_rate: {
       type: DataTypes.INTEGER,
