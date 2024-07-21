@@ -7,10 +7,15 @@ import AuthApiService from '../../services/api-services';
 import useToast from '../../hooks/useToast.hook';
 import useGetApis from '../../hooks/useGetApi.hook';
 import { useQuery } from '@tanstack/react-query';
+// import useQueryGetApi from '../../hooks/useQueryGetApi.hook';
+import Loading from '../../components/loading/Loading';
 
 interface IProps {
   setShowAddPage: React.Dispatch<SetStateAction<boolean>>;
   refetch: () => void;
+  selectedItem?: string;
+  isEdit?: boolean;
+  setIsEdit?: React.Dispatch<SetStateAction<boolean>>;
 }
 
 const defaultValues: IVehicleAddFormValues = {
@@ -46,28 +51,63 @@ const defaultValues: IVehicleAddFormValues = {
   deliveryServicePhoneNumber: ''
 };
 
-const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
+const AddVehicle = ({ setShowAddPage, refetch, setIsEdit, selectedItem, isEdit }: IProps) => {
   const { register, handleSubmit, reset, watch, setValue, formState: { errors }, control } = useForm({
     defaultValues
   })
   const { toastError, toastLoading, toastSuccess } = useToast()
-
-  const { callApi } = useGetApis()
+  const editApiurl = `inventory/list/edit-vehicle/?inventoryId=${selectedItem}`
+  const { callApi } = useGetApis();
+  const fetchData = () => callApi(editApiurl);
+  const { data: vehicleData, isPending } = useQuery({ queryKey: [editApiurl], queryFn: fetchData, enabled: isEdit })
   const url = `inventory/model-brand/vehicle`
   const fetchBrandModal = (): Promise<{ data: IBranAndModel[] } | undefined> => callApi(url)
   const { data: brandData, isPending: brandLoading } = useQuery({ queryKey: ['brand/model-brand'], queryFn: fetchBrandModal })
   useEffect(() => {
+    if (vehicleData?.data) {
+      const mappedValues = {
+        ...defaultValues,
+        party: {
+          value: vehicleData?.data?.account_id,
+          label: vehicleData?.data?.Account?.name,
+        },
+        brand: {
+          label: vehicleData?.data?.BrandModel.brand,
+          value: vehicleData?.data?.brand_model_id.toString(),
+        },
+        model: {
+          label: vehicleData?.data?.BrandModel.model,
+          value: vehicleData?.data?.brand_model_id.toString(),
+        },
+        registrationNumber: vehicleData?.data?.registration_number,
+        purchaseRate: vehicleData?.data?.purchase_rate.toString(),
+        purchaseDate: vehicleData?.data?.date_of_purchase,
+        insurance: vehicleData?.data?.insuranceDoc,
+        proof: vehicleData?.data?.proofDoc,
+        rcBook: vehicleData?.data?.rcBook,
+        ownership: vehicleData?.data?.ownership_name,
+        yearOfManufacture: vehicleData?.data?.year_of_manufacture.toString(),
+        insuranceDate: vehicleData?.data?.insurance_date,
+      };
 
-  }, [])
+      reset(mappedValues);
+      setValue('model', {
+        label: vehicleData?.data?.BrandModel.model,
+        value: vehicleData?.data?.brand_model_id.toString(),
+      })
+    }
+  }, [vehicleData, brandData])
   const onCancelClick = () => {
     reset()
     setShowAddPage(false);
+    setIsEdit && setIsEdit(false);
   };
   const breadCrumbData = [
     { name: 'Dashboard', link: '/' },
     { name: 'Vehicles' },
     { name: 'Add Vehicles' },
   ];
+
   const onSubmit = async (data: IVehicleAddFormValues) => {
     const formData = new FormData();
     formData.append(data?.party.__isNew__ ? 'partyName' : 'accountId', data?.party.value)
@@ -116,12 +156,15 @@ const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
     }
   }, [watch('purchaseRate'), watch('purchaseAmount')])
   console.log(watch('party'))
+  if (isPending && isEdit) {
+    return <Loading />
+  }
   return (
     <div>
       <Header breadCrumbData={breadCrumbData} />
       <div className='pt-5'>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <AddvehicleForm brands={brandData?.data} brandLoading={brandLoading} reset={reset} setValue={setValue} watch={watch} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
+          <AddvehicleForm vehicleData={vehicleData.data} brands={brandData?.data} brandLoading={brandLoading} reset={reset} setValue={setValue} watch={watch} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
         </form>
       </div>
     </div>

@@ -5,6 +5,8 @@ import AddVehicle from './AddVehicle';
 import Table from '../../components/table/Table';
 import { ColumnData } from './vehicle.data';
 import addProduct from '../../assets/icons/addCart.svg';
+import EditIcon from '../../assets/icons/edit.svg';
+import DeleteIcon from '../../assets/icons/delete.svg';
 import SellVehicle from './SellVehicle';
 import { useQuery } from '@tanstack/react-query';
 import { ITableColumn } from '../../types/table/table';
@@ -16,8 +18,9 @@ import Loading from '../../components/loading/Loading';
 const Vehicles = () => {
   const [showAddPage, setShowAddPage] = useState<boolean>(false);
   const [showSellPage, setShowSellPage] = useState<boolean>(false);
+  const [isEdit, setIsEdit] = useState<boolean>(false);
   const [selectedVehicle, setSelectedVehicle] = useState('')
-  const [selectedVehicleMrp, setSelectedVehicleMrp] = useState<string | undefined>('')
+  const [, setSelectedVehicleMrp] = useState<string | undefined>('')
   const onAddButtonClick = () => {
     setShowAddPage(true);
   };
@@ -34,6 +37,10 @@ const Vehicles = () => {
       setSelectedVehicle(id)
       setSelectedVehicleMrp(mrp)
       setShowSellPage(true);
+    } else if (type === 'edit') {
+      setShowAddPage(true)
+      setIsEdit(true)
+      setSelectedVehicle(id)
     }
   };
   const columnData: ITableColumn[] = useMemo(() => {
@@ -43,14 +50,15 @@ const Vehicles = () => {
         name: 'Action',
         key: 'inventory_id',
         returnData: true,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         columnData: (id: string, data: any) => (
-          <div className='flex gap-2 *:h-[20px] *:w-[20px]'>
+          <div className='flex gap-2 *:h-[20px] *:w-[20px] cursor-pointer'>
             <img
               onClick={() => onActionClick('add', id, data?.mrp)}
               src={addProduct}
               alt=''
             />
-            {/* <img
+            <img
               onClick={() => onActionClick('edit', id)}
               src={EditIcon}
               alt=''
@@ -59,7 +67,7 @@ const Vehicles = () => {
               onClick={() => onActionClick('delete', id)}
               src={DeleteIcon}
               alt=''
-            /> */}
+            />
           </div>
         ),
       },
@@ -73,7 +81,7 @@ const Vehicles = () => {
       <main className='table-wrapper'>
 
         {showAddPage ? (
-          <AddVehicle setShowAddPage={setShowAddPage} refetch={refetch} />
+          <AddVehicle setIsEdit={setIsEdit} isEdit={isEdit} selectedItem={selectedVehicle} setShowAddPage={setShowAddPage} refetch={refetch} />
         ) :
           showSellPage ? (
             <SellVehicle refetch={refetch} vehicleId={selectedVehicle} setShowSellPage={setShowSellPage} />

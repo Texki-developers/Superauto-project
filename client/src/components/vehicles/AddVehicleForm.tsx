@@ -28,7 +28,7 @@ interface IProps {
   hideDeliveryServices?: boolean
 }
 
-const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, control, errors, watch, setValue, brands, brandLoading }: IProps) => {
+const AddvehicleForm = ({ vehicleDataonCancelClick, hideDeliveryServices, register, reset, control, errors, watch, setValue, brands, brandLoading }: IProps) => {
   const [isNewParty, setIsNewParty] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [modelsData, setModelsData] = useState<any>([])

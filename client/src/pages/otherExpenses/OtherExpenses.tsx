@@ -25,6 +25,7 @@ const OtherExpenses = () => {
   })
 
   const onCancelClick = useCallback(() => {
+    reset()
     setShowOtherExpensesPopup(false);
   }, [])
   const onSubmit = (data: IOtherExpense) => {
