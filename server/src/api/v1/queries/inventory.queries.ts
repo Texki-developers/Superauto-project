@@ -120,7 +120,7 @@ class InventoryQueries {
     return await SaleReturn.create(data, options);
   }
 
-  async listBrandModel() {
+  async listBrandModel(){
     return await BrandModel.findAll({
       attributes: {
         exclude: ['createdAt', 'updatedAt'],
@@ -218,6 +218,8 @@ GROUP BY
       },
     });
   }
+
+
 }
 
 export default new InventoryQueries();
