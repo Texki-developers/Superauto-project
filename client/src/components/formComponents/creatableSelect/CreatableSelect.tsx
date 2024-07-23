@@ -22,6 +22,7 @@ interface ISelectInputProps {
     valueName?: string;
     isLoading?: boolean;
     control: any
+    onChange?: (value: any) => void;
     error: any;
     // validation?: (value: any) => any
 }
@@ -68,6 +69,7 @@ export default function CreateSelectInput(props: ISelectInputProps) {
                             getOptionLabel={(data) => { return props?.labelName ? data[props?.labelName] : data?.label }}
                             getOptionValue={(data) => { return props?.valueName ? data[props?.valueName] : data?.value }}
                             onChange={(value) => {
+                                props?.onChange && props?.onChange(value)
                                 field.onChange(value)
                                 if (value?.__isNew__) {
                                     props?.setIsNew && props.setIsNew(true)

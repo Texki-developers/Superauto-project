@@ -15,3 +15,4 @@ router.get('/list/category-drop/:category',accountsController.getDropDownCategor
 router.get('/list/getAllAccounts',accountsController.getAllAccounts)
 
 export default router;
+ 

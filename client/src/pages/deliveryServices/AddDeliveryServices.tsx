@@ -2,6 +2,8 @@ import { Control, FieldErrors, UseFormRegister } from 'react-hook-form';
 import InputBox from '../../components/formComponents/inputBox/InputBox';
 import SaveCancelButtons from '../../components/save-cancel-buttons/SaveCancelButtons';
 import { IDeliveryService } from '../../types/deliveryServices/deliveryServices';
+import { IListAccountData } from '../../types/common/common';
+import { useEffect } from 'react';
 
 interface IProps {
   onCancelClick: () => void;
@@ -9,10 +11,19 @@ interface IProps {
   control: Control<IDeliveryService>;
   errors: FieldErrors<IDeliveryService>;
   reset: (values?: IDeliveryService) => void;
+  data?: IListAccountData | null;
+  isEdit?: boolean;
 }
 
-const AddDeliveryServices = ({ onCancelClick, reset, register, errors }: IProps) => {
-
+const AddDeliveryServices = ({ isEdit, data, onCancelClick, reset, register, errors }: IProps) => {
+  useEffect(() => {
+    if (isEdit && data) {
+      reset({
+        name: data?.name,
+        phoneNumber: data?.contact_info,
+      })
+    }
+  }, [isEdit])
   return (
     <div className='grid gap-3'>
       <div className="grid grid-cols-2 gap-2">

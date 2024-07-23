@@ -11,7 +11,7 @@ import useQueryGetApi from '../../hooks/useQueryGetApi.hook';
 
 interface IProps {
   setShowSellPage: React.Dispatch<SetStateAction<boolean>>;
-  vehicleId: string;
+  vehicleId: string | number ;
   refetch: () => void;
 }
 

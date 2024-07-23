@@ -22,6 +22,7 @@ const LoginPage: React.FC = () => {
             userName: data.userName,
             password: data.password
         }
+        console.log("auth/login", body)
         await auth('auth/login', body, " Invalid Credentials ", "Logged Successfully", () => {
             navigate('/')
         });

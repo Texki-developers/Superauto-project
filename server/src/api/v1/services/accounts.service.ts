@@ -189,6 +189,7 @@ class AccountService {
           'name',
           'contact_info',
           'category',
+          'createdAt',
         ]);
         categoryResult.meta.perPage = perPage;
 
@@ -228,16 +229,15 @@ class AccountService {
     });
   }
 
-
-  deleteAccount(id:Number){
+  deleteAccount(id: Number) {
     return new Promise(async (resolve, reject) => {
       try {
         const query = {
           where: {
-            account_id:id
-          }
-        }
-        const vehicle = await accountsQueries.deleteItem(Accounts,query)
+            account_id: id,
+          },
+        };
+        const vehicle = await accountsQueries.deleteItem(Accounts, query);
 
         return resolve(vehicle);
       } catch (err) {

@@ -42,6 +42,7 @@ class AuthController {
   }
 
   async userLogin(req: Request, res: Response) {
+    console.log('🚀 ~ AuthController ~ userLogin ~ req:', req);
     passport.authenticate('local', (err: any, user: any, info: any) => {
       if (err) {
         return responseHandler(res, 'INTERNAL_SERVER_ERROR', { message: 'An error occurred during login.' });

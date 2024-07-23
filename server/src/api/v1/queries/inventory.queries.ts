@@ -17,6 +17,7 @@ import {
 import SaleReturn from '../../../models/salesReturn';
 import { db } from '../../../config/database';
 import TransactionConnectors from '../../../models/transactionConnecter';
+import Accounts from '../../../models/accounts';
 
 class InventoryQueries {
   async addVehicle(data: IInventoryAttributes, options?: any): Promise<IInventoryAttributes> {
@@ -61,7 +62,10 @@ class InventoryQueries {
 
   async addTodeliveryServiceTable(data: IDsTransactionAttributes[], options?: any) {
     try {
-      const deliveryService = await DsTransaction.bulkCreate(data, {...options,updateOnDuplicate:['ds_id','vehicle_id']});
+      const deliveryService = await DsTransaction.bulkCreate(data, {
+        ...options,
+        updateOnDuplicate: ['ds_id', 'vehicle_id'],
+      });
       return deliveryService;
     } catch (error) {
       throw new Error('Failed To Generate Transaction');
@@ -134,11 +138,11 @@ class InventoryQueries {
         inventory_id: inventory_id,
       },
       include: [
-        // {
-        //   model: Accounts,
-        //   required: false,
-        //   attributes: ['name', 'contact_info', 'head'],
-        // },
+        {
+          model: Accounts,
+          required: false,
+          attributes: ['name', 'contact_info', 'head', 'category'],
+        },
         {
           model: BrandModel,
           required: false,
@@ -157,6 +161,7 @@ class InventoryQueries {
         'date_of_purchase',
         'purchase_rate',
         'year_of_manufacture',
+        'registration_number',
       ],
     });
   }
@@ -182,39 +187,39 @@ GROUP BY
       type: QueryTypes.RAW,
     });
 
-    return mrp[0]
+    return mrp[0];
   }
 
-  async insertBulkTsConnectors(data:any,options:any) {
+  async insertBulkTsConnectors(data: any, options: any) {
     return await TransactionConnectors.bulkCreate(data, options);
   }
 
-  async getTransactionConnectors(data:any) {
+  async getTransactionConnectors(data: any) {
     return await TransactionConnectors.findAll({
-      where:{
-        entity_id:data.entity_id,
-        entity_type:data.entity_type
-      }
+      where: {
+        entity_id: data.entity_id,
+        entity_type: data.entity_type,
+      },
     });
   }
 
-  async findVehicleDeliveryTransaction(query:FindOptions){
-    return await DsTransaction.findAll(query)
+  async findVehicleDeliveryTransaction(query: FindOptions) {
+    return await DsTransaction.findAll(query);
   }
 
-  async editVehicle(data:IInventoryAttributes,query:any){
-      return await Inventory.update(data,query)
+  async editVehicle(data: IInventoryAttributes, query: any) {
+    return await Inventory.update(data, query);
   }
 
-  async findDs_Txn_id (id:number){
+  async findDs_Txn_id(id: number) {
     return await DsTransaction.findOne({
-      where:{
-        transaction_id:id
-      }
-    })
+      where: {
+        transaction_id: id,
+      },
+    });
   }
 
 
 }
 
-export default new InventoryQueries()
+export default new InventoryQueries();

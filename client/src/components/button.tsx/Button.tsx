@@ -14,6 +14,7 @@ type ButtonProps = {
   h?: string;
   className?: string;
   iconStyle?: React.CSSProperties;
+  disable?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const Button: React.FC<ButtonProps> = ({
@@ -28,6 +29,7 @@ const Button: React.FC<ButtonProps> = ({
   hoverColor,
   className,
   iconPos = 'left',
+  disabled,
   ...otherProps
 }) => {
   const customClassName = `${bg && bg !== 'primary' ? `bg-[${bg}]` : bg && 'bg-primary-300'} ${textColor ? `text-[${textColor}]` : 'text-[white]'} ${hoverColor ? `hover:bg-[${hoverColor}]` : bg === 'primary' && 'hover:bg-primary-500'}`;
@@ -49,7 +51,8 @@ const Button: React.FC<ButtonProps> = ({
         padding: '10px 20px',
         border: 'none',
         borderRadius: '5px',
-        cursor: 'pointer',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        opacity: disabled ? .3 : 1,
         ...style,
       }}
       {...otherProps}

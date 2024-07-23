@@ -2,6 +2,8 @@ import { Control, FieldErrors, UseFormRegister } from 'react-hook-form';
 import InputBox from '../../components/formComponents/inputBox/InputBox';
 import SaveCancelButtons from '../../components/save-cancel-buttons/SaveCancelButtons';
 import { IEmployee } from '../../types/employees/employees';
+import { IListAccountData } from '../../types/common/common';
+import { useEffect } from 'react';
 
 interface IProps {
   onCancelClick: () => void;
@@ -9,9 +11,20 @@ interface IProps {
   control: Control<IEmployee>;
   errors: FieldErrors<IEmployee>;
   reset: (values?: IEmployee) => void;
+  data?: IListAccountData | null;
+  isEdit?: boolean;
 }
 
-const AddEmployees = ({ onCancelClick, reset, register, errors }: IProps) => {
+const AddEmployees = ({ isEdit, data, onCancelClick, reset, register, errors }: IProps) => {
+  useEffect(() => {
+    if (isEdit && data) {
+      reset({
+        name: data?.name,
+        phoneNumber: data?.contact_info,
+        salary: data?.Employee?.salary
+      })
+    }
+  }, [isEdit])
   const defaultValues: IEmployee = {
     name: '', // Default value for name
     phoneNumber: '', // Default value for phoneNumber

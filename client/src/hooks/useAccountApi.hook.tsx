@@ -1,15 +1,29 @@
 import AuthApiService from "../services/api-services"
 import { IAccountApiBody, IAccountApiBodyResponseBody } from "../types/apimodal/apimodal"
 import useToast from "./useToast.hook"
-
+interface IApiParams {
+    body: IAccountApiBody;
+    errorMessage: string;
+    successMessage: string;
+    onSuccess?: () => void;
+    onFailure?: () => void;
+    url?: string | null;
+}
 const useAccountApi = () => {
     const { toastLoading, toastError, toastSuccess } = useToast()
 
-    return async (body: IAccountApiBody, errorMessage: string, successMessage: string, onSuccess?: () => void, onFailure?: () => void) => {
+    return async ({
+        body,
+        errorMessage,
+        successMessage,
+        onSuccess,
+        onFailure,
+        url,
+    }: IApiParams) => {
         const id = toastLoading("Please wait...")
         console.log(id)
         try {
-            const data = await AuthApiService.postApi<IAccountApiBody, IAccountApiBodyResponseBody>('accounts/create/account', body)
+            const data = await AuthApiService.postApi<IAccountApiBody, IAccountApiBodyResponseBody>(url ?? 'accounts/create/account', body)
             console.log(data)
             if (data?.status === 'error') {
                 toastError(id, errorMessage)

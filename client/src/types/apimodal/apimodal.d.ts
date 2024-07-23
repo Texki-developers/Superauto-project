@@ -9,6 +9,7 @@ export enum ICategory {
 
 export interface IAccountApiBody {
   name: string;
+  id?: string | number;
   category: ICategory;
   contactInfo: string;
   salary?: number;

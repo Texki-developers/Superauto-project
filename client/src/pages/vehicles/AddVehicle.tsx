@@ -7,10 +7,16 @@ import AuthApiService from '../../services/api-services';
 import useToast from '../../hooks/useToast.hook';
 import useGetApis from '../../hooks/useGetApi.hook';
 import { useQuery } from '@tanstack/react-query';
+// import useQueryGetApi from '../../hooks/useQueryGetApi.hook';
+import Loading from '../../components/loading/Loading';
+import moment from 'moment';
 
 interface IProps {
   setShowAddPage: React.Dispatch<SetStateAction<boolean>>;
   refetch: () => void;
+  selectedItem?: string | number;
+  isEdit?: boolean;
+  setIsEdit?: React.Dispatch<SetStateAction<boolean>>;
 }
 
 const defaultValues: IVehicleAddFormValues = {
@@ -46,28 +52,64 @@ const defaultValues: IVehicleAddFormValues = {
   deliveryServicePhoneNumber: ''
 };
 
-const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
+const AddVehicle = ({ setShowAddPage, refetch, setIsEdit, selectedItem, isEdit }: IProps) => {
   const { register, handleSubmit, reset, watch, setValue, formState: { errors }, control } = useForm({
     defaultValues
   })
   const { toastError, toastLoading, toastSuccess } = useToast()
-
-  const { callApi } = useGetApis()
+  const editApiurl = `inventory/list/edit-vehicle/?inventoryId=${selectedItem}`
+  const { callApi } = useGetApis();
+  const fetchData = () => callApi(editApiurl);
+  const { data: vehicleData, isPending } = useQuery({ queryKey: [editApiurl], queryFn: fetchData, enabled: isEdit })
   const url = `inventory/model-brand/vehicle`
   const fetchBrandModal = (): Promise<{ data: IBranAndModel[] } | undefined> => callApi(url)
   const { data: brandData, isPending: brandLoading } = useQuery({ queryKey: ['brand/model-brand'], queryFn: fetchBrandModal })
   useEffect(() => {
+    if (vehicleData?.data && isEdit) {
+      const mappedValues = {
+        ...defaultValues,
+        party: {
+          value: vehicleData?.data?.account_id,
+          label: vehicleData?.data?.Account?.name,
+        },
+        brand: {
+          label: vehicleData?.data?.BrandModel.brand,
+          value: vehicleData?.data?.brand_model_id.toString(),
+        },
+        model: {
+          label: vehicleData?.data?.BrandModel.model,
+          value: vehicleData?.data?.brand_model_id.toString(),
+        },
+        registrationNumber: vehicleData?.data?.registration_number,
+        purchaseRate: vehicleData?.data?.purchase_rate.toString(),
+        purchaseDate: vehicleData?.data?.date_of_purchase,
+        insurance: vehicleData?.data?.insuranceDoc?.name,
+        proof: vehicleData?.data?.proofDoc?.name,
+        rcBook: vehicleData?.data?.rcBook?.name,
+        ownership: vehicleData?.data?.ownership_name,
+        yearOfManufacture: vehicleData?.data?.year_of_manufacture.toString(),
+        insuranceDate: moment(vehicleData?.data?.insurance_date0)?.format('YYYY-MM-DD'),
+      };
+      console.log(mappedValues?.rcBook, mappedValues?.insurance, mappedValues?.proof)
+      reset(mappedValues);
+      setValue('model', {
+        label: vehicleData?.data?.BrandModel.model,
+        value: vehicleData?.data?.brand_model_id.toString(),
+      })
 
-  }, [])
+    }
+  }, [vehicleData, brandData])
   const onCancelClick = () => {
     reset()
     setShowAddPage(false);
+    setIsEdit && setIsEdit(false);
   };
   const breadCrumbData = [
     { name: 'Dashboard', link: '/' },
     { name: 'Vehicles' },
     { name: 'Add Vehicles' },
   ];
+
   const onSubmit = async (data: IVehicleAddFormValues) => {
     const formData = new FormData();
     formData.append(data?.party.__isNew__ ? 'partyName' : 'accountId', data?.party.value)
@@ -116,6 +158,9 @@ const AddVehicle = ({ setShowAddPage, refetch }: IProps) => {
     }
   }, [watch('purchaseRate'), watch('purchaseAmount')])
   console.log(watch('party'))
+  if (isPending && isEdit) {
+    return <Loading />
+  }
   return (
     <div>
       <Header breadCrumbData={breadCrumbData} />
