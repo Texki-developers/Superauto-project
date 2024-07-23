@@ -154,8 +154,18 @@ class AccountQueries {
     })
   }
 
-  async  EditAccount(data: IAccountAttributes, id: number) {
+  async  EditAccount(data: IAccountAttributes, id: number,salary:number) {
     // Build the SET clause dynamically
+
+
+    if(data && typeof salary !== 'undefined'){
+      await Employee.update({salary:salary},{
+        where:{
+          account_id:id
+        }
+      })
+    }
+
     const setClause = Object.keys(data)
       .filter(key => key !== 'account_id') // Exclude account_id from the set clause
       .map(key => `${key} = :${key}`)

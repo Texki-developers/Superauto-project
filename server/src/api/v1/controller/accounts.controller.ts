@@ -183,7 +183,7 @@ class AccountController {
       contact_info: body.contactInfo,
     };
     accountsService
-      .EditAccount(data)
+      .EditAccount(data,body.salary)
       .then((data: any) => {
         responseHandler(res, 'MODIFIED', data, { message: data.message });
       })
