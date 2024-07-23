@@ -180,6 +180,7 @@ class AccountController {
     const data:any = {
       account_id: body.id,
       name: body.name,
+      salary: body.salary,
       contact_info: body.contactInfo,
     };
     accountsService
