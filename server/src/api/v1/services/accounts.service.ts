@@ -246,11 +246,12 @@ class AccountService {
     });
   }
 
-  EditAccount(data:IAccountAttributes){
+  EditAccount(data:IAccountAttributes,salary:number){
     return new Promise(async (resolve, reject) => {
       try {
         
-        const vehicle = await accountsQueries.EditAccount(data,Number(data.account_id))
+      
+        const vehicle = await accountsQueries.EditAccount(data,Number(data.account_id),salary)
 
         return resolve(vehicle);
       } catch (err) {

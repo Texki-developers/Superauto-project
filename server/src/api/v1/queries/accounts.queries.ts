@@ -154,12 +154,12 @@ class AccountQueries {
     })
   }
 
-  async  EditAccount(data: IAccountAttributes|any, id: number) {
+  async  EditAccount(data: IAccountAttributes, id: number,salary:number) {
     // Build the SET clause dynamically
 
 
-    if(data?.salary){
-      await Employee.update(data.salary,{
+    if(data && typeof salary !== 'undefined'){
+      await Employee.update({salary:salary},{
         where:{
           account_id:id
         }
