@@ -133,6 +133,7 @@ class InventoryQueries {
   }
 
   async getVehiclebyId(inventory_id: number) {
+    
     return await Inventory.findOne({
       where: {
         inventory_id: inventory_id,
@@ -147,6 +148,10 @@ class InventoryQueries {
           model: BrandModel,
           required: false,
           attributes: ['brand', 'model'],
+        },
+        {
+          model: DsTransaction,
+          attributes: ['ds_id','vehicle_id'],
         },
         { model: FileStore, as: 'rcBook', attributes: ['file_id', 'name', 'location'] },
         { model: FileStore, as: 'insuranceDoc', attributes: ['file_id', 'name', 'location'] },
@@ -163,7 +168,7 @@ class InventoryQueries {
         'year_of_manufacture',
         'registration_number',
       ],
-    });
+    }) || []
   }
 
   async getVehicleMrp(vehicle_id: number) {

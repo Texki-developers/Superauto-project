@@ -125,5 +125,6 @@ Inventory.belongsTo(BrandModel, { foreignKey: 'brand_model_id' });
 Inventory.belongsTo(FileStore, { as: 'rcBook', foreignKey: 'rc_book' });
 Inventory.belongsTo(FileStore, { as: 'insuranceDoc', foreignKey: 'insurance_doc' });
 Inventory.belongsTo(FileStore, { as: 'proofDoc', foreignKey: 'proof_doc' });
+Inventory.hasOne(DsTransaction,{foreignKey:'vehicle_id'})
 Inventory.hasOne(SaleReturn, {  foreignKey: 'inventory_id' });
 export default Inventory;
