@@ -730,6 +730,7 @@ class InventoryService {
 
         return resolve(editGetApi);
       } catch (err) {
+        console.log(err,"ERORR")
         reject({ message: `Failed to List Brands: ${err}` });
       }
     });

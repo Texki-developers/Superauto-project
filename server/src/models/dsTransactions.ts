@@ -36,7 +36,7 @@ import Inventory from './inventory';
       type: DataTypes.INTEGER,
       allowNull: false,
       references:{
-        model:Inventory,
+        model:'inventory',
         key:'inventory_id'
       }
     },
