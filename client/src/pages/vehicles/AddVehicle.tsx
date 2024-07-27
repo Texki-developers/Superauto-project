@@ -1,4 +1,4 @@
-import { SetStateAction, useEffect } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
 import Header from '../../components/header/Header';
 import AddvehicleForm from '../../components/vehicles/AddVehicleForm';
 import { useForm } from 'react-hook-form';
@@ -31,6 +31,7 @@ const defaultValues: IVehicleAddFormValues = {
   },
   purchaseRate: '',
   balance: '',
+  brandModel_id: '',
   purchaseDate: '',
   insurance: null,
   proof: null,
@@ -56,6 +57,7 @@ const AddVehicle = ({ setShowAddPage, refetch, setIsEdit, selectedItem, isEdit }
   const { register, handleSubmit, reset, watch, setValue, formState: { errors }, control } = useForm({
     defaultValues
   })
+  const [openStocks, setOpenStocks] = useState(false)
   const { toastError, toastLoading, toastSuccess } = useToast()
   const editApiurl = `inventory/list/edit-vehicle/?inventoryId=${selectedItem}`
   const { callApi } = useGetApis();
@@ -115,7 +117,7 @@ const AddVehicle = ({ setShowAddPage, refetch, setIsEdit, selectedItem, isEdit }
     formData.append(data?.party.__isNew__ ? 'partyName' : 'accountId', data?.party.value)
     formData.append('ownershipName', data.ownership);
     formData.append('registrationNumber', data.registrationNumber);
-    formData.append('brandModel_id', 'null'); // You can update this value as needed
+    data?.brandModel_id && formData.append('brandModel_id', data?.brandModel_id); // You can update this value as needed
     formData.append('yearOfManufacture', data.yearOfManufacture);
     formData.append('purchaseRate', data.purchaseRate);
     formData.append('purchaseAmount', data.purchaseAmount);
@@ -134,15 +136,17 @@ const AddVehicle = ({ setShowAddPage, refetch, setIsEdit, selectedItem, isEdit }
     formData.append('isNew', data?.brand?.__isNew__ ? 'true' : 'false');
     data?.deliveryServicePhoneNumber?.length > 0 && data?.deliveryService.__isNew__ && formData.append('deliveryServicePhoneNumber', data?.deliveryServicePhoneNumber)
     data?.partyPhoneNumber?.length > 0 && data?.party.__isNew__ && formData.append('partyPhoneNumber', data?.partyPhoneNumber)
+    isEdit && selectedItem && formData.append('vehicleId', selectedItem.toString())
     const id = toastLoading('Loading...');
     try {
+      const url = openStocks ? 'inventory/opening-stock' : isEdit ? 'inventory/edit/vehicle' : 'inventory/add/vehicle'
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const data = await AuthApiService.postApiFormData<FormData, any>('inventory/add/vehicle', formData,)
+      const data = await AuthApiService.postApiFormData<FormData, any>(url, formData,)
       if (data?.status === "error") {
         toastError(id, data?.message)
         return
       }
-      toastSuccess(id, 'Vehicle added successfully')
+      toastSuccess(id, isEdit ? 'Vehicle Updated Successfully' : 'Vehicle added successfully')
       setShowAddPage(false)
     } catch (error) {
       toastError(id, 'Something went wrong')
@@ -166,7 +170,7 @@ const AddVehicle = ({ setShowAddPage, refetch, setIsEdit, selectedItem, isEdit }
       <Header breadCrumbData={breadCrumbData} />
       <div className='pt-5'>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <AddvehicleForm brands={brandData?.data} brandLoading={brandLoading} reset={reset} setValue={setValue} watch={watch} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
+          <AddvehicleForm setOpenStocks={setOpenStocks} showOpenStocks={!isEdit} brands={brandData?.data} brandLoading={brandLoading} reset={reset} setValue={setValue} watch={watch} register={register} control={control} errors={errors} onCancelClick={onCancelClick} />
         </form>
       </div>
     </div>

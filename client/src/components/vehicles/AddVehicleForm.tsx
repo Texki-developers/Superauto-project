@@ -4,7 +4,7 @@ import DragAndDrop from '../formComponents/dragAndDrop/DragAndDrop';
 import InputBox from '../formComponents/inputBox/InputBox';
 import { IBranAndModel, IVehicleAddFormValues } from '../../types/vehicle/addVehicle';
 import CreateSelectInput from '../formComponents/creatableSelect/CreatableSelect';
-import { useEffect, useState } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
 import useGetDropdownData from '../../hooks/useGetDropdownData.hook';
 import { ICategory } from '../../types/apimodal/apimodal.d';
 import CheckBox from '../formComponents/checkBox/CheckBox';
@@ -26,10 +26,12 @@ interface IProps {
   ) => void; // SetValue function for setting form values
   brands?: IBranAndModel[] | undefined;
   brandLoading?: boolean
+  showOpenStocks?: boolean;
+  setOpenStocks?: React.Dispatch<SetStateAction<boolean>>;
   hideDeliveryServices?: boolean
 }
 
-const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, control, errors, watch, setValue, brands, brandLoading }: IProps) => {
+const AddvehicleForm = ({ setOpenStocks: setOpenStockFromProps, onCancelClick, showOpenStocks, hideDeliveryServices, register, reset, control, errors, watch, setValue, brands, brandLoading }: IProps) => {
   const [isNewParty, setIsNewParty] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [modelsData, setModelsData] = useState<any>([])
@@ -43,17 +45,17 @@ const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, 
 
   //   }
   // }, [watch('brand'), canEdit])
-  const onBrandChange = (item: { value: string, label: string, __isNew?: string }) => {
+  const onBrandChange = (item: {
+    id: string; value: string, label: string, __isNew?: string
+  }) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const brand: any = item
     setValue('model', '')
     if (brands && brands?.length > 0) {
-      console.log({ brands, brand, item })
       const models = Array.from(new Set(brands?.filter(item => {
         return item.brand === brand.value;
       }).map(item => item.model)))
-        .map(model => ({ value: model, label: model }));
-      console.log(models)
+        .map(model => ({ id: item?.id, value: model, label: model }));
       setModelsData(models)
     }
   }
@@ -62,11 +64,9 @@ const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, 
     if (brands && brands.length > 0) {
       const brandOptionsMap = new Map();
       brands.forEach((item: IBranAndModel) => {
-        brandOptionsMap.set(item.brand, { label: item.brand, value: item.brand });
+        brandOptionsMap.set(item.brand, { id: item?.brand_model_id, label: item.brand, value: item.brand });
       });
       const brandOptions = Array.from(brandOptionsMap.values());
-
-      console.log(brandOptions);
       setBrandData(brandOptions);
     }
 
@@ -77,9 +77,9 @@ const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, 
 
   return (
     <>
-      <div className="py-5">
-        <CheckBox onChange={(e) => { setOpeningStocks(e.target.checked) }} label='Open Stocks' error={errors} name='openStocks' />
-      </div>
+      {showOpenStocks && <div className="py-5">
+        <CheckBox onChange={(e) => { setOpenStockFromProps && setOpenStockFromProps(e.target.checked); setOpeningStocks(e.target.checked) }} label='Open Stocks' error={errors} name='openStocks' />
+      </div>}
 
       <div className='bg-white-100 grid w-full grid-rows-[1fr_80px] rounded p-5'>
         <div className='grid h-full w-full grid-cols-[1fr_300px] gap-3'>
@@ -130,6 +130,9 @@ const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, 
                     placeholder='Select Model'
                     control={control}
                     error={errors}
+                    onChange={(data) => {
+                      data?.id && setValue('brandModel_id', data?.id)
+                    }}
                     required
                   />
                   <InputBox
@@ -163,15 +166,7 @@ const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, 
               </div>
               <div>
                 <div className='second-section grid gap-2'>
-                  <InputBox
-                    name='ownership'
-                    label='Ownership'
-                    placeholder='Enter Vehicle Ownership Name'
-                    register={register}
-                    error={errors}
-                    required
-                  />
-                  <CreateSelectInput
+                  {openingStocks && <CreateSelectInput
                     name='brand'
                     label='Brand'
                     onChange={onBrandChange}
@@ -182,7 +177,27 @@ const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, 
                     control={control}
                     error={errors}
                     required
+                  />}
+                  <InputBox
+                    name='ownership'
+                    label='Ownership'
+                    placeholder='Enter Vehicle Ownership Name'
+                    register={register}
+                    error={errors}
+                    required
                   />
+                  {!openingStocks && <CreateSelectInput
+                    name='brand'
+                    label='Brand'
+                    onChange={onBrandChange}
+                    isSearchable
+                    placeholder='Select Brand'
+                    options={brandData}
+                    isLoading={brandLoading}
+                    control={control}
+                    error={errors}
+                    required
+                  />}
                   <InputBox
                     name='yearOfManufacture'
                     label='Year of Manufacture'
@@ -193,7 +208,7 @@ const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, 
                     defaultValue={'2024'}
                     required
                   />
-                  <InputBox
+                  {!openingStocks && <InputBox
                     name='purchaseAmount'
                     label='Purchase Amount'
                     placeholder='Enter Purchase Amount'
@@ -201,7 +216,7 @@ const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, 
                     register={register}
                     error={errors}
                     required
-                  />
+                  />}
                   <InputBox
                     name='insuranceDate'
                     label='Insurance Date'
@@ -214,7 +229,7 @@ const AddvehicleForm = ({ onCancelClick, hideDeliveryServices, register, reset, 
                 </div>
               </div>
             </div>
-            {!hideDeliveryServices && <div>
+            {!hideDeliveryServices && !openingStocks && <div>
               <h1 className='primary-heading'>Delivery Services</h1>
               <div className='grid grid-cols-2 gap-3 pt-1'>
                 <CreateSelectInput

@@ -52,6 +52,7 @@ export interface IVehicleAddFormValues {
   balance: string;
   purchaseDate: string;
   insurance: Blob | null;
+  brandModel_id: string;
   proof: Blob | null;
   rcBook: Blob | null;
   ownership: string;
