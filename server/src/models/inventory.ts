@@ -30,6 +30,7 @@ class Inventory extends Model<IInventoryAttributes, InventoryCreationAttributes>
   public proof_doc!: number | null;
   public date_of_purchase!: Date;
   public sold_price!: number | null;
+  public initial_amount!: number
 
 }
 
@@ -108,6 +109,14 @@ Inventory.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    initial_amount:{
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    delivery_amount:{
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
     sold_price: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -118,6 +127,7 @@ Inventory.init(
     tableName: 'inventory',
     timestamps: true,
   }
+  
 );
 
 Inventory.belongsTo(Accounts, { foreignKey: 'account_id' });
