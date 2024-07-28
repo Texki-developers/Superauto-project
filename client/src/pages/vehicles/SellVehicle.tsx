@@ -125,9 +125,9 @@ const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
       <Header breadCrumbData={breadCrumbData} />
       <div className='pt-5 mb-3'>
         {
-          showExchangeForm ? <ExchangeVehicle setExchangeDet={setExchangeDet} showPopup={setShowExchangeForm} /> :
+          showExchangeForm ? <ExchangeVehicle accountId={watch('customer')?.value} setExchangeDet={setExchangeDet} showPopup={setShowExchangeForm} /> :
             <form onSubmit={handleSubmit(onSubmit)}>
-              <SellVehicleForm total={total} setShowFinance={setShowFinance} showFinance={showFinance} setValue={setValue} setShowExchangeForm={setShowExchangeForm} register={register} reset={reset} errors={errors} control={control} onCancelClick={onCancelClick} />
+              <SellVehicleForm watch={watch} total={total} setShowFinance={setShowFinance} showFinance={showFinance} setValue={setValue} setShowExchangeForm={setShowExchangeForm} register={register} reset={reset} errors={errors} control={control} onCancelClick={onCancelClick} />
             </form>
         }
       </div>

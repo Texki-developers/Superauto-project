@@ -29,10 +29,12 @@ interface IProps {
   ) => void; // SetValue function for setting form values
   showFinance: boolean;
   total: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  watch: (name: keyof IVehicleSellFormValues) => IVehicleSellFormValues[keyof IVehicleSellFormValues] | any;
   setShowFinance: React.Dispatch<SetStateAction<boolean>>;
 }
 
-const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, control, errors, total, setValue, showFinance, setShowFinance }: IProps) => {
+const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, watch, register, reset, control, errors, total, setValue, showFinance, setShowFinance }: IProps) => {
   const [newCustomer, setNewCustomer] = useState(false)
   const { formatedData: customers, isPending: customerPending } = useGetDropdownData(ICategory.CUSTOMER)
   console.log(customers)
@@ -143,10 +145,10 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
 
               <div className="flex justify-between">
                 <h1 className='primary-heading'>Exchange Details</h1>
-                <div onClick={() => setShowExchangeForm(true)} className="cursor-pointer border-b-2 border-black-100 items-center flex gap-2">
+                {watch('customer')?.value && <div onClick={() => setShowExchangeForm(true)} className="cursor-pointer border-b-2 border-black-100 items-center flex gap-2">
                   <img className="w-[20px] h-[20px]" src={AddButton} alt="" />
                   <p className="font-semibold">Add Exchange Details</p>
-                </div>
+                </div>}
               </div>
               <div className="grid grid-cols-[2fr_1fr]">
                 <div className='grid grid-cols-2 gap-4'>
@@ -234,7 +236,7 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, register, reset, 
               </div>
             </div>
           </div>
-        </div>
+        </div >
       }
     </>
   );

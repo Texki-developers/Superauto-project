@@ -17,6 +17,7 @@ const tabs = ['Sales Return', 'New Vehicle']
 
 interface IProps {
     showPopup: React.Dispatch<SetStateAction<boolean>>;
+    accountId: string;
     setExchangeDet: React.Dispatch<SetStateAction<IExchangeVehicleDetails | null>>;
 }
 const defaultValues: IVehicleAddFormValues = {
@@ -61,7 +62,7 @@ const defaultValuesNew: IVehicleNewFormValues = {
     purchaseDate: ''
 
 }
-const ExchangeVehicle = ({ showPopup, setExchangeDet }: IProps) => {
+const ExchangeVehicle = ({ showPopup, setExchangeDet, accountId }: IProps) => {
     const { register, handleSubmit, reset, watch, setValue, formState: { errors }, control } = useForm({
         defaultValues
     })
@@ -130,7 +131,8 @@ const ExchangeVehicle = ({ showPopup, setExchangeDet }: IProps) => {
             inventoryId: data?.registrationNumber?.value,
             dateOfPurchase: data?.purchaseDate,
             salesReturn: true,
-            purchaseRate: data?.value
+            purchaseRate: data?.value,
+            accountId: accountId
         }
         const id = toastLoading('Loading...');
         try {
