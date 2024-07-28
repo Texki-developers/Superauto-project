@@ -5,6 +5,7 @@ const router: Router = express.Router();
 
 router.post('/create/account', accountsController.createAccount);
 router.post('/edit/account', accountsController.editAccount);
+router.post('/book/journal',accountsController.addJournal)
 router.delete('/delete/account', accountsController.deleteAccount);
 router.post('/book/other-expense',accountsController.bookOtherExpense)
 router.post('/book/payment',accountsController.addPayment)
