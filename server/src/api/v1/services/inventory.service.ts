@@ -891,6 +891,8 @@ class InventoryService {
           proof_doc: uploadDocs?.[1]?.file_id ?? null,
           date_of_purchase: data.date_of_purchase,
           registration_number: data.registration_number,
+          initial_amount:data.purchase_amount,
+          delivery_amount:data.delivery_amount
         };
 
         const EditQuery = {
@@ -940,11 +942,11 @@ class InventoryService {
               });
 
               console.log(deliveryTransaction, 'TRANSCA');
-                await accountsQueries.generateTransaction(deliveryTransaction, {
+              const resultTransaction = await accountsQueries.generateTransaction(deliveryTransaction, {
                 transaction: dbTransaction,
               });
 
-               await inventoryQueries.addTodeliveryServiceTable(dsTransactions, {
+              DeliverServiceTransactionResult = await inventoryQueries.addTodeliveryServiceTable(dsTransactions, {
                 transaction: dbTransaction,
               });
             } else {

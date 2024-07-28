@@ -112,7 +112,7 @@ Inventory.init(
     },
     initial_amount:{
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     delivery_amount:{
       type: DataTypes.INTEGER,
