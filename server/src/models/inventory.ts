@@ -6,6 +6,7 @@ import BrandModel from './brand';
 import FileStore from './documents';
 import SaleReturn from './salesReturn';
 import DsTransaction from './dsTransactions';
+import Transaction from './transaction';
 
 // Define the interface for model attributes
 

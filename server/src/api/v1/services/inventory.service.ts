@@ -574,7 +574,7 @@ class InventoryService {
               }
             );
             }
-            
+
           await accountsQueries.generateTransaction(generatedTransaction, {
             transaction: dbTransaction,
           });
@@ -886,7 +886,6 @@ class InventoryService {
         let docsResult: any = await Promise.all(
           docs.map((file) => (file === null ? null : uploadFile(file, fileType, allowedExtension)))
         );
-
         let uploadDocs;
         let brandID;
 

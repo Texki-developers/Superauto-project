@@ -43,18 +43,10 @@ Transaction.init(
     credit_account: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: Accounts,
-        key: 'account_id',
-      },
     },
     debit_account: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: Accounts,
-        key: 'account_id',
-      },
     },
     voucher_id: {
       type: DataTypes.STRING,
