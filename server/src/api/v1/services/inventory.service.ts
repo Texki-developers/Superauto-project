@@ -946,7 +946,7 @@ class InventoryService {
                 transaction: dbTransaction,
               });
 
-              DeliverServiceTransactionResult = await inventoryQueries.addTodeliveryServiceTable(dsTransactions, {
+              await inventoryQueries.addTodeliveryServiceTable(dsTransactions, {
                 transaction: dbTransaction,
               });
             } else {
