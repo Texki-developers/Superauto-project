@@ -535,7 +535,32 @@ UNION ALL select * from all_data where description NOT IN ('Closing Balance','Op
         return cashbookReport;
       }
 
-      async trialBalanceReport (startDate:string,endDate:string){
+
+      calculateFinancialYear(startYear: string, endYear: string): { startDate: Date; endDate: Date;} {
+        const startYearNumber = parseInt(startYear, 10);
+        const endYearNumber = parseInt(endYear, 10);
+      
+        // Validate input
+        if (isNaN(startYearNumber) || isNaN(endYearNumber) || startYearNumber >= endYearNumber) {
+          throw new Error("Invalid year inputs. Start year must be less than end year.");
+        }
+      
+        // Define start and end dates for the financial year
+        const startDate = new Date(startYearNumber, 3, 1); // April 1st of the start year
+        const endDate = new Date(endYearNumber, 2, 31);    // March 31st of the end year
+      
+   
+      
+        return {
+          startDate,
+          endDate,
+        };
+      }
+
+      async trialBalanceReport (startYear:string,endYear:string){
+
+        const { startDate, endDate} = this.calculateFinancialYear(startYear, endYear);
+
             const trialBalancequery = `
 
             WITH account_balances AS (
@@ -680,7 +705,9 @@ tc.type   FROM total_category tc
       }
 
 
-     async balanceSheet(){
+     async balanceSheet(startYear:string,endYear:string){
+
+        const { startDate, endDate} = this.calculateFinancialYear(startYear, endYear);
         const balanceSheetQuery = `WITH account_balances AS (
             SELECT
                 a.account_id,
@@ -735,10 +762,10 @@ tc.type   FROM total_category tc
         SELECT * FROM final_data where category in ('asset','liability','equity') order by account_type`
 
         const [balanceSheet] = await db.query(balanceSheetQuery, {
-            // replacements: { startDate, endDate  },
+            replacements: { startDate, endDate  },
             type: QueryTypes.RAW,
           })
-          const profit = await this.profitAndLoss()
+          const profit = await this.profitAndLoss(startYear,endYear)
           let netProfit 
         
             profit.map((item:any)=>{
@@ -750,7 +777,8 @@ tc.type   FROM total_category tc
             return balanceSheet
       }
 
-      async profitAndLoss(){
+      async profitAndLoss(startYear:string,endYear:string){
+        const { startDate, endDate} = this.calculateFinancialYear(startYear, endYear);
         const accountNames = [
             'Purchase',
             'Capital A/C',
@@ -974,7 +1002,7 @@ tc.type   FROM total_category tc
             name;
         `
         const [reportAndLoss]:any = await db.query(query, {
-            // replacements: { startDate, endDate  },
+            replacements: { startDate, endDate  },
             type: QueryTypes.RAW,
           })
           

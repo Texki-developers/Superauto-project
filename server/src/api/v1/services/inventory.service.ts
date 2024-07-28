@@ -573,8 +573,8 @@ class InventoryService {
                 transaction_date: data.date_of_purchase,
               }
             );
-          }
-
+            }
+            
           await accountsQueries.generateTransaction(generatedTransaction, {
             transaction: dbTransaction,
           });
