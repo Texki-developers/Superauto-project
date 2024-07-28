@@ -54,17 +54,17 @@ const Vehicles = () => {
         returnData: true,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         columnData: (id: string, data: any) => (
-          <div className='flex gap-2 *:h-[20px] *:w-[20px] cursor-pointer'>
+          <div className='flex gap-2 *:h-[20px] *:w-[20px] cursor-pointer justify-end w-full justify-self-center'>
             <img
               onClick={() => onActionClick('add', id, data)}
               src={addProduct}
               alt=''
             />
-            <img
+            {data?.account_id && <img
               onClick={() => onActionClick('edit', id, data)}
               src={EditIcon}
               alt=''
-            />
+            />}
             <img
               onClick={() => onActionClick('delete', id, data)}
               src={DeleteIcon}

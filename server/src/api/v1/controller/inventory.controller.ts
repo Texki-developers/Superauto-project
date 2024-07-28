@@ -173,7 +173,7 @@ class InventoryController {
       model: body.model,
       brand: body.brand,
       isNew: body.isNew === 'true' ? true :false,
-      is_sales_return: body.salesReturn === 'true' ? true :false,
+      is_sales_return: body.salesReturn === 'true' || body.salesReturn === true  ? true :false,
       inventory_id: body.inventoryId,
       is_delivery: body.isDelivery,
       party_phone_number:body.partyPhoneNumber,

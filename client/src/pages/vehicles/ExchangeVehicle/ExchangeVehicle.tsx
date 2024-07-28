@@ -29,6 +29,7 @@ const defaultValues: IVehicleAddFormValues = {
         label: '',
         value: '',
     },
+    brandModel_id: '',
     purchaseRate: '',
     balance: '',
     purchaseDate: '',
@@ -81,7 +82,7 @@ const ExchangeVehicle = ({ showPopup, setExchangeDet }: IProps) => {
         formData.append(data?.party.__isNew__ ? 'partyName' : 'accountId', data?.party.value)
         formData.append('ownershipName', data.ownership);
         formData.append('registrationNumber', data.registrationNumber);
-        formData.append('brandModel_id', 'null'); // You can update this value as needed
+        data?.brandModel_id && formData.append('brandModel_id', data?.brandModel_id); // You can update this value as needed
         formData.append('yearOfManufacture', data.yearOfManufacture);
         formData.append('purchaseRate', data.purchaseRate);
         formData.append('saleStatus', 'false');
@@ -126,7 +127,7 @@ const ExchangeVehicle = ({ showPopup, setExchangeDet }: IProps) => {
     const onSalesReturn = async (data: IVehicleNewFormValues) => {
         console.log(data)
         const body = {
-            registrationNumber: data?.registrationNumber?.value,
+            inventoryId: data?.registrationNumber?.value,
             dateOfPurchase: data?.purchaseDate,
             salesReturn: true,
             purchaseRate: data?.value
@@ -139,6 +140,7 @@ const ExchangeVehicle = ({ showPopup, setExchangeDet }: IProps) => {
                 toastError(id, data?.message)
                 return
             }
+            console.log(data)
             setExchangeDet({ id: data?.registrationNumber?.value, regNumb: data?.registrationNumber?.label, rate: data?.value })
             toastSuccess(id, 'Vehicle added successfully')
             showPopup(false)
