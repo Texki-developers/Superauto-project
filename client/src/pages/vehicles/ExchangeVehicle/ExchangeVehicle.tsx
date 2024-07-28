@@ -169,7 +169,7 @@ const ExchangeVehicle = ({ showPopup, setExchangeDet }: IProps) => {
                             </form>
                             :
                             <form onSubmit={handleSubmit(onNewVehicleSubmit)}>
-                                <AddvehicleForm brands={brandData?.data} brandLoading={brandLoading} reset={reset} setValue={setValue} watch={watch} register={register} control={control} errors={errors} onCancelClick={onClose} />
+                                <AddvehicleForm exchangeForm brands={brandData?.data} brandLoading={brandLoading} reset={reset} setValue={setValue} watch={watch} register={register} control={control} errors={errors} onCancelClick={onClose} />
                             </form>
                     }
 
