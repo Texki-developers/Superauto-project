@@ -69,7 +69,7 @@ class InventoryService {
           }
         }
 
-        const insertInventoryData: IInventoryAttributes = {
+        const insertInventoryData: IInventoryAttributes  = {
           account_id: data.account_id,
           brand_model_id: brandID || 0,
           year_of_manufacture: data.year_of_manufacture,
@@ -82,6 +82,8 @@ class InventoryService {
           proof_doc: uploadDocs?.[1]?.file_id ?? null,
           date_of_purchase: data.date_of_purchase,
           registration_number: data.registration_number,
+          initial_amount:data.purchase_amount,
+          delivery_amount:data.delivery_amount
         };
 
         const purchaseResult = await accountsQueries.findAccount('Purchase');
@@ -90,6 +92,7 @@ class InventoryService {
           const addInventoryresult = await inventoryQueries.addVehicle(insertInventoryData, {
             transaction: dbTransaction,
           });
+          
 
           if (data.is_delivery) {
             if (data.delivery_service_phone_number) {
@@ -109,7 +112,7 @@ class InventoryService {
 
             if (directExpense) {
               deliveryTransaction.push({
-                amount: data.delivery_amount,
+                amount: data.delivery_amount || 0,
                 credit_account: data.delivery_service,
                 debit_account: directExpense,
                 voucher_id: expenseVoucher,
@@ -651,7 +654,7 @@ class InventoryService {
 
               if (directExpense) {
                 deliveryTransaction.push({
-                  amount: data.delivery_amount,
+                  amount: data.delivery_amount||0,
                   credit_account: data.delivery_service,
                   debit_account: directExpense,
                   voucher_id: expenseVoucher,
@@ -918,7 +921,7 @@ class InventoryService {
             );
             if (directExpense) {
               deliveryTransaction.push({
-                amount: data.delivery_amount,
+                amount: data.delivery_amount || 0,
                 credit_account: data.delivery_service,
                 debit_account: directExpense,
                 transaction_date: data.date_of_purchase,
