@@ -85,12 +85,19 @@ const AddVehicle = ({ setShowAddPage, refetch, setIsEdit, selectedItem, isEdit }
         registrationNumber: vehicleData?.data?.registration_number,
         purchaseRate: vehicleData?.data?.purchase_rate.toString(),
         purchaseDate: vehicleData?.data?.date_of_purchase,
+        purchaseAmount: vehicleData?.data?.initial_amount,
         insurance: vehicleData?.data?.insuranceDoc?.name,
         proof: vehicleData?.data?.proofDoc?.name,
         rcBook: vehicleData?.data?.rcBook?.name,
         ownership: vehicleData?.data?.ownership_name,
         yearOfManufacture: vehicleData?.data?.year_of_manufacture.toString(),
         insuranceDate: moment(vehicleData?.data?.insurance_date0)?.format('YYYY-MM-DD'),
+        deliveryService: {
+          value: vehicleData?.data?.DsTransaction?.ds_id,
+          label: vehicleData?.data?.DsTransaction?.name,
+        },
+        deliveryAmount: vehicleData?.data?.delivery_amount,
+
       };
       console.log(mappedValues?.rcBook, mappedValues?.insurance, mappedValues?.proof)
       reset(mappedValues);
