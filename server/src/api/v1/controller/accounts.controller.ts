@@ -192,6 +192,26 @@ class AccountController {
       });
   }
 
+
+  addJournal(req: Request, res: Response) {
+    const { body } = req;
+    const data:any = {
+      amount: body.amount,
+      paymentTo: body.paymentTo,
+      paymentFrom: body.paymentFrom,
+      description:body.description,
+      date:body.date
+    };
+    accountsService
+      .addJournal(data)
+      .then((data: any) => {
+        responseHandler(res, 'MODIFIED', data, { message: data.message });
+      })
+      .catch((error) => {
+        responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+      });
+  }
+
   
 }
 

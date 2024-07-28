@@ -115,6 +115,7 @@ class ReportsController {
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
       });
   }
+  
 }
 
 export default new ReportsController();

@@ -259,6 +259,26 @@ class AccountService {
       }
     });
   }
+
+  addJournal(data:{paymentFrom:number,paymentTo:number,amount:number,description:string,date:Date}){
+    return new Promise(async (resolve, reject) => {
+      try {
+        
+        const vehicle = await accountsQueries.generateTransaction([
+          {
+          credit_account:data.paymentFrom,
+          debit_account:data.paymentTo,
+          amount:data.amount,
+          transaction_date:data.date,
+          description:data.description
+          }
+        ])
+        return resolve(vehicle);
+      } catch (err) {
+        reject({ message: `Failed to edit this Account: ${err}` });
+      }
+    });
+  }
 }
 
 export default new AccountService();
