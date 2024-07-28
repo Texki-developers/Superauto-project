@@ -26,12 +26,12 @@ interface IProps {
   ) => void; // SetValue function for setting form values
   brands?: IBranAndModel[] | undefined;
   brandLoading?: boolean
-  showOpenStocks?: boolean;
+  isEdit?: boolean;
   setOpenStocks?: React.Dispatch<SetStateAction<boolean>>;
   hideDeliveryServices?: boolean
 }
 
-const AddvehicleForm = ({ setOpenStocks: setOpenStockFromProps, onCancelClick, showOpenStocks, hideDeliveryServices, register, reset, control, errors, watch, setValue, brands, brandLoading }: IProps) => {
+const AddvehicleForm = ({ setOpenStocks: setOpenStockFromProps, onCancelClick, isEdit, hideDeliveryServices, register, reset, control, errors, watch, setValue, brands, brandLoading }: IProps) => {
   const [isNewParty, setIsNewParty] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [modelsData, setModelsData] = useState<any>([])
@@ -72,12 +72,21 @@ const AddvehicleForm = ({ setOpenStocks: setOpenStockFromProps, onCancelClick, s
 
   }, [brands])
 
+  useEffect(() => {
+    console.log(watch('party'))
+    if (!watch('party')?.value && isEdit) {
+      setOpeningStocks(true)
+    } else {
+      setOpeningStocks(false)
+    }
+  }, [isEdit, watch('party')])
+
   const { formatedData: brokers, isPending: brokerPending } = useGetDropdownData(ICategory.BROKER)
   const { formatedData: deliveryService, isPending: deliveryServicePending } = useGetDropdownData(ICategory.DELIVERY_SERVICE)
 
   return (
     <>
-      {showOpenStocks && <div className="py-5">
+      {!isEdit && <div className="py-5">
         <CheckBox onChange={(e) => { setOpenStockFromProps && setOpenStockFromProps(e.target.checked); setOpeningStocks(e.target.checked) }} label='Open Stocks' error={errors} name='openStocks' />
       </div>}
 

@@ -11,7 +11,7 @@ import useQueryGetApi from '../../hooks/useQueryGetApi.hook';
 
 interface IProps {
   setShowSellPage: React.Dispatch<SetStateAction<boolean>>;
-  vehicleId: string | number ;
+  vehicleId: string | number;
   refetch: () => void;
 }
 
@@ -71,7 +71,7 @@ const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
       paymentMode: data?.paymentType.label,
       soldVehicleId: Number(vehicleId),
       isFinance: showFinance ? true : false,
-      exchangeVehicleId: exchangeDet,
+      exchangeVehicleId: exchangeDet?.id,
       is_exchange: !!exchangeDet,
       rate: Number(data?.rate),
       amount: Number(data?.paymentAmount),
