@@ -41,7 +41,7 @@ const defaultValues: IVehicleAddFormValues = {
     value: '',
     label: '',
   },
-  yearOfManufacture: '2024',
+  yearOfManufacture: '',
   purchaseAmount: '',
   insuranceDate: '',
   deliveryService: {
@@ -97,9 +97,9 @@ const AddVehicle = ({ setShowAddPage, refetch, setIsEdit, selectedItem, isEdit }
           label: vehicleData?.data?.DsTransaction?.name,
         },
         deliveryAmount: vehicleData?.data?.delivery_amount,
+        brandModel_id: vehicleData?.data?.brand_model_id
 
       };
-      console.log(mappedValues?.rcBook, mappedValues?.insurance, mappedValues?.proof)
       reset(mappedValues);
       setValue('model', {
         label: vehicleData?.data?.BrandModel.model,
@@ -108,11 +108,13 @@ const AddVehicle = ({ setShowAddPage, refetch, setIsEdit, selectedItem, isEdit }
 
     }
   }, [vehicleData, brandData])
+
   const onCancelClick = () => {
     reset()
     setShowAddPage(false);
     setIsEdit && setIsEdit(false);
   };
+
   const breadCrumbData = [
     { name: 'Dashboard', link: '/' },
     { name: 'Vehicles' },
@@ -159,6 +161,7 @@ const AddVehicle = ({ setShowAddPage, refetch, setIsEdit, selectedItem, isEdit }
       toastError(id, 'Something went wrong')
     } finally {
       refetch()
+      setIsEdit && setIsEdit(false)
     }
   }
   useEffect(() => {

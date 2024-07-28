@@ -74,6 +74,8 @@ const AddvehicleForm = ({ setOpenStocks: setOpenStockFromProps, onCancelClick, i
 
   useEffect(() => {
     console.log(watch('party'))
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if (!watch('party')?.value && isEdit) {
       setOpeningStocks(true)
     } else {
@@ -140,6 +142,7 @@ const AddvehicleForm = ({ setOpenStocks: setOpenStockFromProps, onCancelClick, i
                     control={control}
                     error={errors}
                     onChange={(data) => {
+                      console.log({ data })
                       data?.id && setValue('brandModel_id', data?.id)
                     }}
                     required
@@ -290,7 +293,7 @@ const AddvehicleForm = ({ setOpenStocks: setOpenStockFromProps, onCancelClick, i
               w='100px'
               text='Reset'
               type='button'
-              onClick={() => reset()}
+              onClick={() => { reset(); setOpeningStocks(false) }}
             />
             <div className='save-cancel-btn flex gap-3'>
               <Button
