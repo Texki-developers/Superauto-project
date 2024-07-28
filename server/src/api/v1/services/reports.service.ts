@@ -100,11 +100,11 @@ class ReportsService{
       });
     }
 
-    balanceSheetReport(){
+    balanceSheetReport(startYear:string,endYear:string){
       return new Promise(async (resolve, reject) => {
         try {
 
-            const balanceSheet = await reportsQueries.balanceSheet()
+            const balanceSheet = await reportsQueries.balanceSheet(startYear,endYear)
             return resolve(balanceSheet)
         } catch (err) {
           reject({ message: `Failed to List Brands: ${err}` });
@@ -112,11 +112,11 @@ class ReportsService{
       });
     }
 
-    profitAndLoss(){
+    profitAndLoss(startYear:string,endYear:string){
       return new Promise(async (resolve, reject) => {
         try {
 
-            const balanceSheet = await reportsQueries.profitAndLoss()
+            const balanceSheet = await reportsQueries.profitAndLoss(startYear,endYear)
             return resolve(balanceSheet)
         } catch (err) {
           reject({ message: `Failed to List Brands: ${err}` });

@@ -92,7 +92,7 @@ class ReportsController {
     const fromDateStr = typeof fromDate === 'string' ? fromDate : '';
     const toDateStr = typeof toDate === 'string' ? toDate : '';
     reportsService
-      .balanceSheetReport()
+      .balanceSheetReport(fromDateStr,toDateStr)
       .then((data: any) => {
         responseHandler(res, 'OK', data, { message: data.message });
       })
@@ -107,7 +107,7 @@ class ReportsController {
     const fromDateStr = typeof fromDate === 'string' ? fromDate : '';
     const toDateStr = typeof toDate === 'string' ? toDate : '';
     reportsService
-      .profitAndLoss()
+      .profitAndLoss(fromDateStr,toDateStr)
       .then((data: any) => {
         responseHandler(res, 'OK', data, { message: data.message });
       })
@@ -115,7 +115,7 @@ class ReportsController {
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
       });
   }
-  
+
 }
 
 export default new ReportsController();
