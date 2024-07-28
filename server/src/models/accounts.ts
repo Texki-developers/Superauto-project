@@ -26,6 +26,7 @@ Accounts.init(
     },
     name: {
       type: DataTypes.STRING,
+      unique:true
     },
     contact_info: {
       type: DataTypes.STRING,

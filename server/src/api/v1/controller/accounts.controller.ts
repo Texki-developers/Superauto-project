@@ -191,6 +191,8 @@ class AccountController {
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
       });
   }
+
+  
 }
 
 export default new AccountController();

@@ -6,6 +6,7 @@ import sequelize from 'sequelize';
 import { db } from '../../../config/database';
 import { LedgerWithBalanceResult, OpeningBalanceResult, TransactionDataResult } from '../../../types/db.type';
 import { raw } from 'express';
+import accountsQueries from './accounts.queries';
 
 class ReportQueries {
 
@@ -750,6 +751,17 @@ tc.type   FROM total_category tc
       }
 
       async profitAndLoss(){
+        const accountNames = [
+            'Purchase',
+            'Capital A/C',
+            'Direct Expense',
+            'Sale',
+            'Salary Payables'
+        ];
+        
+        const [purchase, capital, directExpense, sale, salaryPayable] = await Promise.all(
+            accountNames.map(accountsQueries.findAccount)
+        );
         const query  = `
         WITH opening_inventory AS (
             SELECT SUM(purchase_rate) AS opening_inventory 
@@ -774,7 +786,7 @@ tc.type   FROM total_category tc
             LEFT JOIN
                 primary_ledger p ON a.head = p.pl_id
             WHERE
-                a.account_id = 16
+                a.account_id = ${purchase}
             GROUP BY
                 a.account_id, a.name
         ),
@@ -791,7 +803,7 @@ tc.type   FROM total_category tc
             LEFT JOIN
                 primary_ledger p ON a.head = p.pl_id
             WHERE
-                a.account_id = 11
+                a.account_id = ${capital}
             GROUP BY
                 a.account_id, a.name
         ),
@@ -808,7 +820,7 @@ tc.type   FROM total_category tc
             LEFT JOIN
                 primary_ledger p ON a.head = p.pl_id
             WHERE
-                a.account_id = 13
+                a.account_id = ${directExpense}
             GROUP BY
                 a.account_id, a.name
         ),
@@ -825,7 +837,7 @@ tc.type   FROM total_category tc
             LEFT JOIN
                 primary_ledger p ON a.head = p.pl_id
             WHERE
-                a.account_id = 17
+                a.account_id = ${sale}
             GROUP BY
                 a.account_id, a.name
         ),
@@ -842,7 +854,7 @@ tc.type   FROM total_category tc
             LEFT JOIN
                 primary_ledger p ON a.head = p.pl_id
             WHERE
-                a.account_id = 5
+                a.account_id = ${salaryPayable}
             GROUP BY
                 a.account_id, a.name
         )

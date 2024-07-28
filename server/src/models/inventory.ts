@@ -74,6 +74,7 @@ Inventory.init(
       allowNull: true,
     },
     registration_number: {
+      unique:true,
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -127,7 +128,7 @@ Inventory.init(
     tableName: 'inventory',
     timestamps: true,
   }
-  
+
 );
 
 Inventory.belongsTo(Accounts, { foreignKey: 'account_id' });
