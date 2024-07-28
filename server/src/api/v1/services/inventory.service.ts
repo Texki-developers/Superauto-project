@@ -92,7 +92,7 @@ class InventoryService {
           const addInventoryresult = await inventoryQueries.addVehicle(insertInventoryData, {
             transaction: dbTransaction,
           });
-          
+
 
           if (data.is_delivery) {
             if (data.delivery_service_phone_number) {
@@ -626,6 +626,8 @@ class InventoryService {
             proof_doc: uploadDocs?.[1]?.file_id ?? null,
             date_of_purchase: data.date_of_purchase,
             registration_number: data.registration_number,
+            initial_amount:data.purchase_amount,
+            delivery_amount:data.delivery_amount
           };
 
           if (purchaseResult && cashResult && brandID) {
@@ -890,6 +892,8 @@ class InventoryService {
           proof_doc: uploadDocs?.[1]?.file_id ?? null,
           date_of_purchase: data.date_of_purchase,
           registration_number: data.registration_number,
+          initial_amount:data.purchase_amount,
+          delivery_amount:data.delivery_amount
         };
 
         const EditQuery = {
@@ -1034,6 +1038,8 @@ class InventoryService {
           proof_doc: uploadDocs?.[1]?.file_id ?? null,
           date_of_purchase: data.date_of_purchase,
           registration_number: data.registration_number,
+          initial_amount:data.purchase_amount,
+          delivery_amount:data.delivery_amount
         };
 
         console.log(insertInventoryData,"DATA")
