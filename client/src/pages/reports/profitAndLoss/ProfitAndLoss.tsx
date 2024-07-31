@@ -9,7 +9,7 @@ import NormalDropdown from "../../../components/normalDropDown/NormalDropdown"
 
 const ProfitAndLoss = () => {
     const [formattedData, setFormattedData] = useState({})
-    const [dateData, setDateData] = useState<string>('2023-2024')
+    const [dateData, setDateData] = useState<string>('2024-2025')
     const breadCrumbData = [
         { name: 'Dashboard', link: '/' },
         { name: 'All Reports' },
