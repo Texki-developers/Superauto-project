@@ -157,7 +157,7 @@ const AddvehicleForm = ({ exchangeForm, setOpenStocks: setOpenStockFromProps, on
                     error={errors}
                     required
                   />
-                  <InputBox
+                  {!openingStocks && <InputBox
                     name='balance'
                     label='Balance'
                     placeholder='Enter Balance'
@@ -165,7 +165,7 @@ const AddvehicleForm = ({ exchangeForm, setOpenStocks: setOpenStockFromProps, on
                     register={register}
                     error={errors}
                     isDisabled
-                  />
+                  />}
                   <InputBox
                     name='purchaseDate'
                     label='Purchase Date'
@@ -179,6 +179,7 @@ const AddvehicleForm = ({ exchangeForm, setOpenStocks: setOpenStockFromProps, on
               </div>
               <div>
                 <div className='second-section grid gap-2'>
+                  {/* its for changing the location  */}
                   {openingStocks && <CreateSelectInput
                     name='brand'
                     label='Brand'
