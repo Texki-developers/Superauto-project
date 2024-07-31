@@ -57,17 +57,17 @@ app.get('/', (_: Request, res: Response) => {
 });
 
 app.get('/add', async (_: any, res: any) => {
-  try {
+  try { 
     const result = await Accounts.create({
       name: 'Muhsin',
       category: E_ACCOUNT_CATEGORIES.EMPLOYEE,
-      contact_info: '8606113002',
+      contact_info: '8606113002', 
       head: 1,
     });
     res.status(201).json(result);
   } catch (error) {
     res.status(500).send('Error inserting data');
-  }
+  } 
 });
 
 // Endpoint to get data from the database
