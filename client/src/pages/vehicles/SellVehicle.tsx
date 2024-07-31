@@ -120,6 +120,8 @@ const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
       setValue('balance', `${Number(salesRate ?? 0) - Number(paymentAmount ?? 0)}`)
     }
   }, [watch('saleRate'), watch('paymentAmount')])
+
+  console.log({ exchangeDet })
   return (
     <div>
       <Header breadCrumbData={breadCrumbData} />

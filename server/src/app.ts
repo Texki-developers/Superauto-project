@@ -57,7 +57,7 @@ app.get('/', (_: Request, res: Response) => {
 });
 
 app.get('/add', async (_: any, res: any) => {
-  try { 
+  try {
     const result = await Accounts.create({
       name: 'Muhsin',
       category: E_ACCOUNT_CATEGORIES.EMPLOYEE,

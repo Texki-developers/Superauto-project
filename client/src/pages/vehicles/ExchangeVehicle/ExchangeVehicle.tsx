@@ -104,18 +104,16 @@ const ExchangeVehicle = ({ showPopup, setExchangeDet, accountId }: IProps) => {
         data?.partyPhoneNumber?.length > 0 && data?.party.__isNew__ && formData.append('partyPhoneNumber', data?.partyPhoneNumber)
         const id = toastLoading('Loading...');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const returnData: any = { value: data?.purchaseDate, regNumber: data?.registrationNumber }
+        const returnData: any = { value: data?.purchaseRate, regNumber: data?.registrationNumber }
         try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const data: any = await AuthApiService.postApiFormData<FormData, any>('inventory/exchange/vehicle', formData,)
             if (data?.status === "error") {
                 toastError(id, data?.message)
                 return
-            } 
-            if (data?.data?.data) {
-                const res = data?.data?.data
-                setExchangeDet({ id: res?.inventory_id, regNumb: returnData?.regNumber, rate: returnData?.value })
             }
+            const res = data?.data?.data
+            setExchangeDet({ id: res?.inventory_id, regNumb: returnData?.regNumber, rate: returnData?.value })
             toastSuccess(id, 'Vehicle added successfully')
             showPopup(false)
         } catch (error) {
