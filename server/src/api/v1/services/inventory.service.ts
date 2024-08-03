@@ -209,13 +209,14 @@ class InventoryService {
         const financerDetails: IFinancerTransactionAttributes[] = [];
         const customerVoucher = await getVoucher(E_VOUCHERS.Reciept);
         const financerVoucher = await getVoucher(E_VOUCHERS.Reciept); // will change later
-
+          console.log(body,"DATA")
         await Promise.all(
           body.map(async (items) => {
             const [Vehicle, cash] = await Promise.all([
               inventoryQueries.findVehicle(items?.regNum),
               accountsQueries.findAccount('Cash'),
             ]);
+            console.log(Vehicle,"VEHICLE")
 
             if (Vehicle && Vehicle.account_id && items.financerId && Vehicle.inventory_id) {
               transactions.push({
@@ -529,6 +530,9 @@ class InventoryService {
   }
 
   exchangeVehicle(data: IInventoryBody) {
+
+    console.log(data,"THE DATA >>>>")
+    
     return new Promise(async (resolve, reject) => {
       try {
         const purchaseResult = await accountsQueries.findAccount('Purchase');
@@ -538,8 +542,10 @@ class InventoryService {
         const dbTransaction = await db.transaction();
         const allowedExtension = ['pdf', 'jpg', 'jpeg', 'png'];
         const fileType = 'doc';
-        let addInventoryresult;
+        let addInventoryresult:any;
         let SaleReturnResult;
+        const connectorTransaction = [];
+
         console.log(data.is_sales_return, 'SALES RETURN');
         if (data.is_sales_return === true) {
           console.log('entering.... sales return', data);
@@ -552,8 +558,8 @@ class InventoryService {
               date_of_purchase: data.date_of_purchase,
             },
             { transaction: dbTransaction }
+
           );
-          console.log(SaleReturnResult, 'RESULTTT');
           if (purchaseResult && cashResult) {
             generatedTransaction.push(
               {
@@ -636,13 +642,13 @@ class InventoryService {
             date_of_purchase: data.date_of_purchase,
             registration_number: data.registration_number,
             initial_amount:data.purchase_amount,
-            delivery_amount:data.delivery_amount
+            delivery_amount:data.delivery_amount 
           };
-  console.log(insertInventoryData,"insertINventory")
+
           const purchaseResult = await accountsQueries.findAccount('Purchase');
           const cashResult = await accountsQueries.findAccount('Cash');
           if (purchaseResult && cashResult && brandID) {
-            const addInventoryresult = await inventoryQueries.addVehicle(insertInventoryData, {
+             addInventoryresult = await inventoryQueries.addVehicle(insertInventoryData, {
               transaction: dbTransaction,
             });
   
@@ -692,6 +698,15 @@ class InventoryService {
                 DeliverServiceTransactionResult = await inventoryQueries.addTodeliveryServiceTable(dsTransactions, {
                   transaction: dbTransaction,
                 });
+
+                if (DeliverServiceTransactionResult[0].dataValues) {
+                  connectorTransaction.push({
+                    transaction_id: DeliverServiceTransactionResult[0].dataValues.transaction_id,
+                    entity_id: DeliverServiceTransactionResult[0].dataValues.vehicle_id,
+                    entity_type: 'delivery',
+                  });
+                }
+               
               } else {
                 throw new Error('Delivery Expense Is not Found Try again...');
               }
@@ -718,8 +733,6 @@ class InventoryService {
               ],
               { transaction: dbTransaction }
             );
-  
-            const connectorTransaction = [];
             transactionresult &&
               transactionresult.forEach(async (items) => {
                 connectorTransaction.push({
@@ -728,15 +741,9 @@ class InventoryService {
                   entity_type: 'vehicle',
                 });
               });
-            console.log(DeliverServiceTransactionResult[0].dataValues, 'DELIVER');
+          
   
-            if (DeliverServiceTransactionResult[0].dataValues) {
-              connectorTransaction.push({
-                transaction_id: DeliverServiceTransactionResult[0].dataValues.transaction_id,
-                entity_id: DeliverServiceTransactionResult[0].dataValues.vehicle_id,
-                entity_type: 'delivery',
-              });
-            }
+         
             console.log(connectorTransaction, 'TRANSACTION IDDD');
   
             await inventoryQueries.insertBulkTsConnectors(connectorTransaction, {

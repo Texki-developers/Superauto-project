@@ -175,10 +175,10 @@ class InventoryController {
       isNew: body.isNew === 'true' ? true :false,
       is_sales_return: body.salesReturn === 'true' || body.salesReturn === true  ? true :false,
       inventory_id: body.inventoryId,
-      is_delivery: body.isDelivery,
+      is_delivery: body.isDelivery === 'true' ? true :false,
       party_phone_number:body.partyPhoneNumber,
       party_name:body.partyName,
-      delivery_service_phone_number:body.deliveryServicePhoneNumber,
+      delivery_service_phone_number:body.deliveryServicePhoneNumber ,
       delivery_name:body.deliveryName,
       sold_price: body.soldPrice,
       purchase_amount:body.purchaseAmount

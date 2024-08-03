@@ -1,4 +1,3 @@
-import { Op } from "sequelize";
 import reportsQueries from "../queries/reports.queries";
 import accountsQueries from "../queries/accounts.queries";
 
