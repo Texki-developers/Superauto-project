@@ -116,10 +116,11 @@ const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
   useEffect(() => {
     const salesRate = watch('saleRate')
     const paymentAmount = watch('paymentAmount')
-    if (salesRate || paymentAmount) {
-      setValue('balance', `${Number(salesRate ?? 0) - Number(paymentAmount ?? 0)}`)
+    const financeAmount = watch('financeAmount')
+    if (salesRate || paymentAmount || financeAmount) {
+      setValue('balance', `${Number(salesRate ?? 0) - (Number(paymentAmount ?? 0) + Number(financeAmount ?? 0))}`)
     }
-  }, [watch('saleRate'), watch('paymentAmount')])
+  }, [watch('saleRate'), watch('paymentAmount'), watch('financeAmount')])
 
   console.log({ exchangeDet })
   return (
