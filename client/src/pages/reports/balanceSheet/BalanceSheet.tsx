@@ -16,7 +16,7 @@ const breadCrumbData = [
 
 const BalanceSheet = () => {
     const [formatedData, setFormatedData] = useState<IFormattedBalanceSheet | null>(null)
-    const [dateData, setDateData] = useState<string>('2023-2024')
+    const [dateData, setDateData] = useState<string>('2024-2025')
     const url = `reports/balance-sheet?fromDate=${dateData.split('-')?.[0]}&toDate=${dateData.split('-')?.[1]}`
     const { data, isPending } = useQueryGetApi(url)
     const [, setSearchParams] = useSearchParams()
@@ -38,8 +38,8 @@ const BalanceSheet = () => {
             "total_profit": {
                 balance: 0
             },
-            "capitalAc":{
-                balance:0
+            "capitalAc": {
+                balance: 0
             }
         }
         for (const item of data) {
@@ -47,7 +47,7 @@ const BalanceSheet = () => {
                 store[item?.category].balance = item?.balance
                 continue;
             }
-            if(item?.ledger === "Capital A/C"){
+            if (item?.ledger === "Capital A/C") {
                 store.capitalAc.balance = item?.balance
                 continue;
             }
