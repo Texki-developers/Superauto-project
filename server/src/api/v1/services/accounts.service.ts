@@ -269,6 +269,7 @@ class AccountService {
           credit_account:data.paymentFrom,
           debit_account:data.paymentTo,
           amount:data.amount,
+          voucher_id:await getVoucher('Adjustment'),
           transaction_date:data.date,
           description:data.description
           }

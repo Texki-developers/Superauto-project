@@ -16,6 +16,5 @@ server.listen(PORT, () => {
     }
     catch(err){
         console.log(err,"ERROR")
-    }
-   
+    } 
 })
