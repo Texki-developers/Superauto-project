@@ -90,8 +90,8 @@ const ExchangeVehicle = ({ showPopup, setExchangeDet, accountId }: IProps) => {
         formData.append('saleStatus', 'false');
         formData.append('purchaseAmount', data.purchaseAmount);
         formData.append('insuranceDate', data.insuranceDate);
-        formData.append(data?.deliveryService.__isNew__ ? 'deliveryName' : 'deliveryService', data.deliveryService.value);
-        formData.append('deliveryAmount', data.deliveryAmount);
+        (data?.deliveryService?.__isNew__ || data?.deliveryService?.value) && formData.append(data?.deliveryService.__isNew__ ? 'deliveryName' : 'deliveryService', data.deliveryService.value);
+        data.deliveryAmount && formData.append('deliveryAmount', data.deliveryAmount);
         data.rcBook && formData.append('rcBook', data.rcBook);
         data.insurance && formData.append('insuranceDoc', data.insurance);
         data.proof && formData.append('proofDoc', data.proof);

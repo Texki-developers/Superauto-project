@@ -642,7 +642,7 @@ class InventoryService {
             date_of_purchase: data.date_of_purchase,
             registration_number: data.registration_number,
             initial_amount:data.purchase_amount,
-            delivery_amount:data.delivery_amount 
+            delivery_amount:data.delivery_amount
           };
 
           const purchaseResult = await accountsQueries.findAccount('Purchase');

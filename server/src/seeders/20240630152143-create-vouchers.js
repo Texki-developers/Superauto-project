@@ -54,6 +54,14 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date()
         },
+        {
+          voucher_id: 7,
+          voucher_name: 'Adjustment',
+          prefix: 'ADJ',
+          last_invoice_number: 0,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        },
       ],
       {}
     );
