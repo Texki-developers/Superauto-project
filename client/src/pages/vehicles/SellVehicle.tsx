@@ -38,6 +38,7 @@ const defaultValues: IVehicleSellFormValues = {
 };
 
 const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
+  const [allExchangeData, setAllExchangeData] = useState()
   const { register, handleSubmit, reset, watch, setValue, formState: { errors }, control } = useForm({
     defaultValues
   })
@@ -118,9 +119,9 @@ const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
     const paymentAmount = watch('paymentAmount')
     const financeAmount = watch('financeAmount')
     if (salesRate || paymentAmount || financeAmount) {
-      setValue('balance', `${Number(salesRate ?? 0) - (Number(paymentAmount ?? 0) + Number(financeAmount ?? 0))}`)
+      setValue('balance', `${Number(salesRate ?? 0) - (Number(paymentAmount ?? 0) + Number(financeAmount ?? 0)) - Number(exchangeDet?.rate ?? 0)}`)
     }
-  }, [watch('saleRate'), watch('paymentAmount'), watch('financeAmount')])
+  }, [watch('saleRate'), watch('paymentAmount'), watch('financeAmount'), exchangeDet])
 
   console.log({ exchangeDet })
   return (
@@ -128,7 +129,7 @@ const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
       <Header breadCrumbData={breadCrumbData} />
       <div className='pt-5 mb-3'>
         {
-          showExchangeForm ? <ExchangeVehicle accountId={watch('customer')?.value} setExchangeDet={setExchangeDet} showPopup={setShowExchangeForm} /> :
+          showExchangeForm ? <ExchangeVehicle setAllData={setAllExchangeData} allData={allExchangeData} accountId={watch('customer')?.value} setExchangeDet={setExchangeDet} showPopup={setShowExchangeForm} /> :
             <form onSubmit={handleSubmit(onSubmit)}>
               <SellVehicleForm watch={watch} total={total} setShowFinance={setShowFinance} showFinance={showFinance} setValue={setValue} setShowExchangeForm={setShowExchangeForm} register={register} reset={reset} errors={errors} control={control} onCancelClick={onCancelClick} />
             </form>

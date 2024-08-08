@@ -18,6 +18,10 @@ const tabs = ['Sales Return', 'New Vehicle']
 interface IProps {
     showPopup: React.Dispatch<SetStateAction<boolean>>;
     accountId: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setAllData: (data: any) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    allData: any;
     setExchangeDet: React.Dispatch<SetStateAction<IExchangeVehicleDetails | null>>;
 }
 const defaultValues: IVehicleAddFormValues = {
@@ -62,7 +66,7 @@ const defaultValuesNew: IVehicleNewFormValues = {
     purchaseDate: ''
 
 }
-const ExchangeVehicle = ({ showPopup, setExchangeDet, accountId }: IProps) => {
+const ExchangeVehicle = ({ showPopup, setExchangeDet, accountId, setAllData, allData }: IProps) => {
     const { register, handleSubmit, reset, watch, setValue, formState: { errors }, control } = useForm({
         defaultValues
     })
@@ -107,13 +111,14 @@ const ExchangeVehicle = ({ showPopup, setExchangeDet, accountId }: IProps) => {
         const returnData: any = { value: data?.purchaseRate, regNumber: data?.registrationNumber }
         try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const data: any = await AuthApiService.postApiFormData<FormData, any>('inventory/exchange/vehicle', formData,)
-            if (data?.status === "error") {
-                toastError(id, data?.message)
+            const response: any = await AuthApiService.postApiFormData<FormData, any>('inventory/exchange/vehicle', formData,)
+            if (response?.status === "error") {
+                toastError(id, response?.message)
                 return
             }
-            const res = data?.data?.data
+            const res = response?.data?.data
             setExchangeDet({ id: res?.inventory_id, regNumb: returnData?.regNumber, rate: returnData?.value })
+            setAllData(data)
             toastSuccess(id, 'Vehicle added successfully')
             showPopup(false)
         } catch (error) {
@@ -141,19 +146,30 @@ const ExchangeVehicle = ({ showPopup, setExchangeDet, accountId }: IProps) => {
         const id = toastLoading('Loading...');
         try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const data = await AuthApiService.postApi<any, any>('inventory/exchange/vehicle', body,)
-            if (data?.status === "error") {
-                toastError(id, data?.message)
+            const response = await AuthApiService.postApi<any, any>('inventory/exchange/vehicle', body,)
+            if (response?.status === "error") {
+                toastError(id, response?.message)
                 return
             }
             console.log(data)
-            setExchangeDet({ id: data?.registrationNumber?.value, regNumb: returnData?.regNumber, rate: Number(body?.purchaseRate) })
+            setAllData(data)
+            setExchangeDet({ id: response?.registrationNumber?.value, regNumb: returnData?.regNumber, rate: Number(body?.purchaseRate) })
             toastSuccess(id, 'Vehicle added successfully')
             showPopup(false)
         } catch (error) {
             toastError(id, 'Something went wrong')
         }
     }
+    useEffect(() => {
+        console.log(allData)
+        if (allData) {
+            if (allData?.ownership) {
+                reset(allData)
+            } else {
+                resetNew(allData)
+            }
+        }
+    }, [allData])
     return (
         <div className="">
             <ModalWrapper hideHeading onClose={onClose}>

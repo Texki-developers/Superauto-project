@@ -170,7 +170,7 @@ const AddVehicle = ({ setShowAddPage, refetch, setIsEdit, selectedItem, isEdit }
     if (purchaseAmount || purchaseRate) {
       setValue('balance', `${Number(purchaseRate ?? 0) - Number(purchaseAmount ?? 0)}`)
     }
-  }, [watch('purchaseRate'), watch('purchaseAmount')])
+  }, [watch('purchaseRate'), watch('purchaseAmount'),])
   console.log(watch('party'))
   if (isPending && isEdit) {
     return <Loading />
