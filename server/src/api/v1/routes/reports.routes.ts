@@ -13,4 +13,6 @@ router.get('/balance-sheet', reportsController.balanceSheetReport);
 router.get('/list/dailybook-voucher', reportsController.listdailyBookVoucher);
 router.get('/list/ledgers', reportsController.listLedgers);
 router.get('/list/profit-loss', reportsController.profitAndLoss);
+router.get('/list/sales-report', reportsController.salesReport);
+
 export default router;

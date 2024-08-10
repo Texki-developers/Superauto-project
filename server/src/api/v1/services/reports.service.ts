@@ -74,12 +74,12 @@ class ReportsService{
 
 
 
-    cashbookReport(query:string,fromDate:string,toDate:string){
+    cashbookReport(fromDate:string,toDate:string){
       return new Promise(async (resolve, reject) => {
         
         try {
           const account  = await accountsQueries.findAccount('Cash')
-          const result = await reportsQueries.cashbookReport(query,fromDate,toDate,account||1)
+          const result = await reportsQueries.cashbookReport(fromDate,toDate,account||1)
           resolve(result)
         } catch (err) {
           reject({ message: `Failed to List Brands: ${err}` });
@@ -116,6 +116,18 @@ class ReportsService{
         try {
 
             const balanceSheet = await reportsQueries.profitAndLoss(startYear,endYear)
+            return resolve(balanceSheet)
+        } catch (err) {
+          reject({ message: `Failed to List Brands: ${err}` });
+        }
+      });
+    }
+
+    saleReport(fromDate:string,toDate:string){
+      return new Promise(async (resolve, reject) => {
+        try {
+          const sales  = await accountsQueries.findAccount('Sale')
+            const balanceSheet = await reportsQueries.cashbookReport(fromDate,toDate,sales||14)
             return resolve(balanceSheet)
         } catch (err) {
           reject({ message: `Failed to List Brands: ${err}` });
