@@ -380,7 +380,7 @@ UNION ALL select * from all_data where description NOT IN ('Closing Balance','Op
         return ledgerWithBalanceResult;
       }
 
-      async cashbookReport(query:string,startDate:string, endDate:string,accountId:number){
+      async cashbookReport(startDate:string, endDate:string,accountId:number){
 
         const ledgerQuery = `
         WITH account_type AS (
@@ -534,7 +534,6 @@ UNION ALL select * from all_data where description NOT IN ('Closing Balance','Op
       
         return cashbookReport;
       }
-
 
       calculateFinancialYear(startYear: string, endYear: string): { startDate: Date; endDate: Date;} {
         const startYearNumber = parseInt(startYear, 10);
@@ -1054,9 +1053,11 @@ tc.type   FROM total_category tc
     
         return reportAndLoss;
     }
-    
 
-    }      
+   
+    }  
+    
+   
 
 
 

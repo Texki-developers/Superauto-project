@@ -57,13 +57,12 @@ class ReportsController {
   }
 
   cashbookReport(req: Request, res: Response) {
-    const { query, fromDate, toDate } = req.query;
+    const { fromDate, toDate } = req.query;
 
-    const querystr = typeof query === 'string' ? query : '';
     const fromDateStr = typeof fromDate === 'string' ? fromDate : '';
     const toDateStr = typeof toDate === 'string' ? toDate : '';
     reportsService
-      .cashbookReport(querystr, fromDateStr, toDateStr)
+      .cashbookReport(fromDateStr, toDateStr)
       .then((data: any) => {
         responseHandler(res, 'OK', data, { message: data.message });
       })
@@ -116,6 +115,20 @@ class ReportsController {
       });
   }
 
+  salesReport(req: Request, res: Response) {
+    const { fromDate, toDate } = req.query;
+    const fromDateStr = typeof fromDate === 'string' ? fromDate : '';
+    const toDateStr = typeof toDate === 'string' ? toDate : '';
+
+    reportsService
+      .saleReport(fromDateStr,toDateStr)
+      .then((data: any) => {
+        responseHandler(res, 'OK', data, { message: data.message });
+      })
+      .catch((error) => {
+        responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+      });
+  }
 }
 
 export default new ReportsController();
