@@ -23,6 +23,8 @@ import CashBook from '../pages/reports/cashbook/Cashbook';
 import TrailBalance from '../pages/reports/trailBalance/TrailBalance';
 import BalanceSheet from '../pages/reports/balanceSheet/BalanceSheet';
 import ProfitAndLoss from '../pages/reports/profitAndLoss/ProfitAndLoss';
+import SalesReturn from '../pages/salesReturn/Sales';
+import SalesReport from '../pages/reports/sales-report/SalesReports.';
 
 export const sidebarData: ISidebarItem[] = [
   {
@@ -40,6 +42,14 @@ export const sidebarData: ISidebarItem[] = [
     id: uuidv4(),
     isSubMenu: false,
     element: <Vehicles />,
+  },
+  {
+    name: 'Sales',
+    url: '/sales',
+    icon: VehiclesImage,
+    id: uuidv4(),
+    isSubMenu: false,
+    element: <SalesReturn />,
   },
   {
     name: 'Finance',
@@ -116,6 +126,13 @@ export const sidebarData: ISidebarItem[] = [
         id: uuidv4() + 4,
         isSubMenu: false,
         element: <CashBook />,
+      },
+      {
+        name: 'Sales Report',
+        url: '/all-reports/sales-report',
+        id: uuidv4() + 4,
+        isSubMenu: false,
+        element: <SalesReport />,
       },
       {
         name: 'Trial Balance',

@@ -110,15 +110,20 @@ const ExchangeVehicle = ({ showPopup, setExchangeDet, accountId, setAllData, all
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const returnData: any = { value: data?.purchaseRate, regNumber: data?.registrationNumber }
         try {
+            let url = 'inventory/exchange/vehicle'
+            if (allData?.registrationNumber) {
+                url = 'inventory/edit/vehicle'
+                formData.append('vehicleId', allData?.vehicleId)
+            }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const response: any = await AuthApiService.postApiFormData<FormData, any>('inventory/exchange/vehicle', formData,)
+            const response: any = await AuthApiService.postApiFormData<FormData, any>(url, formData,)
             if (response?.status === "error") {
                 toastError(id, response?.message)
                 return
             }
             const res = response?.data?.data
             setExchangeDet({ id: res?.inventory_id, regNumb: returnData?.regNumber, rate: returnData?.value })
-            setAllData(data)
+            setAllData({ ...data, vehicleId: res?.inventory_id })
             toastSuccess(id, 'Vehicle added successfully')
             showPopup(false)
         } catch (error) {
