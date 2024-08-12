@@ -30,7 +30,7 @@ class InventoryController {
       model: body.model,
       brand: body.brand,
       isNew: body.isNew === 'true' ? true :false,
-      is_delivery: body.isDelivery,
+      is_delivery: body.isDelivery === 'true' ? true :false,
       party_phone_number:body.partyPhoneNumber,
       party_name:body.partyName,
       delivery_service_phone_number:body.deliveryServicePhoneNumber,
@@ -183,6 +183,7 @@ class InventoryController {
       sold_price: body.soldPrice,
       purchase_amount:body.purchaseAmount
     };
+    
 console.log(data.is_sales_return,"IS SALES")
     inventoryService
       .exchangeVehicle(data)

@@ -32,7 +32,7 @@ class InventoryService {
       const fileType = 'doc';
       try {
         const docs = [data.rc_book, data.proof_doc, data.insurance_doc];
-
+        const connectorTransaction = [];
         const dbTransaction = await db.transaction();
 
         let docsResult: any = await Promise.all(
@@ -140,6 +140,13 @@ class InventoryService {
               DeliverServiceTransactionResult = await inventoryQueries.addTodeliveryServiceTable(dsTransactions, {
                 transaction: dbTransaction,
               });
+              if (DeliverServiceTransactionResult[0].dataValues) {
+                connectorTransaction.push({
+                  transaction_id: DeliverServiceTransactionResult[0].dataValues.transaction_id,
+                  entity_id: DeliverServiceTransactionResult[0].dataValues.vehicle_id,
+                  entity_type: 'delivery',
+                });
+              }
             } else {
               throw new Error('Delivery Expense Is not Found Try again...');
             }
@@ -167,7 +174,6 @@ class InventoryService {
             { transaction: dbTransaction }
           );
 
-          const connectorTransaction = [];
           transactionresult &&
             transactionresult.forEach(async (items) => {
               connectorTransaction.push({
@@ -176,15 +182,7 @@ class InventoryService {
                 entity_type: 'vehicle',
               });
             });
-          console.log(DeliverServiceTransactionResult[0].dataValues, 'DELIVER');
-
-          if (DeliverServiceTransactionResult[0].dataValues) {
-            connectorTransaction.push({
-              transaction_id: DeliverServiceTransactionResult[0].dataValues.transaction_id,
-              entity_id: DeliverServiceTransactionResult[0].dataValues.vehicle_id,
-              entity_type: 'delivery',
-            });
-          }
+      
           console.log(connectorTransaction, 'TRANSACTION IDDD');
 
           await inventoryQueries.insertBulkTsConnectors(connectorTransaction, {
@@ -733,6 +731,7 @@ class InventoryService {
               ],
               { transaction: dbTransaction }
             );
+
             transactionresult &&
               transactionresult.forEach(async (items) => {
                 connectorTransaction.push({
@@ -740,15 +739,12 @@ class InventoryService {
                   entity_id: addInventoryresult.inventory_id,
                   entity_type: 'vehicle',
                 });
-              });
-          
-  
-         
-            console.log(connectorTransaction, 'TRANSACTION IDDD');
-  
+              })
+      
             await inventoryQueries.insertBulkTsConnectors(connectorTransaction, {
               transaction: dbTransaction,
             });
+
             await performTransaction(dbTransaction);
           }
   
