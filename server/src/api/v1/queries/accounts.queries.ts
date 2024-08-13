@@ -34,7 +34,7 @@ class AccountQueries {
     } catch (error) {
       console.error('Error fetching ledger:', error);
     }
-  }
+  } 
 
   async generateTransaction(data: ITransactionParams[], options?: any) {
     try {
