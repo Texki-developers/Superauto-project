@@ -18,4 +18,5 @@ router.post('/assign-vehicle/service',inventoryController.assignVehiclesToServic
 router.get('/model-brand/vehicle', inventoryController.getBrandModel);
 router.get('/list/edit-vehicle',inventoryController.editGetApi)
 router.get('/vehicle/mrp',inventoryController.getVehicleMrp)
+router.get('/sales',inventoryController.getVehicleMrp)
 export default router;
