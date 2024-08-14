@@ -878,7 +878,7 @@ class InventoryService {
         const deliveryTRANS = await inventoryQueries.getTransactionConnectors({
           entity_id: data.vehicle_id,
           entity_type: 'delivery',
-        });
+        })
 
         const entitiesId: Array<Number> = entities.map((items) => items.transaction_id);
 
@@ -958,11 +958,11 @@ class InventoryService {
             const directExpense = await accountsQueries.findAccount(E_LEDGERS_BASIC.DIRECT_EXPENSE);
             const deliveryTransaction: ITransactionParams[] = [];
             const dsTransactions: IDsTransactionAttributes[] = [];
-
-            const findVoucher = await accountsQueries.getVoucherWithTransaction_id(
-              Number(deliveryTRANS[0].transaction_id)
-            );
-            if (directExpense) {
+         
+            if (directExpense && deliveryTRANS) {
+              const findVoucher = await accountsQueries.getVoucherWithTransaction_id(
+                Number(deliveryTRANS[0]?.transaction_id)
+              ); 
               deliveryTransaction.push({
                 amount: data.delivery_amount || 0,
                 credit_account: data.delivery_service,
@@ -970,7 +970,7 @@ class InventoryService {
                 transaction_date: data.date_of_purchase,
                 voucher_id: findVoucher?.voucher_id,
                 description: '',
-                transaction_id: deliveryTRANS[0].transaction_id,
+                transaction_id: deliveryTRANS[0]?.transaction_id,
               });
 
               const findDs_txn_id = await inventoryQueries.findDs_Txn_id(deliveryTRANS[0].transaction_id);
@@ -990,7 +990,48 @@ class InventoryService {
                 transaction: dbTransaction,
               });
             } else {
-              throw new Error('Delivery Expense Is not Found Try again...');
+              const expenseVoucher = await getVoucher('Expense');
+              if(directExpense){
+                deliveryTransaction.push({
+                  amount: data.delivery_amount || 0,
+                  credit_account: data.delivery_service,
+                  debit_account: directExpense,
+                  voucher_id: expenseVoucher,
+                  transaction_date: data.date_of_purchase,
+                  description: '',
+                });
+
+
+                if (data.vehicle_id) {
+                  dsTransactions.push({
+                    ds_id: data.delivery_service,
+                    vehicle_id: data.vehicle_id,
+                    transaction_id: 0,
+                  });
+                }
+                const resultTransaction = await accountsQueries.generateTransaction(deliveryTransaction, {
+                  transaction: dbTransaction,
+                });
+                dsTransactions.forEach((item, index) => {
+                  dsTransactions[index].transaction_id = resultTransaction[index].transaction_id;
+                });
+               const DeliverServiceTransactionResult = await inventoryQueries.addTodeliveryServiceTable(dsTransactions, {
+                  transaction: dbTransaction,
+                });
+        
+                await inventoryQueries.insertBulkTsConnectors([{
+                  transaction_id: DeliverServiceTransactionResult[0].dataValues.transaction_id,
+                  entity_id: DeliverServiceTransactionResult[0].dataValues.vehicle_id,
+                  entity_type: 'delivery',
+                }], {
+                  transaction: dbTransaction,
+                });
+
+              
+              }else{
+                throw new Error('Delivery Expense Is not Found Try again...');
+              }
+          
             }
           }
           const findVoucherforPurchase = await accountsQueries.getVoucherWithTransaction_id(
@@ -999,7 +1040,7 @@ class InventoryService {
           const findVoucherforPayment = await accountsQueries.getVoucherWithTransaction_id(
             Number(entities[1].transaction_id)
           );
-
+      
           const transactionResult = await accountsQueries.generateTransaction(
             [
               {
@@ -1029,6 +1070,7 @@ class InventoryService {
 
         return resolve({ message: 'Vehicle Edited Successfully' });
       } catch (err) {
+        console.log(err,"ERR")
         reject({ message: `Failed to List Brands: ${err}` });
       }
     });
