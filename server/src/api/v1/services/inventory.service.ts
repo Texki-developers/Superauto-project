@@ -959,7 +959,8 @@ class InventoryService {
             const deliveryTransaction: ITransactionParams[] = [];
             const dsTransactions: IDsTransactionAttributes[] = [];
          
-            if (directExpense && deliveryTRANS) {
+            if (directExpense && deliveryTRANS.length > 0) {
+              
               const findVoucher = await accountsQueries.getVoucherWithTransaction_id(
                 Number(deliveryTRANS[0]?.transaction_id)
               ); 
@@ -972,7 +973,7 @@ class InventoryService {
                 description: '',
                 transaction_id: deliveryTRANS[0]?.transaction_id,
               });
-
+              
               const findDs_txn_id = await inventoryQueries.findDs_Txn_id(deliveryTRANS[0].transaction_id);
               dsTransactions.push({
                 ds_txn_id: findDs_txn_id?.ds_txn_id,
