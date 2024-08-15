@@ -224,26 +224,28 @@ class InventoryQueries {
   async getVehicleMrp(vehicle_id: number) {
     const query = `
     SELECT 
-    (i.purchase_rate + SUM(t.amount)) AS MRP
-FROM 
-    inventory i
-LEFT JOIN 
-    ds_transactions ds ON i.inventory_id = ds.vehicle_id
-LEFT JOIN 
-    service_transactions st ON i.inventory_id = st.vehicle_id
-LEFT JOIN 
-    transactions t ON ds.transaction_id = t.transaction_id OR st.transaction_id = t.transaction_id
-WHERE 
-    i.inventory_id = :vehicle_id
-GROUP BY 
-    i.purchase_rate;`;
+      (i.purchase_rate + COALESCE(SUM(t.amount), 0)) AS MRP
+    FROM 
+      inventory i
+    LEFT JOIN 
+      ds_transactions ds ON i.inventory_id = ds.vehicle_id
+    LEFT JOIN 
+      service_transactions st ON i.inventory_id = st.vehicle_id
+    LEFT JOIN 
+      transactions t ON ds.transaction_id = t.transaction_id OR st.transaction_id = t.transaction_id
+    WHERE 
+      i.inventory_id = :vehicle_id
+    GROUP BY 
+      i.purchase_rate;`;
+  
     const [mrp] = await db.query(query, {
       replacements: { vehicle_id },
       type: QueryTypes.RAW,
     });
-
+    console.log(mrp, "vehicles")
     return mrp[0];
   }
+  
 
   async insertBulkTsConnectors(data: any, options: any) {
     return await TransactionConnectors.bulkCreate(data, options);

@@ -983,6 +983,7 @@ class InventoryService {
               });
 
               console.log(deliveryTransaction, 'TRANSCA');
+              
               const resultTransaction = await accountsQueries.generateTransaction(deliveryTransaction, {
                 transaction: dbTransaction,
               });
