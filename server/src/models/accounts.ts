@@ -3,8 +3,7 @@ import { db } from '../config/database';
 import PrimaryLedger from './primaryLedger';
 import { IAccountAttributes } from '../types/db.type';
 import Employee from './employee';
-import Transaction
- from './transaction';
+import Transaction from './transaction';
 interface AccountCreationAttributes extends Optional<IAccountAttributes, 'account_id'> {}
 
 class Accounts extends Model<IAccountAttributes, AccountCreationAttributes> {
@@ -26,6 +25,7 @@ Accounts.init(
     },
     name: {
       type: DataTypes.STRING,
+      unique:true
     },
     contact_info: {
       type: DataTypes.STRING,
@@ -51,7 +51,5 @@ Accounts.init(
 Accounts.belongsTo(PrimaryLedger, { foreignKey: 'head' });
 PrimaryLedger.hasMany(Accounts, { foreignKey: 'head' });
 Accounts.hasOne(Employee,{foreignKey: 'account_id'})
-
-Transaction.belongsTo(Accounts, { as: 'CreditAccount', foreignKey: 'credit_account' });
-Transaction.belongsTo(Accounts, { as: 'DebitAccount', foreignKey: 'debit_account' });
 export default Accounts;
+

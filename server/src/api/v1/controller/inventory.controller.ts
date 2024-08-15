@@ -29,8 +29,8 @@ class InventoryController {
       date_of_purchase: body.dateOfPurchase,
       model: body.model,
       brand: body.brand,
-      isNew: body.isNew,
-      is_delivery: body.isDelivery,
+      isNew: body.isNew === 'true' ? true :false,
+      is_delivery: body.isDelivery === 'true' ? true :false,
       party_phone_number:body.partyPhoneNumber,
       party_name:body.partyName,
       delivery_service_phone_number:body.deliveryServicePhoneNumber,
@@ -154,12 +154,6 @@ class InventoryController {
     const rcBook = getFile(req, 'rcBook');
     const insuranceDoc = getFile(req, 'insuranceDoc');
     const proofDoc = getFile(req, 'proofDoc');
-
-    if(!body.salesReturn){
-      if (!rcBook && !insuranceDoc && !proofDoc) {
-        throw new Error('The Required Docs are not provided');
-      }
-    }
    
     const data: IInventoryBody = {
       account_id: body.accountId,
@@ -178,13 +172,18 @@ class InventoryController {
       date_of_purchase: body.dateOfPurchase,
       model: body.model,
       brand: body.brand,
-      isNew: body.isNew,
-      is_sales_return: Boolean(body.salesReturn),
+      isNew: body.isNew === 'true' ? true :false,
+      is_sales_return: body.salesReturn === 'true' || body.salesReturn === true  ? true :false,
       inventory_id: body.inventoryId,
-      is_delivery: body.isDelivery,
+      is_delivery: body.isDelivery === 'true' ? true :false,
+      party_phone_number:body.partyPhoneNumber,
+      party_name:body.partyName,
+      delivery_service_phone_number:body.deliveryServicePhoneNumber ,
+      delivery_name:body.deliveryName,
       sold_price: body.soldPrice,
       purchase_amount:body.purchaseAmount
     };
+
 console.log(data.is_sales_return,"IS SALES")
     inventoryService
       .exchangeVehicle(data)
@@ -207,7 +206,6 @@ console.log(data.is_sales_return,"IS SALES")
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
       });
   }
-
   editGetApi(req: Request, res: Response) {
     const { inventoryId } = req.query;
     inventoryService
@@ -267,15 +265,15 @@ console.log(data.is_sales_return,"IS SALES")
       date_of_purchase: body.dateOfPurchase,
       model: body.model,
       brand: body.brand,
-      isNew: body.isNew,
-      is_delivery: body.isDelivery,
+      isNew: body.isNew === 'true' ? true :false,
+      is_delivery: body.isDelivery === 'true' ? true :false,
       party_phone_number:body.partyPhoneNumber,
       party_name:body.partyName,
       delivery_service_phone_number:body.deliveryServicePhoneNumber,
       delivery_name:body.deliveryName,
       vehicle_id:body.vehicleId
         };
-
+        
     inventoryService.EditVehicle(data) .then((data: any) => {
       responseHandler(res, 'MODIFIED', data, { message: data.message });
     })
@@ -306,7 +304,7 @@ console.log(data.is_sales_return,"IS SALES")
       date_of_purchase: body.dateOfPurchase,
       model: body.model,
       brand: body.brand,
-      isNew: body.isNew,
+      isNew: body.isNew === 'true' ? true :false ,
 
         }
 

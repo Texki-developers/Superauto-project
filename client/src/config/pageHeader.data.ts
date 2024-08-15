@@ -9,6 +9,10 @@ export const headersData: IHeaderDataMap = {
     title: 'Vehicles',
     breadCrumb: [{ name: 'Dashboard', link: '/' }, { name: 'Vehicles' }],
   },
+  sales: {
+    title: 'Sales',
+    breadCrumb: [{ name: 'Dashboard', link: '/' }, { name: 'Sales' }],
+  },
   finance: {
     title: 'Finance',
     breadCrumb: [{ name: 'Dashboard', link: '/' }, { name: 'Finance' }],

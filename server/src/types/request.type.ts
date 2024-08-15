@@ -4,19 +4,20 @@ import { IAccountAttributes, IDeliveryAttributes, IEmployeeAttributes, IInventor
 interface IAccountBody extends IAccountAttributes, IEmployeeAttributes {}
 
 
-interface IInventoryBody extends IInventoryAttributes,IDeliveryAttributes {
-    isNew :boolean,
-    brand:string,
-    model:string
-    is_sales_return?:boolean
-    is_delivery:boolean
-    party_phone_number?:string,
-    delivery_service_phone_number?:string;
-    party_name?:string
-    delivery_name?:string,
-    purchase_amount:number,
-    vehicle_id?:number
+interface IInventoryBody extends IInventoryAttributes, Omit<IDeliveryAttributes, 'delivery_amount'> {
+    isNew: boolean;
+    brand: string;
+    model: string;
+    is_sales_return?: boolean;
+    is_delivery: boolean;
+    party_phone_number?: string;
+    delivery_service_phone_number?: string;
+    party_name?: string;
+    delivery_name?: string;
+    purchase_amount: number;
+    vehicle_id?: number;
 }
+
 interface IassignVehicle {
     amount:number;
     regNum:string;

@@ -30,6 +30,8 @@ interface IInventoryAttributes {
   proof_doc: typeof fileUpload;
   date_of_purchase: Date;
   sold_price?: number | null;
+  initial_amount?:number
+  delivery_amount?:number
 }
 
 interface ITransactionParams {

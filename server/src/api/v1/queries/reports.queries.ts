@@ -6,6 +6,7 @@ import sequelize from 'sequelize';
 import { db } from '../../../config/database';
 import { LedgerWithBalanceResult, OpeningBalanceResult, TransactionDataResult } from '../../../types/db.type';
 import { raw } from 'express';
+import accountsQueries from './accounts.queries';
 
 class ReportQueries {
 
@@ -379,7 +380,7 @@ UNION ALL select * from all_data where description NOT IN ('Closing Balance','Op
         return ledgerWithBalanceResult;
       }
 
-      async cashbookReport(query:string,startDate:string, endDate:string,accountId:number){
+      async cashbookReport(startDate:string, endDate:string,accountId:number){
 
         const ledgerQuery = `
         WITH account_type AS (
@@ -534,7 +535,31 @@ UNION ALL select * from all_data where description NOT IN ('Closing Balance','Op
         return cashbookReport;
       }
 
-      async trialBalanceReport (startDate:string,endDate:string){
+      calculateFinancialYear(startYear: string, endYear: string): { startDate: Date; endDate: Date;} {
+        const startYearNumber = parseInt(startYear, 10);
+        const endYearNumber = parseInt(endYear, 10);
+      
+        // Validate input
+        if (isNaN(startYearNumber) || isNaN(endYearNumber) || startYearNumber >= endYearNumber) {
+          throw new Error("Invalid year inputs. Start year must be less than end year.");
+        }
+      
+        // Define start and end dates for the financial year
+        const startDate = new Date(startYearNumber, 3, 1); // April 1st of the start year
+        const endDate = new Date(endYearNumber, 2, 31);    // March 31st of the end year
+      
+   
+      
+        return {
+          startDate,
+          endDate,
+        };
+      }
+
+      async trialBalanceReport (startYear:string,endYear:string){
+
+        const { startDate, endDate} = this.calculateFinancialYear(startYear, endYear);
+
             const trialBalancequery = `
 
             WITH account_balances AS (
@@ -679,87 +704,141 @@ tc.type   FROM total_category tc
       }
 
 
-     async balanceSheet(){
-        const balanceSheetQuery = `WITH account_balances AS (
+      async balanceSheet(startYear: string, endYear: string) {
+        const { startDate, endDate } = this.calculateFinancialYear(startYear, endYear);
+    
+        const balanceSheetQuery = `
+        WITH account_balances AS (
             SELECT
                 a.account_id,
                 a.name,
                 p.pl_id AS account_type,
-        p.type,
+                p.type,
                 COALESCE(SUM(CASE WHEN t.debit_account = a.account_id THEN t.amount ELSE 0 END), 0) AS total_debit,
                 COALESCE(SUM(CASE WHEN t.credit_account = a.account_id THEN t.amount ELSE 0 END), 0) AS total_credit
             FROM
                 accounts a
             LEFT JOIN
-                transactions t ON a.account_id = t.debit_account OR a.account_id = t.credit_account
+                transactions t ON (a.account_id = t.debit_account OR a.account_id = t.credit_account)
+                AND t.transaction_date BETWEEN :startDate AND :endDate -- Filter transactions within the date range
             LEFT JOIN
                 primary_ledger p ON a.head = p.pl_id
             GROUP BY
-                a.account_id, a.name, p.pl_id
+                a.account_id, a.name, p.pl_id, p.type
         ),
         with_balances AS (
-        SELECT
-            account_id,
-            name,
-            account_type,
-            total_debit,
-            total_credit,
-        type,
-            total_debit - total_credit AS balance
-        FROM
-            account_balances
-        ORDER BY
-            account_type, name
+            SELECT
+                account_id,
+                name,
+                account_type,
+                total_debit,
+                total_credit,
+                type,
+                total_debit - total_credit AS balance
+            FROM
+                account_balances
+            ORDER BY
+                account_type, name
         ),
         grouped_type AS (
-          SELECT account_type,SUM(balance) as balance,type AS category FROM with_balances GROUP BY account_type,type
+            SELECT
+                account_type,
+                SUM(balance) AS balance,
+                type AS category
+            FROM
+                with_balances
+            GROUP BY
+                account_type, type
         ),
         with_pl_name AS (
-          SELECT account_type, balance, category, ledger_name as ledger FROM grouped_type LEFT JOIN primary_ledger prld on prld.pl_id = grouped_type.account_type
+            SELECT
+                account_type,
+                balance,
+                category,
+                ledger_name AS ledger
+            FROM
+                grouped_type
+            LEFT JOIN
+                primary_ledger prld ON prld.pl_id = grouped_type.account_type
         ),
         sum_of_category AS (
-        select  category,sum(balance) AS balance from with_pl_name group by category
+            SELECT
+                category,
+                SUM(balance) AS balance
+            FROM
+                with_pl_name
+            GROUP BY
+                category
         ),
-        
         final_data AS (
-        select account_type,balance,category,ledger  from with_pl_name  UNION all
-        select
-         NULL AS account_type,
-        sum_of_category.balance,
-        category,
-        'Total' AS ledger from sum_of_category 
-        
+            SELECT
+                account_type,
+                balance,
+                category,
+                ledger
+            FROM
+                with_pl_name
+            UNION ALL
+            SELECT
+                NULL AS account_type,
+                sum_of_category.balance,
+                category,
+                'Total' AS ledger
+            FROM
+                sum_of_category
         )
-        
-        SELECT * FROM final_data where category in ('asset','liability','equity') order by account_type`
-
+        SELECT *
+        FROM
+            final_data
+        WHERE
+            category IN ('asset', 'liability', 'equity')
+        ORDER BY
+            account_type
+        `;
+    
         const [balanceSheet] = await db.query(balanceSheetQuery, {
-            // replacements: { startDate, endDate  },
+            replacements: { startDate, endDate },
             type: QueryTypes.RAW,
-          })
-          const profit = await this.profitAndLoss()
-          let netProfit 
-        
-            profit.map((item:any)=>{
-            if(item.name  === 'to_net_profit'){
-                netProfit= item
+        });
+    
+        const profit = await this.profitAndLoss(startYear, endYear);
+        let netProfit;
+    
+        profit.map((item: any) => {
+            if (item.name === 'to_net_profit') {
+                netProfit = item;
             }
-          })
-          balanceSheet.push(netProfit)
-            return balanceSheet
-      }
-
-      async profitAndLoss(){
-        const query  = `
+        });
+    
+        balanceSheet.push(netProfit);
+        return balanceSheet;
+    }
+    
+    async profitAndLoss(startYear: string, endYear: string) {
+        const { startDate, endDate } = this.calculateFinancialYear(startYear, endYear);
+        const accountNames = [
+            'Purchase',
+            'Capital A/C',
+            'Direct Expense',
+            'Sale',
+            'Salary Payables'
+        ];
+    
+        // Use Promise.all to retrieve account IDs for each account name
+        const [purchase, capital, directExpense, sale, salaryPayable] = await Promise.all(
+            accountNames.map(accountsQueries.findAccount)
+        );
+    
+        const query = `
         WITH opening_inventory AS (
             SELECT SUM(purchase_rate) AS opening_inventory 
             FROM inventory 
-            WHERE date_of_purchase < '2023-06-06'
+            WHERE date_of_purchase < :startDate -- Use startDate for opening inventory
         ),
         closing_inventory AS (
             SELECT SUM(purchase_rate) AS closing_inventory 
             FROM inventory 
-            WHERE date_of_purchase > '2024-06-06'
+            WHERE date_of_purchase >= :endDate -- Use endDate for closing inventory
         ),
         purchase AS (
             SELECT 
@@ -771,10 +850,11 @@ tc.type   FROM total_category tc
                 accounts a
             LEFT JOIN
                 transactions t ON a.account_id IN (t.debit_account, t.credit_account)
+                AND t.transaction_date BETWEEN :startDate AND :endDate -- Filter transactions within the date range
             LEFT JOIN
                 primary_ledger p ON a.head = p.pl_id
             WHERE
-                a.account_id = 16
+                a.account_id = ${purchase}
             GROUP BY
                 a.account_id, a.name
         ),
@@ -788,10 +868,11 @@ tc.type   FROM total_category tc
                 accounts a
             LEFT JOIN
                 transactions t ON a.account_id IN (t.debit_account, t.credit_account)
+                AND t.transaction_date BETWEEN :startDate AND :endDate -- Filter transactions within the date range
             LEFT JOIN
                 primary_ledger p ON a.head = p.pl_id
             WHERE
-                a.account_id = 11
+                a.account_id = ${capital}
             GROUP BY
                 a.account_id, a.name
         ),
@@ -805,10 +886,11 @@ tc.type   FROM total_category tc
                 accounts a
             LEFT JOIN
                 transactions t ON a.account_id IN (t.debit_account, t.credit_account)
+                AND t.transaction_date BETWEEN :startDate AND :endDate -- Filter transactions within the date range
             LEFT JOIN
                 primary_ledger p ON a.head = p.pl_id
             WHERE
-                a.account_id = 13
+                a.account_id = ${directExpense}
             GROUP BY
                 a.account_id, a.name
         ),
@@ -822,10 +904,11 @@ tc.type   FROM total_category tc
                 accounts a
             LEFT JOIN
                 transactions t ON a.account_id IN (t.debit_account, t.credit_account)
+                AND t.transaction_date BETWEEN :startDate AND :endDate -- Filter transactions within the date range
             LEFT JOIN
                 primary_ledger p ON a.head = p.pl_id
             WHERE
-                a.account_id = 17
+                a.account_id = ${sale}
             GROUP BY
                 a.account_id, a.name
         ),
@@ -839,10 +922,11 @@ tc.type   FROM total_category tc
                 accounts a
             LEFT JOIN
                 transactions t ON a.account_id IN (t.debit_account, t.credit_account)
+                AND t.transaction_date BETWEEN :startDate AND :endDate -- Filter transactions within the date range
             LEFT JOIN
                 primary_ledger p ON a.head = p.pl_id
             WHERE
-                a.account_id = 5
+                a.account_id = ${salaryPayable}
             GROUP BY
                 a.account_id, a.name
         )
@@ -921,7 +1005,7 @@ tc.type   FROM total_category tc
                     COALESCE(
                         (
                             SELECT 
-                                COALESCE(SUM(Sales), 0) + COALESCE(SUM(closing_inventory), 0) + COALESCE(SUM(opening_inventory), 0) + COALESCE(SUM(Purchase), 0) - COALESCE(SUM(Direct_Expense), 0) AS "Total"
+                                COALESCE(SUM(Sales), 0) + COALESCE(SUM(closing_inventory), 0) - COALESCE(SUM(opening_inventory), 0) - COALESCE(SUM(Purchase), 0) - COALESCE(SUM(Direct_Expense), 0) AS "Total"
                             FROM 
                                 sales, closing_inventory, opening_inventory, purchase, direct_expense
                         ), 
@@ -936,7 +1020,7 @@ tc.type   FROM total_category tc
                     COALESCE(
                         (
                             SELECT 
-                                COALESCE(SUM(Sales), 0) + COALESCE(SUM(closing_inventory), 0) + COALESCE(SUM(opening_inventory), 0) + COALESCE(SUM(Purchase), 0) - COALESCE(SUM(Direct_Expense), 0) - COALESCE(SUM(salary), 0) AS "Total"
+                                COALESCE(SUM(Sales), 0) + COALESCE(SUM(closing_inventory), 0) - COALESCE(SUM(opening_inventory), 0) - COALESCE(SUM(Purchase), 0) - COALESCE(SUM(Direct_Expense), 0) - COALESCE(SUM(salary), 0) AS "Total"
                             FROM 
                                 sales, closing_inventory, opening_inventory, purchase, direct_expense, salary
                         ), 
@@ -951,7 +1035,7 @@ tc.type   FROM total_category tc
                     COALESCE(
                         (
                             SELECT 
-                                COALESCE(SUM(capital), 0) - COALESCE(SUM(Sales), 0) - COALESCE(SUM(closing_inventory), 0) - COALESCE(SUM(opening_inventory), 0) - COALESCE(SUM(Purchase), 0) + COALESCE(SUM(Direct_Expense), 0) AS "Total"
+                                COALESCE(SUM(capital), 0) - COALESCE(SUM(Sales), 0) - COALESCE(SUM(closing_inventory), 0) + COALESCE(SUM(opening_inventory), 0) + COALESCE(SUM(Purchase), 0) - COALESCE(SUM(Direct_Expense), 0) AS "Total"
                             FROM 
                                 capital, sales, closing_inventory, opening_inventory, purchase, direct_expense
                         ), 
@@ -960,19 +1044,20 @@ tc.type   FROM total_category tc
             ) AS combined_results
         ORDER BY 
             name;
-        `
-        const [reportAndLoss]:any = await db.query(query, {
-            // replacements: { startDate, endDate  },
+        `;
+    
+        const [reportAndLoss]: any = await db.query(query, {
+            replacements: { startDate, endDate },
             type: QueryTypes.RAW,
-          })
-          
+        });
+    
+        return reportAndLoss;
+    }
 
-
-            return reportAndLoss;
-
-      }
-
-    }      
+   
+    }  
+    
+   
 
 
 

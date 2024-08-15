@@ -17,6 +17,11 @@ const tabs = ['Sales Return', 'New Vehicle']
 
 interface IProps {
     showPopup: React.Dispatch<SetStateAction<boolean>>;
+    accountId: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setAllData: (data: any) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    allData: any;
     setExchangeDet: React.Dispatch<SetStateAction<IExchangeVehicleDetails | null>>;
 }
 const defaultValues: IVehicleAddFormValues = {
@@ -29,6 +34,7 @@ const defaultValues: IVehicleAddFormValues = {
         label: '',
         value: '',
     },
+    brandModel_id: '',
     purchaseRate: '',
     balance: '',
     purchaseDate: '',
@@ -60,7 +66,7 @@ const defaultValuesNew: IVehicleNewFormValues = {
     purchaseDate: ''
 
 }
-const ExchangeVehicle = ({ showPopup, setExchangeDet }: IProps) => {
+const ExchangeVehicle = ({ showPopup, setExchangeDet, accountId, setAllData, allData }: IProps) => {
     const { register, handleSubmit, reset, watch, setValue, formState: { errors }, control } = useForm({
         defaultValues
     })
@@ -80,36 +86,44 @@ const ExchangeVehicle = ({ showPopup, setExchangeDet }: IProps) => {
         const formData = new FormData();
         formData.append(data?.party.__isNew__ ? 'partyName' : 'accountId', data?.party.value)
         formData.append('ownershipName', data.ownership);
+        // formData.append('accountId', accountId);
         formData.append('registrationNumber', data.registrationNumber);
-        formData.append('brandModel_id', 'null'); // You can update this value as needed
+        data?.brandModel_id && formData.append('brandModel_id', data?.brandModel_id); // You can update this value as needed
         formData.append('yearOfManufacture', data.yearOfManufacture);
         formData.append('purchaseRate', data.purchaseRate);
         formData.append('saleStatus', 'false');
         formData.append('purchaseAmount', data.purchaseAmount);
         formData.append('insuranceDate', data.insuranceDate);
-        formData.append(data?.deliveryService.__isNew__ ? 'deliveryName' : 'deliveryService', data.deliveryService.value);
-        formData.append('deliveryAmount', data.deliveryAmount);
+        (data?.deliveryService?.__isNew__ || data?.deliveryService?.value) && formData.append(data?.deliveryService.__isNew__ ? 'deliveryName' : 'deliveryService', data.deliveryService.value);
+        data.deliveryAmount && formData.append('deliveryAmount', data.deliveryAmount);
         data.rcBook && formData.append('rcBook', data.rcBook);
         data.insurance && formData.append('insuranceDoc', data.insurance);
         data.proof && formData.append('proofDoc', data.proof);
         formData.append('dateOfPurchase', data.purchaseDate);
         formData.append('model', data.model.value);
         formData.append('brand', data.brand.value);
+        formData.append('isDelivery', `${!!data?.deliveryService.value}`);
         formData.append('isNew', data?.brand?.__isNew__ ? 'true' : 'false');
         data?.deliveryServicePhoneNumber?.length > 0 && data?.deliveryService.__isNew__ && formData.append('deliveryServicePhoneNumber', data?.deliveryServicePhoneNumber)
         data?.partyPhoneNumber?.length > 0 && data?.party.__isNew__ && formData.append('partyPhoneNumber', data?.partyPhoneNumber)
         const id = toastLoading('Loading...');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const returnData: any = { value: data?.purchaseRate, regNumber: data?.registrationNumber }
         try {
+            let url = 'inventory/exchange/vehicle'
+            if (allData?.registrationNumber) {
+                url = 'inventory/edit/vehicle'
+                formData.append('vehicleId', allData?.vehicleId)
+            }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const data: any = await AuthApiService.postApiFormData<FormData, any>('inventory/exchange/vehicle', formData,)
-            if (data?.status === "error") {
-                toastError(id, data?.message)
+            const response: any = await AuthApiService.postApiFormData<FormData, any>(url, formData,)
+            if (response?.status === "error") {
+                toastError(id, response?.message)
                 return
             }
-            if (data?.data?.data) {
-                const res = data?.data?.data
-                setExchangeDet({ id: res?.inventory_id, regNumb: res?.registration_number, rate: res?.purchase_rate })
-            }
+            const res = response?.data?.data
+            setExchangeDet({ id: res?.inventory_id, regNumb: returnData?.regNumber, rate: returnData?.value })
+            setAllData({ ...data, vehicleId: res?.inventory_id })
             toastSuccess(id, 'Vehicle added successfully')
             showPopup(false)
         } catch (error) {
@@ -126,26 +140,41 @@ const ExchangeVehicle = ({ showPopup, setExchangeDet }: IProps) => {
     const onSalesReturn = async (data: IVehicleNewFormValues) => {
         console.log(data)
         const body = {
-            registrationNumber: data?.registrationNumber?.value,
+            inventoryId: data?.registrationNumber?.value,
             dateOfPurchase: data?.purchaseDate,
             salesReturn: true,
-            purchaseRate: data?.value
+            purchaseRate: data?.value,
+            accountId: accountId
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const returnData: any = { value: data?.purchaseDate, regNumber: data?.registrationNumber?.label }
         const id = toastLoading('Loading...');
         try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const data = await AuthApiService.postApi<any, any>('inventory/exchange/vehicle', body,)
-            if (data?.status === "error") {
-                toastError(id, data?.message)
+            const response = await AuthApiService.postApi<any, any>('inventory/exchange/vehicle', body,)
+            if (response?.status === "error") {
+                toastError(id, response?.message)
                 return
             }
-            setExchangeDet({ id: data?.registrationNumber?.value, regNumb: data?.registrationNumber?.label, rate: data?.value })
+            console.log(data)
+            setAllData(data)
+            setExchangeDet({ id: response?.registrationNumber?.value, regNumb: returnData?.regNumber, rate: Number(body?.purchaseRate) })
             toastSuccess(id, 'Vehicle added successfully')
             showPopup(false)
         } catch (error) {
             toastError(id, 'Something went wrong')
         }
     }
+    useEffect(() => {
+        console.log(allData)
+        if (allData) {
+            if (allData?.ownership) {
+                reset(allData)
+            } else {
+                resetNew(allData)
+            }
+        }
+    }, [allData])
     return (
         <div className="">
             <ModalWrapper hideHeading onClose={onClose}>
@@ -167,7 +196,7 @@ const ExchangeVehicle = ({ showPopup, setExchangeDet }: IProps) => {
                             </form>
                             :
                             <form onSubmit={handleSubmit(onNewVehicleSubmit)}>
-                                <AddvehicleForm brands={brandData?.data} brandLoading={brandLoading} reset={reset} setValue={setValue} watch={watch} register={register} control={control} errors={errors} onCancelClick={onClose} />
+                                <AddvehicleForm exchangeForm brands={brandData?.data} brandLoading={brandLoading} reset={reset} setValue={setValue} watch={watch} register={register} control={control} errors={errors} onCancelClick={onClose} />
                             </form>
                     }
 

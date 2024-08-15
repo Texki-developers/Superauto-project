@@ -1,13 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import AddAndSearchItem from '../../components/addAndSearchItem/AddAndSearchItem';
 import Header from '../../components/header/Header';
-import AddVehicle from './AddVehicle';
 import Table from '../../components/table/Table';
-import { ColumnData } from './vehicle.data';
+import { ColumnData } from './sales.data';
 import addProduct from '../../assets/icons/addCart.svg';
 import EditIcon from '../../assets/icons/edit.svg';
 import DeleteIcon from '../../assets/icons/delete.svg';
-import SellVehicle from './SellVehicle';
 import { useQuery } from '@tanstack/react-query';
 import { ITableColumn } from '../../types/table/table';
 import useGetApis from '../../hooks/useGetApi.hook';
@@ -17,11 +15,10 @@ import DeleteModal from '../../components/deleteModal/DeleteModal';
 import { IListVehicle } from '../../types/vehicle/vehicle';
 
 
-const Vehicles = () => {
+const SalesReturn = () => {
   const [showAddPage, setShowAddPage] = useState<boolean>(false);
   const [showSellPage, setShowSellPage] = useState<boolean>(false);
   const [showDeletePage, setShowDeletePage] = useState(false)
-  const [isEdit, setIsEdit] = useState<boolean>(false);
   const [selectedVehicleData, setSelectedVehicleData] = useState<IListVehicle | null>(null)
   const onAddButtonClick = () => {
     setShowAddPage(true);
@@ -39,7 +36,6 @@ const Vehicles = () => {
       setShowSellPage(true);
     } else if (type === 'edit') {
       setShowAddPage(true)
-      setIsEdit(true)
     } else {
       setShowDeletePage(true)
     }
@@ -93,10 +89,10 @@ const Vehicles = () => {
       }
       <main className='table-wrapper'>
         {showAddPage ? (
-          <AddVehicle setIsEdit={setIsEdit} isEdit={isEdit} selectedItem={selectedVehicleData?.inventory_id} setShowAddPage={setShowAddPage} refetch={refetch} />
+          <></>
         ) :
           showSellPage && selectedVehicleData ? (
-            <SellVehicle refetch={refetch} vehicleId={selectedVehicleData?.inventory_id} setShowSellPage={setShowSellPage} />
+            <></>
           ) :
             (
               <>
@@ -120,4 +116,4 @@ const Vehicles = () => {
   );
 };
 
-export default React.memo(Vehicles);
+export default React.memo(SalesReturn);

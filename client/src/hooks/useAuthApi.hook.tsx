@@ -6,6 +6,7 @@ const useAuthApi = () => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return async (url: string, body: any, errorMessage: string, successMessage: string, onSuccess?: () => void, onFailure?: () => void) => {
+        console.log(url, body)
         const id = toastLoading("Please wait...")
         try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any

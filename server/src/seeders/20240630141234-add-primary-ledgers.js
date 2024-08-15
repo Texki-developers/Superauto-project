@@ -148,7 +148,7 @@ module.exports = {
           account_head: 17,
           createdAt: new Date(),
           updatedAt: new Date(),
-          type: 'asset',
+          type: 'equity',
         },
       ],
       {}

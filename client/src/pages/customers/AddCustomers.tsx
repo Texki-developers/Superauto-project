@@ -3,6 +3,8 @@ import CheckBox from '../../components/formComponents/checkBox/CheckBox';
 import InputBox from '../../components/formComponents/inputBox/InputBox';
 import SaveCancelButtons from '../../components/save-cancel-buttons/SaveCancelButtons';
 import { ICustomer } from '../../types/customers/customers';
+import { IListAccountData } from '../../types/common/common';
+import { useEffect } from 'react';
 
 interface IProps {
   onCancelClick: () => void;
@@ -10,12 +12,22 @@ interface IProps {
   control: Control<ICustomer>;
   errors: FieldErrors<ICustomer>;
   reset: (values?: ICustomer) => void;
+  data?: IListAccountData | null;
+  isEdit?: boolean;
 }
 
 
 
-const AddCustomers = ({ onCancelClick, reset, register, errors }: IProps) => {
-
+const AddCustomers = ({ onCancelClick, reset, isEdit, data, register, errors }: IProps) => {
+  useEffect(() => {
+    if (isEdit && data) {
+      reset({
+        name: data?.name,
+        phoneNumber: data?.contact_info,
+        isBroker: data?.category === 'BROKER'
+      })
+    }
+  }, [isEdit])
   return (
     <div className='grid gap-3'>
       <div className="flex gap-2">

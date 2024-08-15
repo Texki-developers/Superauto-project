@@ -8,7 +8,7 @@ export const ColumnData = [
     key: 'account_id',
   },
   {
-    name: 'Financer Name',
+    name: 'Employees Name',
     key: 'name',
   },
   {

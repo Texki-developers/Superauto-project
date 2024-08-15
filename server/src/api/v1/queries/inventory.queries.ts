@@ -17,6 +17,8 @@ import {
 import SaleReturn from '../../../models/salesReturn';
 import { db } from '../../../config/database';
 import TransactionConnectors from '../../../models/transactionConnecter';
+import Accounts from '../../../models/accounts';
+import Transaction from '../../../models/transaction';
 
 class InventoryQueries {
   async addVehicle(data: IInventoryAttributes, options?: any): Promise<IInventoryAttributes> {
@@ -61,7 +63,10 @@ class InventoryQueries {
 
   async addTodeliveryServiceTable(data: IDsTransactionAttributes[], options?: any) {
     try {
-      const deliveryService = await DsTransaction.bulkCreate(data, {...options,updateOnDuplicate:['ds_id','vehicle_id']});
+      const deliveryService = await DsTransaction.bulkCreate(data, {
+        ...options,
+        updateOnDuplicate: ['ds_id', 'vehicle_id'],
+      });
       return deliveryService;
     } catch (error) {
       throw new Error('Failed To Generate Transaction');
@@ -116,7 +121,7 @@ class InventoryQueries {
     return await SaleReturn.create(data, options);
   }
 
-  async listBrandModel(){
+  async listBrandModel() {
     return await BrandModel.findAll({
       attributes: {
         exclude: ['createdAt', 'updatedAt'],
@@ -129,37 +134,92 @@ class InventoryQueries {
   }
 
   async getVehiclebyId(inventory_id: number) {
-    return await Inventory.findOne({
-      where: {
-        inventory_id: inventory_id,
-      },
-      include: [
-        // {
-        //   model: Accounts,
-        //   required: false,
-        //   attributes: ['name', 'contact_info', 'head'],
-        // },
-        {
-          model: BrandModel,
-          required: false,
-          attributes: ['brand', 'model'],
+    try {
+      // Fetch the inventory item along with its associated data
+      const inventory:any = await Inventory.findOne({
+        where: { inventory_id },
+        include: [
+          {
+            model: Accounts,
+            required: false,
+            attributes: ['name', 'contact_info', 'head', 'category'],
+          },
+          {
+            model: BrandModel,
+            required: false,
+            attributes: ['brand', 'model'],
+          },
+          {
+            model: DsTransaction,
+            attributes: ['ds_id'],
+          },
+          {
+            model: FileStore,
+            as: 'rcBook',
+            attributes: ['file_id', 'name', 'location'],
+          },
+          {
+            model: FileStore,
+            as: 'insuranceDoc',
+            attributes: ['file_id', 'name', 'location'],
+          },
+          {
+            model: FileStore,
+            as: 'proofDoc',
+            attributes: ['file_id', 'name', 'location'],
+          },
+        ],
+        attributes: [
+          'inventory_id',
+          'account_id',
+          'brand_model_id',
+          'ownership_name',
+          'insurance_date',
+          'date_of_purchase',
+          'purchase_rate',
+          'year_of_manufacture',
+          'registration_number',
+          'delivery_amount',
+          'initial_amount'
+        ],
+      });
+  
+      // Return an empty object if no inventory is found
+      if (!inventory) {
+        return {};
+      }
+  
+      // Fetch the delivery service name using the ds_id from DsTransaction
+      const dsTransaction = inventory?.DsTransaction;
+      let deliveryServiceName = '';
+  
+      if (dsTransaction && dsTransaction.ds_id) {
+        const deliveryService = await Accounts.findOne({
+          where: { account_id: dsTransaction.ds_id },
+          attributes: ['name'],
+        });
+        deliveryServiceName = deliveryService?.name || '';
+      }
+
+
+  
+      // Construct the result object
+      const result = {
+        ...inventory.dataValues,
+        DsTransaction: {
+          ...dsTransaction?.dataValues,
+          name: deliveryServiceName,
         },
-        { model: FileStore, as: 'rcBook', attributes: ['file_id', 'name', 'location'] },
-        { model: FileStore, as: 'insuranceDoc', attributes: ['file_id', 'name', 'location'] },
-        { model: FileStore, as: 'proofDoc', attributes: ['file_id', 'name', 'location'] },
-      ],
-      attributes: [
-        'inventory_id',
-        'account_id',
-        'brand_model_id',
-        'ownership_name',
-        'insurance_date',
-        'date_of_purchase',
-        'purchase_rate',
-        'year_of_manufacture',
-      ],
-    });
+      };
+  
+      console.log(result);
+      return result;
+    } catch (error) {
+      console.error('Error fetching vehicle by ID:', error);
+      throw error; // Handle or rethrow the error as appropriate
+    }
   }
+  
 
   async getVehicleMrp(vehicle_id: number) {
     const query = `
@@ -182,39 +242,37 @@ GROUP BY
       type: QueryTypes.RAW,
     });
 
-    return mrp[0]
+    return mrp[0];
   }
 
-  async insertBulkTsConnectors(data:any,options:any) {
+  async insertBulkTsConnectors(data: any, options: any) {
     return await TransactionConnectors.bulkCreate(data, options);
   }
 
-  async getTransactionConnectors(data:any) {
+  async getTransactionConnectors(data: any) {
     return await TransactionConnectors.findAll({
-      where:{
-        entity_id:data.entity_id,
-        entity_type:data.entity_type
-      }
+      where: {
+        entity_id: data.entity_id,
+        entity_type: data.entity_type,
+      },
     });
   }
 
-  async findVehicleDeliveryTransaction(query:FindOptions){
-    return await DsTransaction.findAll(query)
+  async findVehicleDeliveryTransaction(query: FindOptions) {
+    return await DsTransaction.findAll(query);
   }
 
-  async editVehicle(data:IInventoryAttributes,query:any){
-      return await Inventory.update(data,query)
+  async editVehicle(data: IInventoryAttributes, query: any) {
+    return await Inventory.update(data, query);
   }
 
-  async findDs_Txn_id (id:number){
+  async findDs_Txn_id(id: number) {
     return await DsTransaction.findOne({
-      where:{
-        transaction_id:id
-      }
-    })
+      where: {
+        transaction_id: id,
+      },
+    });
   }
-
-
 }
 
-export default new InventoryQueries()
+export default new InventoryQueries();

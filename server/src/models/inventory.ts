@@ -6,6 +6,7 @@ import BrandModel from './brand';
 import FileStore from './documents';
 import SaleReturn from './salesReturn';
 import DsTransaction from './dsTransactions';
+import Transaction from './transaction';
 
 // Define the interface for model attributes
 
@@ -30,6 +31,7 @@ class Inventory extends Model<IInventoryAttributes, InventoryCreationAttributes>
   public proof_doc!: number | null;
   public date_of_purchase!: Date;
   public sold_price!: number | null;
+  public initial_amount!: number
 
 }
 
@@ -62,7 +64,7 @@ Inventory.init(
     },
     ownership_name: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     purchase_rate: {
       type: DataTypes.INTEGER,
@@ -73,6 +75,7 @@ Inventory.init(
       allowNull: true,
     },
     registration_number: {
+      unique:true,
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -108,6 +111,14 @@ Inventory.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    initial_amount:{
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    delivery_amount:{
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
     sold_price: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -118,6 +129,7 @@ Inventory.init(
     tableName: 'inventory',
     timestamps: true,
   }
+
 );
 
 Inventory.belongsTo(Accounts, { foreignKey: 'account_id' });
@@ -125,5 +137,6 @@ Inventory.belongsTo(BrandModel, { foreignKey: 'brand_model_id' });
 Inventory.belongsTo(FileStore, { as: 'rcBook', foreignKey: 'rc_book' });
 Inventory.belongsTo(FileStore, { as: 'insuranceDoc', foreignKey: 'insurance_doc' });
 Inventory.belongsTo(FileStore, { as: 'proofDoc', foreignKey: 'proof_doc' });
+Inventory.hasOne(DsTransaction,{foreignKey:'vehicle_id'})
 Inventory.hasOne(SaleReturn, {  foreignKey: 'inventory_id' });
 export default Inventory;

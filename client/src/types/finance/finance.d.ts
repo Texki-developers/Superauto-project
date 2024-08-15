@@ -1,4 +1,4 @@
 export interface IFinance {
-    name: string;
-    phoneNumber: string;
-  }
+  name: string;
+  phoneNumber: string;
+}

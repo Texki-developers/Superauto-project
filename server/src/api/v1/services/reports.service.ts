@@ -1,4 +1,3 @@
-import { Op } from "sequelize";
 import reportsQueries from "../queries/reports.queries";
 import accountsQueries from "../queries/accounts.queries";
 
@@ -75,12 +74,12 @@ class ReportsService{
 
 
 
-    cashbookReport(query:string,fromDate:string,toDate:string){
+    cashbookReport(fromDate:string,toDate:string){
       return new Promise(async (resolve, reject) => {
         
         try {
           const account  = await accountsQueries.findAccount('Cash')
-          const result = await reportsQueries.cashbookReport(query,fromDate,toDate,account||1)
+          const result = await reportsQueries.cashbookReport(fromDate,toDate,account||1)
           resolve(result)
         } catch (err) {
           reject({ message: `Failed to List Brands: ${err}` });
@@ -100,11 +99,11 @@ class ReportsService{
       });
     }
 
-    balanceSheetReport(){
+    balanceSheetReport(startYear:string,endYear:string){
       return new Promise(async (resolve, reject) => {
         try {
 
-            const balanceSheet = await reportsQueries.balanceSheet()
+            const balanceSheet = await reportsQueries.balanceSheet(startYear,endYear)
             return resolve(balanceSheet)
         } catch (err) {
           reject({ message: `Failed to List Brands: ${err}` });
@@ -112,11 +111,23 @@ class ReportsService{
       });
     }
 
-    profitAndLoss(){
+    profitAndLoss(startYear:string,endYear:string){
       return new Promise(async (resolve, reject) => {
         try {
 
-            const balanceSheet = await reportsQueries.profitAndLoss()
+            const balanceSheet = await reportsQueries.profitAndLoss(startYear,endYear)
+            return resolve(balanceSheet)
+        } catch (err) {
+          reject({ message: `Failed to List Brands: ${err}` });
+        }
+      });
+    }
+
+    saleReport(fromDate:string,toDate:string){
+      return new Promise(async (resolve, reject) => {
+        try {
+          const sales  = await accountsQueries.findAccount('Sale')
+            const balanceSheet = await reportsQueries.cashbookReport(fromDate,toDate,sales||14)
             return resolve(balanceSheet)
         } catch (err) {
           reject({ message: `Failed to List Brands: ${err}` });

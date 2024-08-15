@@ -25,7 +25,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions)); // Preflight requests
-
+   
 // Middleware
 app.use(logger('dev'));
 
@@ -34,10 +34,10 @@ app.use(express.urlencoded({ limit: 50 * 1024 * 1024 }));
 app.use(express.json({ limit: '50mb' }));
 app.use(
   session({
-    secret: 'your-secret-key', // Replace with a secure random string
+    secret: 'your-secret-key', // Replace with a secure random string 
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, httpOnly: true, sameSite: 'strict', path: '/', maxAge: 1 * 60 * 60 * 1000 },
+    cookie: { secure: false, httpOnly: true, sameSite: 'strict', path: '/', maxAge: 24 * 60 * 60 * 1000 },
   })
 );
 
@@ -46,8 +46,8 @@ app.use(passport.session());
 
 ///THE ROUTES
 app.use('/api/v1/accounts', accountRoutes);
-app.use('/api/v1/inventory', inventoryRoutes);
-app.use('/api/v1/reports', isAuthenticated, reportRoutes);
+app.use('/api/v1/inventory',  inventoryRoutes);
+app.use('/api/v1/reports', reportRoutes);
 app.use('/api/v1/auth', authRouter);
 ///THE ROUTES
 
@@ -61,13 +61,13 @@ app.get('/add', async (_: any, res: any) => {
     const result = await Accounts.create({
       name: 'Muhsin',
       category: E_ACCOUNT_CATEGORIES.EMPLOYEE,
-      contact_info: '8606113002',
+      contact_info: '8606113002', 
       head: 1,
-    });
+    }); 
     res.status(201).json(result);
   } catch (error) {
     res.status(500).send('Error inserting data');
-  }
+  } 
 });
 
 // Endpoint to get data from the database

@@ -183,7 +183,7 @@ class AccountController {
       contact_info: body.contactInfo,
     };
     accountsService
-      .EditAccount(data)
+      .EditAccount(data,body.salary)
       .then((data: any) => {
         responseHandler(res, 'MODIFIED', data, { message: data.message });
       })
@@ -191,6 +191,28 @@ class AccountController {
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
       });
   }
+
+
+  addJournal(req: Request, res: Response) {
+    const { body } = req;
+    const data:any = {
+      amount: body.amount,
+      paymentTo: body.paymentTo,
+      paymentFrom: body.paymentFrom,
+      description:body.description,
+      date:body.date
+    };
+    accountsService
+      .addJournal(data)
+      .then((data: any) => {
+        responseHandler(res, 'MODIFIED', data, { message: data.message });
+      })
+      .catch((error) => {
+        responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+      });
+  }
+
+  
 }
 
 export default new AccountController();

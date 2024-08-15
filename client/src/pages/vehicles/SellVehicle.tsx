@@ -11,7 +11,7 @@ import useQueryGetApi from '../../hooks/useQueryGetApi.hook';
 
 interface IProps {
   setShowSellPage: React.Dispatch<SetStateAction<boolean>>;
-  vehicleId: string;
+  vehicleId: string | number;
   refetch: () => void;
 }
 
@@ -38,6 +38,7 @@ const defaultValues: IVehicleSellFormValues = {
 };
 
 const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
+  const [allExchangeData, setAllExchangeData] = useState()
   const { register, handleSubmit, reset, watch, setValue, formState: { errors }, control } = useForm({
     defaultValues
   })
@@ -71,7 +72,7 @@ const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
       paymentMode: data?.paymentType.label,
       soldVehicleId: Number(vehicleId),
       isFinance: showFinance ? true : false,
-      exchangeVehicleId: exchangeDet,
+      exchangeVehicleId: exchangeDet?.id,
       is_exchange: !!exchangeDet,
       rate: Number(data?.rate),
       amount: Number(data?.paymentAmount),
@@ -116,18 +117,21 @@ const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
   useEffect(() => {
     const salesRate = watch('saleRate')
     const paymentAmount = watch('paymentAmount')
-    if (salesRate || paymentAmount) {
-      setValue('balance', `${Number(salesRate ?? 0) - Number(paymentAmount ?? 0)}`)
+    const financeAmount = watch('financeAmount')
+    if (salesRate || paymentAmount || financeAmount) {
+      setValue('balance', `${Number(salesRate ?? 0) - (Number(paymentAmount ?? 0) + Number(financeAmount ?? 0)) - Number(exchangeDet?.rate ?? 0)}`)
     }
-  }, [watch('saleRate'), watch('paymentAmount')])
+  }, [watch('saleRate'), watch('paymentAmount'), watch('financeAmount'), exchangeDet])
+
+  console.log({ exchangeDet })
   return (
     <div>
       <Header breadCrumbData={breadCrumbData} />
       <div className='pt-5 mb-3'>
         {
-          showExchangeForm ? <ExchangeVehicle setExchangeDet={setExchangeDet} showPopup={setShowExchangeForm} /> :
+          showExchangeForm ? <ExchangeVehicle setAllData={setAllExchangeData} allData={allExchangeData} accountId={watch('customer')?.value} setExchangeDet={setExchangeDet} showPopup={setShowExchangeForm} /> :
             <form onSubmit={handleSubmit(onSubmit)}>
-              <SellVehicleForm total={total} setShowFinance={setShowFinance} showFinance={showFinance} setValue={setValue} setShowExchangeForm={setShowExchangeForm} register={register} reset={reset} errors={errors} control={control} onCancelClick={onCancelClick} />
+              <SellVehicleForm watch={watch} total={total} setShowFinance={setShowFinance} showFinance={showFinance} setValue={setValue} setShowExchangeForm={setShowExchangeForm} register={register} reset={reset} errors={errors} control={control} onCancelClick={onCancelClick} />
             </form>
         }
       </div>

@@ -189,6 +189,7 @@ class AccountService {
           'name',
           'contact_info',
           'category',
+          'createdAt',
         ]);
         categoryResult.meta.perPage = perPage;
 
@@ -228,16 +229,15 @@ class AccountService {
     });
   }
 
-
-  deleteAccount(id:Number){
+  deleteAccount(id: Number) {
     return new Promise(async (resolve, reject) => {
       try {
         const query = {
           where: {
-            account_id:id
-          }
-        }
-        const vehicle = await accountsQueries.deleteItem(Accounts,query)
+            account_id: id,
+          },
+        };
+        const vehicle = await accountsQueries.deleteItem(Accounts, query);
 
         return resolve(vehicle);
       } catch (err) {
@@ -246,12 +246,34 @@ class AccountService {
     });
   }
 
-  EditAccount(data:IAccountAttributes){
+  EditAccount(data:IAccountAttributes,salary:number){
     return new Promise(async (resolve, reject) => {
       try {
         
-        const vehicle = await accountsQueries.EditAccount(data,Number(data.account_id))
+      
+        const vehicle = await accountsQueries.EditAccount(data,Number(data.account_id),salary)
 
+        return resolve(vehicle);
+      } catch (err) {
+        reject({ message: `Failed to edit this Account: ${err}` });
+      }
+    });
+  }
+
+  addJournal(data:{paymentFrom:number,paymentTo:number,amount:number,description:string,date:Date}){
+    return new Promise(async (resolve, reject) => {
+      try {
+        
+        const vehicle = await accountsQueries.generateTransaction([
+          {
+          credit_account:data.paymentFrom,
+          debit_account:data.paymentTo,
+          amount:data.amount,
+          voucher_id:await getVoucher('Adjustment'),
+          transaction_date:data.date,
+          description:data.description
+          }
+        ])
         return resolve(vehicle);
       } catch (err) {
         reject({ message: `Failed to edit this Account: ${err}` });

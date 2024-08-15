@@ -2,6 +2,8 @@ import { Control, FieldErrors, UseFormRegister } from 'react-hook-form';
 import InputBox from '../../components/formComponents/inputBox/InputBox';
 import SaveCancelButtons from '../../components/save-cancel-buttons/SaveCancelButtons';
 import { IServiceShop } from '../../types/serviceShop/serviceShop';
+import { useEffect } from 'react';
+import { IListAccountData } from '../../types/common/common';
 
 interface IProps {
   onCancelClick: () => void;
@@ -9,9 +11,19 @@ interface IProps {
   control: Control<IServiceShop>;
   errors: FieldErrors<IServiceShop>;
   reset: (values?: IServiceShop) => void;
+  data?: IListAccountData | null;
+  isEdit?: boolean;
 }
 
-const AddServiceShop = ({ onCancelClick, reset, register, errors, }: IProps) => {
+const AddServiceShop = ({ isEdit, data, onCancelClick, reset, register, errors, }: IProps) => {
+  useEffect(() => {
+    if (isEdit && data) {
+      reset({
+        name: data?.name,
+        phoneNumber: data?.contact_info,
+      })
+    }
+  }, [isEdit])
   return (
     <div className='grid gap-3'>
       <div className='flex gap-2'>
