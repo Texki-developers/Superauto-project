@@ -61,7 +61,7 @@ const ReceiptForm = ({ setShow }: IProps) => {
 
                     <CreateSelectInput
                         label='Payment From'
-                        required
+                        // required
                         options={data?.data}
                         labelName="name"
                         isLoading={isPending}

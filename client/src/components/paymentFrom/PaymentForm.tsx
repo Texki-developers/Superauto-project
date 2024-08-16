@@ -62,13 +62,14 @@ const PaymentForm = ({ setShow }: IProps) => {
                 <div className="grid grid-cols-2 gap-2">
                     <CreateSelectInput
                         label='Payment To'
-                        required
+                        // required
                         control={control}
                         placeholder='Payee'
                         options={data?.data}
                         labelName="name"
                         isLoading={isPending}
                         valueName="account_id"
+                        isSearchable
                         error={errors}
                         setIsNew={setIsNew}
                         name='paymentTo'
