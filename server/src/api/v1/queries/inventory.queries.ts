@@ -242,7 +242,6 @@ class InventoryQueries {
       replacements: { vehicle_id },
       type: QueryTypes.RAW,
     });
-    console.log(mrp, "vehicles")
     return mrp[0];
   }
   
