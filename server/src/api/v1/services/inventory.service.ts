@@ -983,7 +983,7 @@ class InventoryService {
               });
 
               console.log(deliveryTransaction, 'TRANSCA');
-              
+
               const resultTransaction = await accountsQueries.generateTransaction(deliveryTransaction, {
                 transaction: dbTransaction,
               });
@@ -1084,7 +1084,7 @@ class InventoryService {
       const fileType = 'doc';
       try {
         const docs = [data.rc_book, data.proof_doc, data.insurance_doc];
-
+        const connectorTransaction:Array<any> = [];
         const dbTransaction = await db.transaction();
 
         let docsResult: any = await Promise.all(
@@ -1133,7 +1133,7 @@ class InventoryService {
           });
 
           if (addInventoryresult.inventory_id) {
-            await accountsQueries.generateTransaction(
+            const transactionResult = await accountsQueries.generateTransaction(
               [
                 {
                   amount: data.purchase_rate,
@@ -1146,6 +1146,19 @@ class InventoryService {
               ],
               { transaction: dbTransaction }
             );
+            transactionResult &&
+            transactionResult.forEach(async (items) => {
+              connectorTransaction.push({
+                transaction_id: items.transaction_id,
+                entity_id: addInventoryresult.inventory_id,
+                entity_type: 'vehicle',
+              });
+            });
+
+            await inventoryQueries.insertBulkTsConnectors(connectorTransaction, {
+              transaction: dbTransaction,
+            });
+
             await performTransaction(dbTransaction);
             return resolve({ message: 'Opening Stock Added Successfully' });
           } else {
@@ -1160,6 +1173,94 @@ class InventoryService {
       }
     });
   }
+
+
+  editOpeningStock(data:any){
+    return new Promise(async (resolve, reject) => {
+    try{
+      const dbTransaction = await db.transaction();
+
+        const entities = await inventoryQueries.getTransactionConnectors({
+          entity_id: data.vehicle_id,
+          entity_type: 'vehicle',
+        });
+
+        console.log(entities,"ENTITIES...")
+        const allowedExtension = ['pdf', 'jpg', 'jpeg', 'png'];
+        const fileType = 'doc';
+        const docs = [data.rc_book, data.proof_doc, data.insurance_doc];
+
+        let docsResult: any = await Promise.all(
+          docs.map((file) => (file === null ? null : uploadFile(file, fileType, allowedExtension)))
+        );
+        let uploadDocs;
+        let brandID;
+        if (docsResult && docsResult.length > 0) {
+          docsResult = docsResult.filter((item: any) => item !== null);
+          uploadDocs = await inventoryQueries.uploadManyDocs(docsResult);
+        }
+        if (data.isNew === true) {
+          const brandResult = await inventoryQueries.uploadBrandModel(data.brand, data.model);
+          if (brandResult) {
+            brandID = brandResult.brand_model_id;
+          }
+        } else {
+          brandID = data?.brand_model_id;
+        }
+
+        const insertInventoryData: any = {
+          brand_model_id: Number(brandID) || 0,
+          year_of_manufacture: data.year_of_manufacture,
+          ownership_name: data.ownership_name,
+          purchase_rate: data.purchase_rate,
+          insurance_date: data.insurance_date,
+          sale_status: data.sale_status,
+          rc_book: uploadDocs?.[0]?.file_id ?? null,
+          insurance_doc: uploadDocs?.[2]?.file_id ?? null,
+          proof_doc: uploadDocs?.[1]?.file_id ?? null,
+          date_of_purchase: data.date_of_purchase,
+          registration_number: data.registration_number,
+          initial_amount:data.purchase_amount,
+          delivery_amount:data.delivery_amount
+        };
+
+        const EditQuery = {
+          where: { inventory_id: data.vehicle_id },
+          transaction: dbTransaction,
+        };
+        const differenceOpening = await accountsQueries.findAccount(E_LEDGERS_BASIC.DIFFERENCE_OPENING);
+
+        if(brandID && differenceOpening){
+           await inventoryQueries.editVehicle(insertInventoryData, EditQuery);
+
+           const findVoucherforPurchase = await accountsQueries.getVoucherWithTransaction_id(
+            Number(entities[0].transaction_id)
+          );
+         
+        
+
+           await accountsQueries.generateTransaction(
+            [
+              {
+                amount: data.purchase_rate,
+                credit_account: differenceOpening,
+                debit_account: data.vehicle_id,
+                transaction_date: data.date_of_purchase,
+                description: '',
+                voucher_id: findVoucherforPurchase?.voucher_id,
+                transaction_id: entities[0].transaction_id,
+              },
+            ],
+            { transaction: dbTransaction }
+          );
+          await performTransaction(dbTransaction);
+        }
+        return resolve({ message: 'OpeningStock Edited Successfully' });
+    } catch (err) {
+      reject({ message: `Failed to Edit opening Stock: ${err}` });
+    }
+  });
+}
 }
 
 export default new InventoryService();

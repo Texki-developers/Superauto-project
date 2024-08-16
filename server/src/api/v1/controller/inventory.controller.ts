@@ -206,6 +206,7 @@ console.log(data.is_sales_return,"IS SALES")
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
       });
   }
+
   editGetApi(req: Request, res: Response) {
     const { inventoryId } = req.query;
     inventoryService
@@ -273,7 +274,7 @@ console.log(data.is_sales_return,"IS SALES")
       delivery_name:body.deliveryName,
       vehicle_id:body.vehicleId
         };
-        
+
     inventoryService.EditVehicle(data) .then((data: any) => {
       responseHandler(res, 'MODIFIED', data, { message: data.message });
     })
@@ -309,6 +310,39 @@ console.log(data.is_sales_return,"IS SALES")
         }
 
     inventoryService.createOpeningStock(data) .then((data: any) => {
+      responseHandler(res, 'MODIFIED', data, { message: data.message });
+    })
+    .catch((error) => {
+      responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+    });
+
+  }
+
+  editOpeningStock (req: Request, res: Response){
+    const { body } = req;
+    const rcBook = getFile(req, 'rcBook');
+    const insuranceDoc = getFile(req, 'insuranceDoc');
+    const proofDoc = getFile(req, 'proofDoc');
+    
+    const data = {
+      ownership_name: body.ownershipName,
+      registration_number: body?.registrationNumber,
+      brand_model_id: body?.brandModel_id,
+      year_of_manufacture: body.yearOfManufacture,
+      purchase_rate: body.purchaseRate,
+      sale_status: false,
+      insurance_date: body.insuranceDate,
+      rc_book: rcBook,
+      insurance_doc: insuranceDoc,
+      proof_doc: proofDoc,
+      date_of_purchase: body.dateOfPurchase,
+      model: body.model,
+      brand: body.brand,
+      isNew: body.isNew === 'true' ? true :false ,
+      vehicle_id:body.vehicleId
+        }
+
+    inventoryService.editOpeningStock(data) .then((data: any) => {
       responseHandler(res, 'MODIFIED', data, { message: data.message });
     })
     .catch((error) => {
