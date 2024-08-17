@@ -74,13 +74,12 @@ const AddvehicleForm = ({ exchangeForm, setOpenStocks: setOpenStockFromProps, on
   }, [brands])
 
   useEffect(() => {
-    console.log(watch('party'))
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     if (!watch('party')?.value && isEdit) {
       setOpeningStocks(true)
     } else {
-      setOpeningStocks(false)
+    setOpeningStocks(false)
     }
   }, [isEdit, watch('party')])
 
@@ -143,7 +142,6 @@ const AddvehicleForm = ({ exchangeForm, setOpenStocks: setOpenStockFromProps, on
                     control={control}
                     error={errors}
                     onChange={(data) => {
-                      console.log({ data })
                       data?.id && setValue('brandModel_id', data?.id)
                     }}
                     required

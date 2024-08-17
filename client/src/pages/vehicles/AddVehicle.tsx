@@ -106,6 +106,10 @@ const AddVehicle = ({ setShowAddPage, refetch, setIsEdit, selectedItem, isEdit }
         value: vehicleData?.data?.brand_model_id.toString(),
       })
 
+      if (!vehicleData?.data?.account_id) {
+        setOpenStocks(true)
+      }
+
     }
   }, [vehicleData, brandData])
 
@@ -148,7 +152,7 @@ const AddVehicle = ({ setShowAddPage, refetch, setIsEdit, selectedItem, isEdit }
     isEdit && selectedItem && formData.append('vehicleId', selectedItem.toString())
     const id = toastLoading('Loading...');
     try {
-      const url = openStocks ? 'inventory/opening-stock' : isEdit ? 'inventory/edit/vehicle' : 'inventory/add/vehicle'
+      const url = openStocks && isEdit ? 'inventory/edit/opening-stock' : openStocks ? 'inventory/opening-stock' : isEdit ? 'inventory/edit/vehicle' : 'inventory/add/vehicle'
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const data = await AuthApiService.postApiFormData<FormData, any>(url, formData,)
       if (data?.status === "error") {
@@ -157,11 +161,10 @@ const AddVehicle = ({ setShowAddPage, refetch, setIsEdit, selectedItem, isEdit }
       }
       toastSuccess(id, isEdit ? 'Vehicle Updated Successfully' : 'Vehicle added successfully')
       setShowAddPage(false)
+      setIsEdit && setIsEdit(false)
+      refetch()
     } catch (error) {
       toastError(id, 'Something went wrong')
-    } finally {
-      refetch()
-      setIsEdit && setIsEdit(false)
     }
   }
   useEffect(() => {

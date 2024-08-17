@@ -10,7 +10,7 @@ class InventoryController {
     const rcBook = getFile(req, 'rcBook');
     const insuranceDoc = getFile(req, 'insuranceDoc');
     const proofDoc = getFile(req, 'proofDoc');
-    
+
     const data: IInventoryBody = {
       account_id: body.accountId,
       ownership_name: body.ownershipName,
@@ -18,7 +18,7 @@ class InventoryController {
       brand_model_id: body?.brandModel_id,
       year_of_manufacture: body.yearOfManufacture,
       purchase_rate: body.purchaseRate,
-      purchase_amount:body.purchaseAmount,
+      purchase_amount: body.purchaseAmount,
       sale_status: false,
       insurance_date: body.insuranceDate,
       delivery_service: body.deliveryService,
@@ -29,13 +29,13 @@ class InventoryController {
       date_of_purchase: body.dateOfPurchase,
       model: body.model,
       brand: body.brand,
-      isNew: body.isNew === 'true' ? true :false,
-      is_delivery: body.isDelivery === 'true' ? true :false,
-      party_phone_number:body.partyPhoneNumber,
-      party_name:body.partyName,
-      delivery_service_phone_number:body.deliveryServicePhoneNumber,
-      delivery_name:body.deliveryName
-        };
+      isNew: body.isNew === 'true' ? true : false,
+      is_delivery: body.isDelivery === 'true' ? true : false,
+      party_phone_number: body.partyPhoneNumber,
+      party_name: body.partyName,
+      delivery_service_phone_number: body.deliveryServicePhoneNumber,
+      delivery_name: body.deliveryName,
+    };
 
     inventoryService
       .addVehicle(data)
@@ -64,8 +64,8 @@ class InventoryController {
       amount: body.amount,
       due_date: body.due_date,
       exchange_vehicle_id: body.exchangeVehicleId,
-      customer_phone_number:body.customerPhoneNumber,
-      customer_name:body.customerName,
+      customer_phone_number: body.customerPhoneNumber,
+      customer_name: body.customerName,
     };
 
     inventoryService
@@ -119,15 +119,14 @@ class InventoryController {
   }
 
   listVehicle(req: Request, res: Response) {
-
     let { page, perPage } = req.query;
     const pageNum = page ? parseInt(page as string, 10) : 1;
     const perPageNum = perPage ? parseInt(perPage as string, 10) : 10;
-  
+
     inventoryService
       .listVehicles(pageNum, perPageNum)
       .then((data: any) => {
-        responseHandler(res, 'OK', data.accounts, { message: data.message ,meta:data.meta});
+        responseHandler(res, 'OK', data.accounts, { message: data.message, meta: data.meta });
       })
       .catch((error) => {
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
@@ -135,8 +134,7 @@ class InventoryController {
   }
 
   listVehicleRegNumber(req: Request, res: Response) {
-
-    const {isSold} = req.query
+    const { isSold } = req.query;
     const fromDateStr = typeof isSold === 'string' ? isSold : '';
 
     inventoryService
@@ -154,7 +152,7 @@ class InventoryController {
     const rcBook = getFile(req, 'rcBook');
     const insuranceDoc = getFile(req, 'insuranceDoc');
     const proofDoc = getFile(req, 'proofDoc');
-   
+
     const data: IInventoryBody = {
       account_id: body.accountId,
       ownership_name: body.ownershipName,
@@ -172,24 +170,24 @@ class InventoryController {
       date_of_purchase: body.dateOfPurchase,
       model: body.model,
       brand: body.brand,
-      isNew: body.isNew === 'true' ? true :false,
-      is_sales_return: body.salesReturn === 'true' || body.salesReturn === true  ? true :false,
+      isNew: body.isNew === 'true' ? true : false,
+      is_sales_return: body.salesReturn === 'true' || body.salesReturn === true ? true : false,
       inventory_id: body.inventoryId,
-      is_delivery: body.isDelivery === 'true' ? true :false,
-      party_phone_number:body.partyPhoneNumber,
-      party_name:body.partyName,
-      delivery_service_phone_number:body.deliveryServicePhoneNumber ,
-      delivery_name:body.deliveryName,
+      is_delivery: body.isDelivery === 'true' ? true : false,
+      party_phone_number: body.partyPhoneNumber,
+      party_name: body.partyName,
+      delivery_service_phone_number: body.deliveryServicePhoneNumber,
+      delivery_name: body.deliveryName,
       sold_price: body.soldPrice,
-      purchase_amount:body.purchaseAmount
+      purchase_amount: body.purchaseAmount,
     };
 
-console.log(data.is_sales_return,"IS SALES")
+    console.log(data.is_sales_return, 'IS SALES');
     inventoryService
       .exchangeVehicle(data)
       .then((data: any) => {
-        console.log(data,"RETRUN")
-        responseHandler(res, 'OK', data, { message: data.message, });
+        console.log(data, 'RETRUN');
+        responseHandler(res, 'OK', data, { message: data.message });
       })
       .catch((error) => {
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
@@ -219,7 +217,7 @@ console.log(data.is_sales_return,"IS SALES")
       });
   }
 
-  getVehicleMrp (req: Request, res: Response){
+  getVehicleMrp(req: Request, res: Response) {
     const { vehicle_id } = req.query;
     inventoryService
       .getVehicleMrp(Number(vehicle_id))
@@ -231,23 +229,24 @@ console.log(data.is_sales_return,"IS SALES")
       });
   }
 
-  deleteVehicle (req: Request, res: Response){
-    const {id,type} = req.query
-    inventoryService.deleteVehicle({id:Number(id),type:type as string}) .then((data: any) => {
-      responseHandler(res, 'MODIFIED', data, { message: data.message });
-    })
-    .catch((error) => {
-      responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
-    });
-
+  deleteVehicle(req: Request, res: Response) {
+    const { id, type } = req.query;
+    inventoryService
+      .deleteVehicle({ id: Number(id), type: type as string })
+      .then((data: any) => {
+        responseHandler(res, 'MODIFIED', data, { message: data.message });
+      })
+      .catch((error) => {
+        responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+      });
   }
 
-  EditVehicle (req: Request, res: Response){
+  EditVehicle(req: Request, res: Response) {
     const { body } = req;
     const rcBook = getFile(req, 'rcBook');
     const insuranceDoc = getFile(req, 'insuranceDoc');
     const proofDoc = getFile(req, 'proofDoc');
-    
+
     const data: IInventoryBody = {
       account_id: body.accountId,
       ownership_name: body.ownershipName,
@@ -255,7 +254,7 @@ console.log(data.is_sales_return,"IS SALES")
       brand_model_id: body?.brandModel_id,
       year_of_manufacture: body.yearOfManufacture,
       purchase_rate: body.purchaseRate,
-      purchase_amount:body.purchaseAmount,
+      purchase_amount: body.purchaseAmount,
       sale_status: false,
       insurance_date: body.insuranceDate,
       delivery_service: body.deliveryService,
@@ -266,31 +265,32 @@ console.log(data.is_sales_return,"IS SALES")
       date_of_purchase: body.dateOfPurchase,
       model: body.model,
       brand: body.brand,
-      isNew: body.isNew === 'true' ? true :false,
-      is_delivery: body.isDelivery === 'true' ? true :false,
-      party_phone_number:body.partyPhoneNumber,
-      party_name:body.partyName,
-      delivery_service_phone_number:body.deliveryServicePhoneNumber,
-      delivery_name:body.deliveryName,
-      vehicle_id:body.vehicleId
-        };
+      isNew: body.isNew === 'true' ? true : false,
+      is_delivery: body.isDelivery === 'true' ? true : false,
+      party_phone_number: body.partyPhoneNumber,
+      party_name: body.partyName,
+      delivery_service_phone_number: body.deliveryServicePhoneNumber,
+      delivery_name: body.deliveryName,
+      vehicle_id: body.vehicleId,
+    };
 
-    inventoryService.EditVehicle(data) .then((data: any) => {
-      responseHandler(res, 'MODIFIED', data, { message: data.message });
-    })
-    .catch((error) => {
-      responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
-    });
-
+    inventoryService
+      .EditVehicle(data)
+      .then((data: any) => {
+        responseHandler(res, 'MODIFIED', data, { message: data.message });
+      })
+      .catch((error) => {
+        responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+      });
   }
 
-  createOpeningStock (req: Request, res: Response){
+  createOpeningStock(req: Request, res: Response) {
     const { body } = req;
     const rcBook = getFile(req, 'rcBook');
     const insuranceDoc = getFile(req, 'insuranceDoc');
     const proofDoc = getFile(req, 'proofDoc');
-    
-    console.log(body)
+
+    console.log(body);
     const data = {
       ownership_name: body.ownershipName,
       registration_number: body?.registrationNumber,
@@ -305,25 +305,25 @@ console.log(data.is_sales_return,"IS SALES")
       date_of_purchase: body.dateOfPurchase,
       model: body.model,
       brand: body.brand,
-      isNew: body.isNew === 'true' ? true :false ,
+      isNew: body.isNew === 'true' ? true : false,
+    };
 
-        }
-
-    inventoryService.createOpeningStock(data) .then((data: any) => {
-      responseHandler(res, 'MODIFIED', data, { message: data.message });
-    })
-    .catch((error) => {
-      responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
-    });
-
+    inventoryService
+      .createOpeningStock(data)
+      .then((data: any) => {
+        responseHandler(res, 'MODIFIED', data, { message: data.message });
+      })
+      .catch((error) => {
+        responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+      });
   }
 
-  editOpeningStock (req: Request, res: Response){
+  editOpeningStock(req: Request, res: Response) {
     const { body } = req;
     const rcBook = getFile(req, 'rcBook');
     const insuranceDoc = getFile(req, 'insuranceDoc');
     const proofDoc = getFile(req, 'proofDoc');
-    
+
     const data = {
       ownership_name: body.ownershipName,
       registration_number: body?.registrationNumber,
@@ -338,17 +338,19 @@ console.log(data.is_sales_return,"IS SALES")
       date_of_purchase: body.dateOfPurchase,
       model: body.model,
       brand: body.brand,
-      isNew: body.isNew === 'true' ? true :false ,
-      vehicle_id:body.vehicleId
-        }
+      isNew: body.isNew === 'true' ? true : false,
+      vehicle_id: body.vehicleId,
+    };
 
-    inventoryService.editOpeningStock(data) .then((data: any) => {
-      responseHandler(res, 'MODIFIED', data, { message: data.message });
-    })
-    .catch((error) => {
-      responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
-    });
-
+    inventoryService
+      .editOpeningStock(data)
+      .then((data: any) => {
+        responseHandler(res, 'MODIFIED', data, { message: data.message });
+      })
+      .catch((error) => {
+        console.log(error);
+        responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+      });
   }
 }
 

@@ -37,7 +37,6 @@ interface IProps {
 const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, watch, register, reset, control, errors, total, setValue, showFinance, setShowFinance }: IProps) => {
   const [newCustomer, setNewCustomer] = useState(false)
   const { formatedData: customers, isPending: customerPending } = useGetDropdownData(ICategory.CUSTOMER)
-  console.log(customers)
   return (
     <>
       {

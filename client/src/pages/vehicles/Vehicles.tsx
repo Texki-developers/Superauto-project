@@ -60,11 +60,11 @@ const Vehicles = () => {
               src={addProduct}
               alt=''
             />
-            {data?.account_id && <img
+            <img
               onClick={() => onActionClick('edit', id, data)}
               src={EditIcon}
               alt=''
-            />}
+            />
             <img
               onClick={() => onActionClick('delete', id, data)}
               src={DeleteIcon}

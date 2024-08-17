@@ -44,7 +44,6 @@ class AccountQueries {
       return returnDataValues(TransactionResult);
     } catch (error) {
       console.log(error);
-
       throw new Error('Failed To Generate Transaction');
     }
   }

@@ -21,10 +21,8 @@ const useAccountApi = () => {
         url,
     }: IApiParams) => {
         const id = toastLoading("Please wait...")
-        console.log(id)
         try {
             const data = await AuthApiService.postApi<IAccountApiBody, IAccountApiBodyResponseBody>(url ?? 'accounts/create/account', body)
-            console.log(data)
             if (data?.status === 'error') {
                 toastError(id, errorMessage)
                 onFailure && onFailure()
