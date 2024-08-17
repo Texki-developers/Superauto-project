@@ -1094,11 +1094,10 @@ class InventoryService {
 
         if (docsResult && docsResult.length > 0) {
           docsResult = docsResult.filter((item: any) => item !== null);
-
           uploadDocs = await inventoryQueries.uploadManyDocs(docsResult);
         }
 
-        if (data.isNew === 'true') {
+        if (data.isNew) {
           const brandResult = await inventoryQueries.uploadBrandModel(data.brand, data.model);
           if (brandResult) {
             brandID = brandResult.brand_model_id;
