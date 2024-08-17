@@ -1230,8 +1230,7 @@ class InventoryService {
           const findVoucherforPurchase = await accountsQueries.getVoucherWithTransaction_id(
             Number(entities[0].transaction_id)
           );
-
-          await accountsQueries.generateTransaction(
+           await accountsQueries.generateTransaction(
             [
               {
                 amount: data.purchase_rate,
@@ -1248,12 +1247,24 @@ class InventoryService {
           await performTransaction(dbTransaction);
         }
         return resolve({ message: 'OpeningStock Edited Successfully' });
-      } catch (err) {
-        console.log(err);
-        reject({ message: `Failed to Edit opening Stock: ${err}` });
-      }
-    });
-  }
+    } catch (err) {
+      reject({ message: `Failed to Edit opening Stock: ${err}` });
+    }
+  });
+}
+
+getSales(){
+  return new Promise(async (resolve, reject) => {
+    try {
+      const Brands = await inventoryQueries.listBrandModel();
+
+      return resolve(Brands);
+    } catch (err) {
+      reject({ message: `Failed to List Brands: ${err}` });
+    }
+  });
+}
+
 }
 
 export default new InventoryService();

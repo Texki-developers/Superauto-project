@@ -352,6 +352,18 @@ class InventoryController {
         responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
       });
   }
+
+  getSales (req: Request, res: Response){
+    const { vehicle_id } = req.query;
+    inventoryService
+      .getSales()
+      .then((data: any) => {
+        responseHandler(res, 'OK', data, { message: data.message });
+      })
+      .catch((error) => {
+        responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+      });
+  }
 }
 
 export default new InventoryController();
