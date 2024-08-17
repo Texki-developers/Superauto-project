@@ -1236,9 +1236,6 @@ class InventoryService {
            const findVoucherforPurchase = await accountsQueries.getVoucherWithTransaction_id(
             Number(entities[0].transaction_id)
           );
-         
-        
-
            await accountsQueries.generateTransaction(
             [
               {
@@ -1261,6 +1258,19 @@ class InventoryService {
     }
   });
 }
+
+getSales(){
+  return new Promise(async (resolve, reject) => {
+    try {
+      const Brands = await inventoryQueries.listBrandModel();
+
+      return resolve(Brands);
+    } catch (err) {
+      reject({ message: `Failed to List Brands: ${err}` });
+    }
+  });
+}
+
 }
 
 export default new InventoryService();
