@@ -91,7 +91,7 @@ const AddVehicle = ({ setShowAddPage, refetch, setIsEdit, selectedItem, isEdit }
         rcBook: vehicleData?.data?.rcBook?.name,
         ownership: vehicleData?.data?.ownership_name,
         yearOfManufacture: vehicleData?.data?.year_of_manufacture.toString(),
-        insuranceDate: moment(vehicleData?.data?.insurance_date0)?.format('YYYY-MM-DD'),
+        insuranceDate: moment(vehicleData?.data?.insurance_date)?.format('YYYY-MM-DD'),
         deliveryService: {
           value: vehicleData?.data?.DsTransaction?.ds_id,
           label: vehicleData?.data?.DsTransaction?.name,
