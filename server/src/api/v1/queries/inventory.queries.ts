@@ -129,6 +129,18 @@ class InventoryQueries {
     });
   }
 
+  async ListSales() {
+    return await Sales.findAll({
+      include: [
+        {
+          model: Inventory,
+          attributes:['registration_number','sold_price']
+        }
+      ]
+    });
+  }
+  
+
   async getSalesReturn(options: FindOptions) {
     return await SaleReturn.findAll(options);
   }

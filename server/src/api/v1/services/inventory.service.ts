@@ -1255,11 +1255,11 @@ class InventoryService {
 getSales(){
   return new Promise(async (resolve, reject) => {
     try {
-      const Brands = await inventoryQueries.listBrandModel();
+      const sales = await inventoryQueries.ListSales();
 
-      return resolve(Brands);
+      return resolve(sales);
     } catch (err) {
-      reject({ message: `Failed to List Brands: ${err}` });
+      reject({ message: `Failed to List sales: ${err}` });
     }
   });
 }
