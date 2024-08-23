@@ -135,7 +135,7 @@ const AddVehicle = ({ setShowAddPage, refetch, setIsEdit, selectedItem, isEdit }
     formData.append('purchaseRate', data.purchaseRate);
     formData.append('purchaseAmount', data.purchaseAmount);
     formData.append('saleStatus', 'false');
-    formData.append('insuranceDate', data.insuranceDate);
+    data.insuranceDate && formData.append('insuranceDate', data.insuranceDate);
     (data?.deliveryService?.__isNew__ || data?.deliveryService?.value) && formData.append(data?.deliveryService.__isNew__ ? 'deliveryName' : 'deliveryService', data.deliveryService.value);
     data.deliveryAmount && formData.append('deliveryAmount', data.deliveryAmount);
     data.rcBook && formData.append('rcBook', data.rcBook);

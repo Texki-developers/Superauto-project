@@ -79,7 +79,7 @@ const AddvehicleForm = ({ exchangeForm, setOpenStocks: setOpenStockFromProps, on
     if (!watch('party')?.value && isEdit) {
       setOpeningStocks(true)
     } else {
-    setOpeningStocks(false)
+      setOpeningStocks(false)
     }
   }, [isEdit, watch('party')])
 
@@ -236,7 +236,6 @@ const AddvehicleForm = ({ exchangeForm, setOpenStocks: setOpenStockFromProps, on
                     type='date'
                     register={register}
                     error={errors}
-                    required
                   />
                 </div>
               </div>
