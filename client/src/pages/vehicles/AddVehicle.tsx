@@ -91,7 +91,7 @@ const AddVehicle = ({ setShowAddPage, refetch, setIsEdit, selectedItem, isEdit }
         rcBook: vehicleData?.data?.rcBook?.name,
         ownership: vehicleData?.data?.ownership_name,
         yearOfManufacture: vehicleData?.data?.year_of_manufacture.toString(),
-        insuranceDate: moment(vehicleData?.data?.insurance_date0)?.format('YYYY-MM-DD'),
+        insuranceDate: moment(vehicleData?.data?.insurance_date)?.format('YYYY-MM-DD'),
         deliveryService: {
           value: vehicleData?.data?.DsTransaction?.ds_id,
           label: vehicleData?.data?.DsTransaction?.name,
@@ -135,7 +135,7 @@ const AddVehicle = ({ setShowAddPage, refetch, setIsEdit, selectedItem, isEdit }
     formData.append('purchaseRate', data.purchaseRate);
     formData.append('purchaseAmount', data.purchaseAmount);
     formData.append('saleStatus', 'false');
-    formData.append('insuranceDate', data.insuranceDate);
+    data.insuranceDate && formData.append('insuranceDate', data.insuranceDate);
     (data?.deliveryService?.__isNew__ || data?.deliveryService?.value) && formData.append(data?.deliveryService.__isNew__ ? 'deliveryName' : 'deliveryService', data.deliveryService.value);
     data.deliveryAmount && formData.append('deliveryAmount', data.deliveryAmount);
     data.rcBook && formData.append('rcBook', data.rcBook);

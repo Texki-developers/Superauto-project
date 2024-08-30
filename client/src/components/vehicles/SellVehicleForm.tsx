@@ -189,7 +189,7 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, watch, register, 
                   type='date'
                   register={register}
                   error={errors}
-                  required
+                  required={watch('balance') != 0}
                 />
                 <InputBox
                   name='balance'
