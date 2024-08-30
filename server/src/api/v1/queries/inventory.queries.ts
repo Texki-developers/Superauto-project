@@ -12,7 +12,6 @@ import {
   IInventoryAttributes,
   ISalesAttributes,
   IServiceTransactionAttributes,
-  ITransactionParams,
 } from '../../../types/db.type';
 import SaleReturn from '../../../models/salesReturn';
 import { db } from '../../../config/database';
@@ -73,6 +72,18 @@ class InventoryQueries {
     }
   }
 
+  async addToFinancerTable(data: FinancerTransaction[], options?: any) {
+    try {
+      const deliveryService = await FinancerTransaction.bulkCreate(data, {
+        ...options,
+        updateOnDuplicate: ['financer_id', 'vehicle_id'],
+      });
+      return deliveryService;
+    } catch (error) {
+      throw new Error('Failed To Generate Transaction');
+    }
+  }
+
   async addToServiceTable(data: IServiceTransactionAttributes[], options?: any) {
     try {
       const Service = await ServiceTransaction.bulkCreate(data, options);
@@ -97,6 +108,9 @@ class InventoryQueries {
 
   async addDatatoSales(data: ISalesAttributes, options?: any) {
     return await Sales.create(data, options);
+  }
+  async editDatatoSales(data: ISalesAttributes, query:any) {
+    return await Sales.update(data, query);
   }
 
   async getAllVehicles(options?: FindOptions) {
@@ -134,9 +148,10 @@ class InventoryQueries {
       include: [
         {
           model: Inventory,
-          attributes:['registration_number','sold_price']
+          attributes:['registration_number','inventory_id']
         }
-      ]
+      ],
+      attributes:['sold_rate','sales_id']
     });
   }
   
@@ -144,6 +159,16 @@ class InventoryQueries {
   async getSalesReturn(options: FindOptions) {
     return await SaleReturn.findAll(options);
   }
+
+
+  async getSales(salesid:number){
+    return await Sales.findOne({
+      where:{
+        sales_id:salesid
+      }
+    })
+  }
+
 
   async getVehiclebyId(inventory_id: number) {
     try {
@@ -286,6 +311,7 @@ class InventoryQueries {
       },
     });
   }
+  
 }
 
 export default new InventoryQueries();
