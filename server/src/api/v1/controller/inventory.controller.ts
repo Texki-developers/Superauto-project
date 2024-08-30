@@ -62,7 +62,7 @@ class InventoryController {
       is_exchange: body.is_exchange,
       rate: body.rate,
       amount: body.amount,
-      due_date: body.due_date,
+      due_date: body.due_date === "" ? null : body.due_date,
       exchange_vehicle_id: body.exchangeVehicleId,
       customer_phone_number: body.customerPhoneNumber,
       customer_name: body.customerName,
