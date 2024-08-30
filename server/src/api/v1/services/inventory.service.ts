@@ -24,6 +24,7 @@ import Transaction from '../../../models/transaction';
 import { Op } from 'sequelize';
 import DsTransaction from '../../../models/dsTransactions';
 import TransactionConnectors from '../../../models/transactionConnecter';
+import Sales from '../../../models/sales';
 
 class InventoryService {
   addVehicle = (data: IInventoryBody) => {
@@ -386,8 +387,8 @@ class InventoryService {
     return new Promise(async (resolve, reject) => {
       try {
         const dbTransaction = await db.transaction();
-        const connectorTransaction:any[] = [];
-       const financeTransaction:any[] = []
+        const connectorTransaction: any[] = [];
+        const financeTransaction: any[] = [];
         const salesId = await accountsQueries.findAccount(E_LEDGERS_BASIC.SALE);
         const payment_mode = await accountsQueries.findAccount(data.payment_mode);
         if (data.customer_phone_number && data?.customer_phone_number?.length > 0) {
@@ -424,25 +425,26 @@ class InventoryService {
           ];
         }
 
-
-
         console.log(transactions, 'TRANSACTIon');
-        const transactionResult = await accountsQueries.generateTransaction(transactions, { transaction: dbTransaction });
-        const financeResult = await inventoryQueries.addToFinancerTable(financeTransaction, { transaction: dbTransaction });
+        const transactionResult = await accountsQueries.generateTransaction(transactions, {
+          transaction: dbTransaction,
+        });
+        const financeResult = await inventoryQueries.addToFinancerTable(financeTransaction, {
+          transaction: dbTransaction,
+        });
         await inventoryQueries.changeStatusOfVehicle(data.sold_vehicle_id, data.sales_rate, {
           transaction: dbTransaction,
         });
 
-       
         transactionResult &&
-        transactionResult.forEach(async (items) => {
-          connectorTransaction.push({
-            transaction_id: items.transaction_id,
-            entity_id: data.account_id,
-            entity_type: 'sales',
+          transactionResult.forEach(async (items) => {
+            connectorTransaction.push({
+              transaction_id: items.transaction_id,
+              entity_id: data.account_id,
+              entity_type: 'sales',
+            });
           });
-        });
-       
+
         const salesData = {
           account_id: data.account_id,
           sold_date: data.sales_date,
@@ -839,6 +841,7 @@ class InventoryService {
         });
 
         const entitiesId = entities.map((items) => items.transaction_id);
+
         const transactionTableDeleteQuery = {
           where: {
             transaction_id: {
@@ -874,6 +877,7 @@ class InventoryService {
           },
           transaction: dbTransaction,
         });
+
         await accountsQueries.deleteItem(Inventory, query);
         await accountsQueries.deleteItem(TransactionConnectors, {
           where: {
@@ -893,6 +897,51 @@ class InventoryService {
     });
   }
 
+  deleteSales(data: { id: number; account_id: number }) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const dbTransaction = await db.transaction();
+        const query = {
+          where: {
+            sales_id: data.id,
+          },
+          transaction: dbTransaction,
+        };
+        const entities = await inventoryQueries.getTransactionConnectors({
+          entity_id: data.account_id,
+          entity_type: 'sales',
+        });
+
+        const entitiesId = entities.map((items) => items.transaction_id);
+
+        const transactionTableDeleteQuery = {
+          where: {
+            transaction_id: {
+              [Op.in]: entitiesId,
+            },
+          },
+
+          transaction: dbTransaction,
+        };
+
+        await accountsQueries.deleteItem(Sales, query);
+        await accountsQueries.deleteItem(TransactionConnectors, {
+          where: {
+            entity_id: data.account_id,
+            entity_type: 'sales',
+          },
+          transaction: dbTransaction,
+        });
+
+        await accountsQueries.deleteItem(Transaction, transactionTableDeleteQuery);
+        await performTransaction(dbTransaction);
+        return resolve({ message: 'Deleted Successfully' });
+      } catch (err) {
+        console.log(err);
+        reject({ message: `Failed to Delete sales:` });
+      }
+    });
+  }
   EditVehicle(data: IInventoryBody) {
     return new Promise(async (resolve, reject) => {
       try {
@@ -1324,7 +1373,7 @@ class InventoryService {
         if (salesId && payment_mode) {
           transactions = [
             {
-              transaction_id:entities[0].transaction_id,
+              transaction_id: entities[0].transaction_id,
               amount: data.sales_rate,
               credit_account: salesId,
               debit_account: data.account_id,
@@ -1333,7 +1382,7 @@ class InventoryService {
               transaction_date: data.sales_date,
             },
             {
-              transaction_id:entities[1].transaction_id,
+              transaction_id: entities[1].transaction_id,
               amount: data.amount,
               credit_account: data.account_id,
               debit_account: payment_mode,
@@ -1380,11 +1429,17 @@ class InventoryService {
       } catch (error) {
         reject({ message: `Failed to edit sales Error: ${error}` });
       }
-      
     });
   }
 
-  async financeTransactionBuilder(entity:number,ledger1:number,ledger2:number,transaction:any[],amount:number,date:Date){
+  async financeTransactionBuilder(
+    entity: number,
+    ledger1: number,
+    ledger2: number,
+    transaction: any[],
+    amount: number,
+    date: Date
+  ) {
     transaction.push(
       {
         amount: amount,
@@ -1401,9 +1456,8 @@ class InventoryService {
         voucher_id: await getVoucher(E_VOUCHERS.Sale),
         description: '',
         transaction_date: date,
-      },
-    )
-
+      }
+    );
   }
 }
 

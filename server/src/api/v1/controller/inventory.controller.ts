@@ -253,6 +253,18 @@ class InventoryController {
       });
   }
 
+  deleteSales(req: Request, res: Response) {
+    const { id, accountId } = req.query;
+    inventoryService
+      .deleteSales({ id: Number(id), account_id: Number(accountId) })
+      .then((data: any) => {
+        responseHandler(res, 'MODIFIED', data, { message: data.message });
+      })
+      .catch((error) => {
+        responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+      });
+  }
+
   EditVehicle(req: Request, res: Response) {
     const { body } = req;
     const rcBook = getFile(req, 'rcBook');
