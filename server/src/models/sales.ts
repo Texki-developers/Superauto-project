@@ -5,6 +5,7 @@ import {
   } from 'sequelize';
   import { db } from '../config/database';
 import { ISalesAttributes } from '../types/db.type';
+import Inventory from './inventory';
   
   // Define the interface for model attributes
  
@@ -39,7 +40,11 @@ import { ISalesAttributes } from '../types/db.type';
     },
     sold_vehicle: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references:{
+        model:Inventory,
+        key:'inventory_id'
+      }
     },
     sold_rate: {
       type: DataTypes.INTEGER,
@@ -82,6 +87,8 @@ import { ISalesAttributes } from '../types/db.type';
     tableName: 'sales',
     timestamps: true
   });
-  
+
+
+  Sales.belongsTo(Inventory, {foreignKey: 'sold_vehicle'});
   export default Sales;
   

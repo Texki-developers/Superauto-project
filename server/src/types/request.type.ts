@@ -76,6 +76,7 @@ interface IsellVehicleBody {
     customer_name:string;
     customer_phone_number:string;
     due_date: Date;
+    sales_id?:number
 
 }
 

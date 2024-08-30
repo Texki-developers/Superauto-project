@@ -386,6 +386,8 @@ class InventoryService {
     return new Promise(async (resolve, reject) => {
       try {
         const dbTransaction = await db.transaction();
+        const connectorTransaction:any[] = [];
+       const financeTransaction:any[] = []
         const salesId = await accountsQueries.findAccount(E_LEDGERS_BASIC.SALE);
         const payment_mode = await accountsQueries.findAccount(data.payment_mode);
         if (data.customer_phone_number && data?.customer_phone_number?.length > 0) {
@@ -412,7 +414,7 @@ class InventoryService {
               transaction_date: data.sales_date,
             },
             {
-              amount: data.rate,
+              amount: data.amount,
               credit_account: data.account_id,
               debit_account: payment_mode,
               voucher_id: await getVoucher(E_VOUCHERS.Sale),
@@ -421,11 +423,26 @@ class InventoryService {
             },
           ];
         }
+
+
+
         console.log(transactions, 'TRANSACTIon');
-        await accountsQueries.generateTransaction(transactions, { transaction: dbTransaction });
+        const transactionResult = await accountsQueries.generateTransaction(transactions, { transaction: dbTransaction });
+        const financeResult = await inventoryQueries.addToFinancerTable(financeTransaction, { transaction: dbTransaction });
         await inventoryQueries.changeStatusOfVehicle(data.sold_vehicle_id, data.sales_rate, {
           transaction: dbTransaction,
         });
+
+       
+        transactionResult &&
+        transactionResult.forEach(async (items) => {
+          connectorTransaction.push({
+            transaction_id: items.transaction_id,
+            entity_id: data.account_id,
+            entity_type: 'sales',
+          });
+        });
+       
         const salesData = {
           account_id: data.account_id,
           sold_date: data.sales_date,
@@ -447,6 +464,9 @@ class InventoryService {
           delete salesData.exchange_vehicle_id;
         }
         await inventoryQueries.addDatatoSales(salesData, { transaction: dbTransaction });
+        await inventoryQueries.insertBulkTsConnectors(connectorTransaction, {
+          transaction: dbTransaction,
+        });
         await performTransaction(dbTransaction);
         resolve({
           message: 'vehicle sale success',
@@ -768,6 +788,19 @@ class InventoryService {
     return new Promise(async (resolve, reject) => {
       try {
         const editGetApi = await inventoryQueries.getVehiclebyId(inventoryId);
+
+        return resolve(editGetApi);
+      } catch (err) {
+        console.log(err, 'ERORR');
+        reject({ message: `Failed to List Brands: ${err}` });
+      }
+    });
+  }
+
+  saleEditGetApi(salesID: number) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const editGetApi = await inventoryQueries.getSales(salesID);
 
         return resolve(editGetApi);
       } catch (err) {
@@ -1229,7 +1262,7 @@ class InventoryService {
           const findVoucherforPurchase = await accountsQueries.getVoucherWithTransaction_id(
             Number(entities[0].transaction_id)
           );
-           await accountsQueries.generateTransaction(
+          await accountsQueries.generateTransaction(
             [
               {
                 amount: data.purchase_rate,
@@ -1246,24 +1279,132 @@ class InventoryService {
           await performTransaction(dbTransaction);
         }
         return resolve({ message: 'OpeningStock Edited Successfully' });
-    } catch (err) {
-      reject({ message: `Failed to Edit opening Stock: ${err}` });
-    }
-  });
-}
+      } catch (err) {
+        reject({ message: `Failed to Edit opening Stock: ${err}` });
+      }
+    });
+  }
 
-getSales(){
-  return new Promise(async (resolve, reject) => {
-    try {
-      const Brands = await inventoryQueries.listBrandModel();
+  getSales() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const sales = await inventoryQueries.ListSales();
 
-      return resolve(Brands);
-    } catch (err) {
-      reject({ message: `Failed to List Brands: ${err}` });
-    }
-  });
-}
+        return resolve(sales);
+      } catch (err) {
+        reject({ message: `Failed to List sales: ${err}` });
+      }
+    });
+  }
 
+  editSales(data: any) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const entities = await inventoryQueries.getTransactionConnectors({
+          entity_id: data.account_id,
+          entity_type: 'sales',
+        });
+
+        const dbTransaction = await db.transaction();
+        const salesId = await accountsQueries.findAccount(E_LEDGERS_BASIC.SALE);
+        const payment_mode = await accountsQueries.findAccount(data.payment_mode);
+
+        if (data.customer_phone_number && data?.customer_phone_number?.length > 0) {
+          if (data.customer_name) {
+            const newAccountResult = await accountsService.accountHelper(
+              { party_name: data.customer_name, party_phone_number: data.customer_phone_number },
+              'CUSTOMER'
+            );
+
+            console.log(newAccountResult, 'NEW ACCOUNT');
+            data.account_id = newAccountResult.account_id;
+          }
+        }
+        let transactions: ITransactionParams[] = [];
+        if (salesId && payment_mode) {
+          transactions = [
+            {
+              transaction_id:entities[0].transaction_id,
+              amount: data.sales_rate,
+              credit_account: salesId,
+              debit_account: data.account_id,
+              voucher_id: await getVoucher(E_VOUCHERS.Sale),
+              description: '',
+              transaction_date: data.sales_date,
+            },
+            {
+              transaction_id:entities[1].transaction_id,
+              amount: data.amount,
+              credit_account: data.account_id,
+              debit_account: payment_mode,
+              voucher_id: await getVoucher(E_VOUCHERS.Sale),
+              description: '',
+              transaction_date: data.sales_date,
+            },
+          ];
+        }
+        await accountsQueries.generateTransaction(transactions, { transaction: dbTransaction });
+        await inventoryQueries.changeStatusOfVehicle(data.sold_vehicle_id, data.sales_rate, {
+          transaction: dbTransaction,
+        });
+        const salesData = {
+          account_id: data.account_id,
+          sold_date: data.sales_date,
+          due_date: data.due_date,
+          exchange_vehicle_id: data.exchange_vehicle_id,
+          sold_rate: data.sales_rate,
+          sold_vehicle: data.sold_vehicle_id,
+          payment_mode: data.payment_mode,
+          is_finance: data.is_finance,
+          finance_amount: data.finance_amount,
+          finance_service_charge: data.finance_charge,
+          is_exchange: data.is_exchange,
+        };
+        if (!data.is_finance) {
+          delete salesData.finance_amount;
+          delete salesData.finance_service_charge;
+        }
+        if (!data.is_exchange) {
+          delete salesData.exchange_vehicle_id;
+        }
+        const EditQuery = {
+          where: { sales_id: data.sales_id },
+          transaction: dbTransaction,
+        };
+
+        await inventoryQueries.editDatatoSales(salesData, EditQuery);
+        await performTransaction(dbTransaction);
+        resolve({
+          message: 'edit sale success',
+        });
+      } catch (error) {
+        reject({ message: `Failed to edit sales Error: ${error}` });
+      }
+      
+    });
+  }
+
+  async financeTransactionBuilder(entity:number,ledger1:number,ledger2:number,transaction:any[],amount:number,date:Date){
+    transaction.push(
+      {
+        amount: amount,
+        credit_account: ledger1,
+        debit_account: entity,
+        voucher_id: await getVoucher(E_VOUCHERS.Sale),
+        description: '',
+        transaction_date: date,
+      },
+      {
+        amount: amount,
+        credit_account: entity,
+        debit_account: ledger2,
+        voucher_id: await getVoucher(E_VOUCHERS.Sale),
+        description: '',
+        transaction_date: date,
+      },
+    )
+
+  }
 }
 
 export default new InventoryService();

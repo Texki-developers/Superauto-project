@@ -217,6 +217,18 @@ class InventoryController {
       });
   }
 
+  saleEditGetApi(req: Request, res: Response) {
+    const { id } = req.params;
+    inventoryService
+      .saleEditGetApi(Number(id))
+      .then((data: any) => {
+        responseHandler(res, 'OK', data, { message: data.message });
+      })
+      .catch((error) => {
+        responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+      });
+  }
+
   getVehicleMrp(req: Request, res: Response) {
     const { vehicle_id } = req.query;
     inventoryService
@@ -353,10 +365,40 @@ class InventoryController {
       });
   }
 
-  getSales (req: Request, res: Response){
-    const { vehicle_id } = req.query;
+  getSales(req: Request, res: Response) {
     inventoryService
       .getSales()
+      .then((data: any) => {
+        responseHandler(res, 'OK', data, { message: data.message });
+      })
+      .catch((error) => {
+        responseHandler(res, 'INTERNAL_SERVER_ERROR', null, error);
+      });
+  }
+
+  editSales(req: Request, res: Response) {
+    const { body } = req;
+
+    const data: IsellVehicleBody = {
+      sales_id: body.salesId,
+      account_id: body.accountId,
+      sales_rate: body.soldRate,
+      sales_date: body.soldDate,
+      payment_mode: body.paymentMode,
+      finance_amount: body.financeAmound,
+      finance_charge: body.financeCharge,
+      sold_vehicle_id: body.soldVehicleId,
+      is_finance: body.isFinance,
+      is_exchange: body.is_exchange,
+      rate: body.rate,
+      amount: body.amount,
+      due_date: body.due_date,
+      exchange_vehicle_id: body.exchangeVehicleId,
+      customer_phone_number: body.customerPhoneNumber,
+      customer_name: body.customerName,
+    };
+    inventoryService
+      .editSales(data)
       .then((data: any) => {
         responseHandler(res, 'OK', data, { message: data.message });
       })

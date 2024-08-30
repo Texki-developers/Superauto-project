@@ -7,6 +7,7 @@ import FileStore from './documents';
 import SaleReturn from './salesReturn';
 import DsTransaction from './dsTransactions';
 import Transaction from './transaction';
+import Sales from './sales';
 
 // Define the interface for model attributes
 
