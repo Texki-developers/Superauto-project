@@ -48,3 +48,17 @@ export interface IExchangeVehicleDetails {
   rate: number;
   regNumb: string;
 }
+
+export interface IGetSalesLIST {
+  data: IGetSales[];
+}
+export interface IGetSales {
+  sold_rate: number;
+  sales_id: number;
+  Inventory: Inventory;
+}
+
+interface Inventory {
+  registration_number: string;
+  inventory_id: number;
+}

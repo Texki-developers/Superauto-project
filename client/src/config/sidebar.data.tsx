@@ -43,14 +43,14 @@ export const sidebarData: ISidebarItem[] = [
     isSubMenu: false,
     element: <Vehicles />,
   },
-  // {
-  //   name: 'Sales',
-  //   url: '/sales',
-  //   icon: VehiclesImage,
-  //   id: uuidv4(),
-  //   isSubMenu: false,
-  //   element: <SalesReturn />,
-  // },
+  {
+    name: 'Sales',
+    url: '/sales',
+    icon: VehiclesImage,
+    id: uuidv4(),
+    isSubMenu: false,
+    element: <SalesReturn />,
+  },
   {
     name: 'Finance',
     url: '/finance',

@@ -13,7 +13,7 @@ import { paymentTypes } from '../../config/paymentTypes.data';
 
 
 interface IProps {
-  setShowExchangeForm: React.Dispatch<SetStateAction<boolean>>
+  setShowExchangeForm?: React.Dispatch<SetStateAction<boolean>>
   onCancelClick: () => void;
   register: UseFormRegister<IVehicleSellFormValues>;
   control: Control<IVehicleSellFormValues>;
@@ -144,7 +144,7 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, watch, register, 
 
               <div className="flex justify-between">
                 <h1 className='primary-heading'>Exchange Details</h1>
-                {watch('customer')?.value && <div onClick={() => setShowExchangeForm(true)} className="cursor-pointer border-b-2 border-black-100 items-center flex gap-2">
+                {watch('customer')?.value && <div onClick={() => setShowExchangeForm && setShowExchangeForm(true)} className="cursor-pointer border-b-2 border-black-100 items-center flex gap-2">
                   <img className="w-[20px] h-[20px]" src={AddButton} alt="" />
                   <p className="font-semibold">Add Exchange Details</p>
                 </div>}
