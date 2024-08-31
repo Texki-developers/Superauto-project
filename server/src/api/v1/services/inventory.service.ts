@@ -897,7 +897,7 @@ class InventoryService {
     });
   }
 
-  deleteSales(data: { id: number; account_id: number }) {
+  deleteSales(data: { id: number; account_id: number,vehicle_id:number }) {
     return new Promise(async (resolve, reject) => {
       try {
         const dbTransaction = await db.transaction();
@@ -910,7 +910,7 @@ class InventoryService {
 
         const updateQuery = {
           where: {
-            inventory_id: data.id,
+            inventory_id: data.vehicle_id,
           },
           transaction: dbTransaction,
         };

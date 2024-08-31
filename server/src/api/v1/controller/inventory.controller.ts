@@ -254,9 +254,9 @@ class InventoryController {
   }
 
   deleteSales(req: Request, res: Response) {
-    const { id, accountId } = req.query;
+    const { id, accountId ,vehicleId} = req.query;
     inventoryService
-      .deleteSales({ id: Number(id), account_id: Number(accountId) })
+      .deleteSales({ id: Number(id), account_id: Number(accountId), vehicle_id: Number(vehicleId) })
       .then((data: any) => {
         responseHandler(res, 'MODIFIED', data, { message: data.message });
       })
