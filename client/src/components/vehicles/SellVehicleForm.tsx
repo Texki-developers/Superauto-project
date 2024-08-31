@@ -27,14 +27,16 @@ interface IProps {
       shouldDirty?: boolean;
     }
   ) => void; // SetValue function for setting form values
-  showFinance: boolean;
-  total: number,
+  showFinance?: boolean;
+  total?: number,
+  hideExchange?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   watch: (name: keyof IVehicleSellFormValues) => IVehicleSellFormValues[keyof IVehicleSellFormValues] | any;
-  setShowFinance: React.Dispatch<SetStateAction<boolean>>;
+  setShowFinance?: React.Dispatch<SetStateAction<boolean>>;
+  hideBalance?: boolean;
 }
 
-const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, watch, register, reset, control, errors, total, setValue, showFinance, setShowFinance }: IProps) => {
+const SellVehicleForm = ({ hideBalance, setShowExchangeForm, onCancelClick, hideExchange, watch, register, reset, control, errors, total, setValue, showFinance, setShowFinance }: IProps) => {
   const [newCustomer, setNewCustomer] = useState(false)
   const { formatedData: customers, isPending: customerPending } = useGetDropdownData(ICategory.CUSTOMER)
   return (
@@ -116,7 +118,7 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, watch, register, 
                     setValue('financeAmount', '')
                     setValue('financeServiceCharge', '')
                   }
-                  setShowFinance(e.target.checked)
+                  setShowFinance && setShowFinance(e.target.checked)
                 }} error={errors} name='Finance' label="" />
               </div>
               {showFinance && <div className="grid grid-cols-[2fr_1fr]">
@@ -142,34 +144,36 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, watch, register, 
                 </div>
               </div>}
 
-              <div className="flex justify-between">
-                <h1 className='primary-heading'>Exchange Details</h1>
-                {watch('customer')?.value && <div onClick={() => setShowExchangeForm && setShowExchangeForm(true)} className="cursor-pointer border-b-2 border-black-100 items-center flex gap-2">
-                  <img className="w-[20px] h-[20px]" src={AddButton} alt="" />
-                  <p className="font-semibold">Add Exchange Details</p>
-                </div>}
-              </div>
-              <div className="grid grid-cols-[2fr_1fr]">
-                <div className='grid grid-cols-2 gap-4'>
-                  <InputBox
-                    name='registrationNumber'
-                    label='Registration Number'
-                    placeholder='Registration Number'
-                    register={register}
-                    isDisabled
-                    error={errors}
-                  />
-                  <InputBox
-                    name='rate'
-                    label='Rate'
-                    placeholder='0'
-                    type='number'
-                    register={register}
-                    isDisabled
-                    error={errors}
-                  />
+              {!hideExchange && <>
+                <div className="flex justify-between">
+                  <h1 className='primary-heading'>Exchange Details</h1>
+                  {watch('customer')?.value && <div onClick={() => setShowExchangeForm && setShowExchangeForm(true)} className="cursor-pointer border-b-2 border-black-100 items-center flex gap-2">
+                    <img className="w-[20px] h-[20px]" src={AddButton} alt="" />
+                    <p className="font-semibold">Add Exchange Details</p>
+                  </div>}
                 </div>
-              </div>
+                <div className="grid grid-cols-[2fr_1fr]">
+                  <div className='grid grid-cols-2 gap-4'>
+                    <InputBox
+                      name='registrationNumber'
+                      label='Registration Number'
+                      placeholder='Registration Number'
+                      register={register}
+                      isDisabled
+                      error={errors}
+                    />
+                    <InputBox
+                      name='rate'
+                      label='Rate'
+                      placeholder='0'
+                      type='number'
+                      register={register}
+                      isDisabled
+                      error={errors}
+                    />
+                  </div>
+                </div>
+              </>}
 
               <h1 className='primary-heading'>Payments</h1>
               <div className='grid grid-cols-3 gap-4'>
@@ -191,7 +195,7 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, watch, register, 
                   error={errors}
                   required={watch('balance') != 0}
                 />
-                <InputBox
+                {!hideBalance && <InputBox
                   name='balance'
                   label='Balance'
                   placeholder='0'
@@ -200,7 +204,7 @@ const SellVehicleForm = ({ setShowExchangeForm, onCancelClick, watch, register, 
                   register={register}
                   error={errors}
                   required
-                />
+                />}
               </div>
             </div>
           </div>

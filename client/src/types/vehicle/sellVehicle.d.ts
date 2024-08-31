@@ -1,5 +1,5 @@
 interface DataItem {
-  value: string;
+  value: string | number;
   label: string;
   __isNew__?: boolean;
 }
@@ -18,6 +18,33 @@ export interface IVehicleSellFormValues {
   paymentAmount: string;
   dueDate: string;
   balance: string;
+}
+
+export interface ISalesEdit {
+  data: ISalesData;
+}
+export interface ISalesData {
+  sales_id: number;
+  account_id: number;
+  sold_vehicle: number;
+  sold_rate: number | string;
+  sold_date: string;
+  payment_mode: string;
+  is_finance: boolean;
+  finance_amount: null;
+  finance_service_charge: null;
+  is_exchange: boolean;
+  exchange_vehicle_id: null;
+  due_date: string;
+  createdAt: string;
+  updatedAt: string;
+  amount: string | undefined;
+  accounts: Accounts;
+}
+
+interface Accounts {
+  name: string;
+  account_id: number;
 }
 
 export interface IVehicleNewFormValues {

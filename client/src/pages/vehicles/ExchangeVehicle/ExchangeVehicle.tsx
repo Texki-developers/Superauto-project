@@ -17,7 +17,7 @@ const tabs = ['Sales Return', 'New Vehicle']
 
 interface IProps {
     showPopup: React.Dispatch<SetStateAction<boolean>>;
-    accountId: string;
+    accountId: string | number;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setAllData: (data: any) => void;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -57,11 +57,11 @@ const SalesReturn = () => {
               src={addProduct}
               alt=''
             /> */}
-            {/* <img
+            <img
               onClick={() => onActionClick('edit', id, data)}
               src={EditIcon}
               alt=''
-            /> */}
+            />
             <img
               onClick={() => onActionClick('delete', id, data)}
               src={DeleteIcon}
@@ -89,9 +89,11 @@ const SalesReturn = () => {
         />
       }
       <main className='table-wrapper'>
-        {showAddPage ? (
+        {showAddPage && selectedVehicleData?.sales_id ? (
           <>
-            <EditSellPage />
+            <EditSellPage onCancel={() => {
+              setShowAddPage(false)
+            }} selectedItem={selectedVehicleData?.sales_id} selectedVehicle={selectedVehicleData?.Inventory?.inventory_id} />
           </>
         ) :
           showSellPage && selectedVehicleData ? (

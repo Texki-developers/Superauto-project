@@ -109,7 +109,7 @@ class InventoryQueries {
   async addDatatoSales(data: ISalesAttributes, options?: any) {
     return await Sales.create(data, options);
   }
-  async editDatatoSales(data: ISalesAttributes, query:any) {
+  async editDatatoSales(data: ISalesAttributes, query: any) {
     return await Sales.update(data, query);
   }
 
@@ -131,7 +131,7 @@ class InventoryQueries {
     console.log(vehicles);
     return vehicles;
   }
-  
+
   async addDataInToSalesReturn(data: any, options?: any) {
     return await SaleReturn.create(data, options);
   }
@@ -149,32 +149,34 @@ class InventoryQueries {
       include: [
         {
           model: Inventory,
-          attributes:['registration_number','inventory_id']
-        }
+          attributes: ['registration_number', 'inventory_id'],
+        },
       ],
-      attributes:['sold_rate','sales_id']
+      attributes: ['sold_rate', 'sales_id'],
     });
   }
-  
 
   async getSalesReturn(options: FindOptions) {
     return await SaleReturn.findAll(options);
   }
 
-
-  async getSales(salesid:number){
+  async getSales(salesid: number) {
     return await Sales.findOne({
-      where:{
-        sales_id:salesid
-      }
-    })
+      where: {
+        sales_id: salesid,
+      },
+      include: [
+        {
+          model: Accounts, // Replace with your actual Account model
+        },
+      ],
+    });
   }
-
 
   async getVehiclebyId(inventory_id: number) {
     try {
       // Fetch the inventory item along with its associated data
-      const inventory:any = await Inventory.findOne({
+      const inventory: any = await Inventory.findOne({
         where: { inventory_id },
         include: [
           {
@@ -218,19 +220,19 @@ class InventoryQueries {
           'year_of_manufacture',
           'registration_number',
           'delivery_amount',
-          'initial_amount'
+          'initial_amount',
         ],
       });
-  
+
       // Return an empty object if no inventory is found
       if (!inventory) {
         return {};
       }
-  
+
       // Fetch the delivery service name using the ds_id from DsTransaction
       const dsTransaction = inventory?.DsTransaction;
       let deliveryServiceName = '';
-  
+
       if (dsTransaction && dsTransaction.ds_id) {
         const deliveryService = await Accounts.findOne({
           where: { account_id: dsTransaction.ds_id },
@@ -239,8 +241,6 @@ class InventoryQueries {
         deliveryServiceName = deliveryService?.name || '';
       }
 
-
-  
       // Construct the result object
       const result = {
         ...inventory.dataValues,
@@ -249,7 +249,7 @@ class InventoryQueries {
           name: deliveryServiceName,
         },
       };
-  
+
       console.log(result);
       return result;
     } catch (error) {
@@ -257,7 +257,6 @@ class InventoryQueries {
       throw error; // Handle or rethrow the error as appropriate
     }
   }
-  
 
   async getVehicleMrp(vehicle_id: number) {
     const query = `
@@ -275,14 +274,13 @@ class InventoryQueries {
       i.inventory_id = :vehicle_id
     GROUP BY 
       i.purchase_rate;`;
-  
+
     const [mrp] = await db.query(query, {
       replacements: { vehicle_id },
       type: QueryTypes.RAW,
     });
     return mrp[0];
   }
-  
 
   async insertBulkTsConnectors(data: any, options: any) {
     return await TransactionConnectors.bulkCreate(data, options);
@@ -312,7 +310,6 @@ class InventoryQueries {
       },
     });
   }
-  
 }
 
 export default new InventoryQueries();

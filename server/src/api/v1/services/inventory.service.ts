@@ -799,17 +799,39 @@ class InventoryService {
     });
   }
 
-  saleEditGetApi(salesID: number) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const editGetApi = await inventoryQueries.getSales(salesID);
+  // saleEditGetApi(salesID: number) {
+  //   return new Promise(async (resolve, reject) => {
+  //     try {
+  //       const editGetApi = await inventoryQueries.getSales(salesID);
 
-        return resolve(editGetApi);
-      } catch (err) {
-        console.log(err, 'ERORR');
-        reject({ message: `Failed to List Brands: ${err}` });
-      }
+  //       return resolve(editGetApi);
+  //     } catch (err) {
+  //       console.log(err, 'ERORR');
+  //       reject({ message: `Failed to List Brands: ${err}` });
+  //     }
+  //   });
+  // }
+  async saleEditGetApi(salesID: number) {
+    // Fetch the sales data
+    const salesData = await Sales.findOne({
+      where: {
+        sales_id: salesID,
+      },
     });
+
+    if (!salesData) {
+      throw new Error('Sales data not found');
+    }
+    const accountData = await Accounts.findOne({
+      where: {
+        account_id: salesData.account_id,
+      },
+      attributes: ['name', 'account_id'],
+    });
+    return {
+      ...salesData.toJSON(),
+      accounts: accountData ? accountData.toJSON() : null,
+    };
   }
 
   getVehicleMrp(vehicle_id: number) {
@@ -897,7 +919,7 @@ class InventoryService {
     });
   }
 
-  deleteSales(data: { id: number; account_id: number,vehicle_id:number }) {
+  deleteSales(data: { id: number; account_id: number; vehicle_id: number }) {
     return new Promise(async (resolve, reject) => {
       try {
         const dbTransaction = await db.transaction();

@@ -36,7 +36,11 @@ const defaultValues: IVehicleSellFormValues = {
   dueDate: '',
   balance: ''
 };
-
+const breadCrumbData = [
+  { name: 'Dashboard', link: '/' },
+  { name: 'Vehicles', link: '/vehicles' },
+  { name: 'Sell Vehicles' },
+];
 const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
   const [allExchangeData, setAllExchangeData] = useState()
   const { register, handleSubmit, reset, watch, setValue, formState: { errors }, control } = useForm({
@@ -57,11 +61,7 @@ const SellVehicle = ({ setShowSellPage, vehicleId, refetch }: IProps) => {
       setValue('mrp', data?.data?.mrp)
     }
   }, [data])
-  const breadCrumbData = [
-    { name: 'Dashboard', link: '/' },
-    { name: 'Vehicles', link: '/vehicles' },
-    { name: 'Sell Vehicles' },
-  ];
+
   const onSubmit = async (data: IVehicleSellFormValues) => {
     console.log(data);
     const id = toastLoading('Loading...');
