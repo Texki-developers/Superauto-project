@@ -131,6 +131,7 @@ class InventoryQueries {
     console.log(vehicles);
     return vehicles;
   }
+  
   async addDataInToSalesReturn(data: any, options?: any) {
     return await SaleReturn.create(data, options);
   }

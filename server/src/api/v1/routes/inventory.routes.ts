@@ -22,5 +22,5 @@ router.get('/vehicle/mrp',inventoryController.getVehicleMrp)
 router.get('/sales',inventoryController.getSales)
 router.post('/edit-sales',inventoryController.editSales)
 router.delete('/sales',inventoryController.deleteSales)
-router.post('/edit/opening-stock',inventoryController.editOpeningStock);
+router.post('/edit/opening-stock',inventoryController.editOpeningStock)
 export default router;
