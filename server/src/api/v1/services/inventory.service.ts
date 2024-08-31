@@ -907,6 +907,14 @@ class InventoryService {
           },
           transaction: dbTransaction,
         };
+
+        const updateQuery = {
+          where: {
+            inventory_id: data.id,
+          },
+          transaction: dbTransaction,
+        };
+
         const entities = await inventoryQueries.getTransactionConnectors({
           entity_id: data.account_id,
           entity_type: 'sales',
@@ -923,7 +931,13 @@ class InventoryService {
 
           transaction: dbTransaction,
         };
-
+        await inventoryQueries.editVehicle(
+          {
+            sale_status: false,
+            sold_price: null,
+          } as any,
+          updateQuery
+        );
         await accountsQueries.deleteItem(Sales, query);
         await accountsQueries.deleteItem(TransactionConnectors, {
           where: {
