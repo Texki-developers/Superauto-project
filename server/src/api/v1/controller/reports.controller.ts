@@ -3,13 +3,15 @@ import reportsService from '../services/reports.service';
 import { Request, Response } from 'express';
 
 class ReportsController {
+  
   dailyBook(req: Request, res: Response) {
-    const {fromDate, toDate } = req.query;
+    const { voucher, fromDate, toDate } = req.query;
 
+    const voucherStr = typeof voucher === 'string' ? voucher : '';
     const fromDateStr = typeof fromDate === 'string' ? fromDate : '';
     const toDateStr = typeof toDate === 'string' ? toDate : '';
     reportsService
-      .dailybookReport( fromDateStr, toDateStr)
+      .dailybookReport(voucherStr, fromDateStr, toDateStr)
       .then((data: any) => {
         responseHandler(res, 'OK', data, { message: data.message });
       })
@@ -91,7 +93,7 @@ class ReportsController {
     const fromDateStr = typeof fromDate === 'string' ? fromDate : '';
     const toDateStr = typeof toDate === 'string' ? toDate : '';
     reportsService
-      .balanceSheetReport(fromDateStr,toDateStr)
+      .balanceSheetReport(fromDateStr, toDateStr)
       .then((data: any) => {
         responseHandler(res, 'OK', data, { message: data.message });
       })
@@ -100,13 +102,12 @@ class ReportsController {
       });
   }
 
-
   profitAndLoss(req: Request, res: Response) {
     const { fromDate, toDate } = req.query;
     const fromDateStr = typeof fromDate === 'string' ? fromDate : '';
     const toDateStr = typeof toDate === 'string' ? toDate : '';
     reportsService
-      .profitAndLoss(fromDateStr,toDateStr)
+      .profitAndLoss(fromDateStr, toDateStr)
       .then((data: any) => {
         responseHandler(res, 'OK', data, { message: data.message });
       })
@@ -121,7 +122,7 @@ class ReportsController {
     const toDateStr = typeof toDate === 'string' ? toDate : '';
 
     reportsService
-      .saleReport(fromDateStr,toDateStr)
+      .saleReport(fromDateStr, toDateStr)
       .then((data: any) => {
         responseHandler(res, 'OK', data, { message: data.message });
       })

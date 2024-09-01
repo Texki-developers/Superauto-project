@@ -11,207 +11,28 @@ import accountsQueries from './accounts.queries';
 class ReportQueries {
 
 
-   async createDailybookReport(startDate:string,endDate:string){
+   async createDailybookReport(whereCondition:any){
 
 
-    const query = `
-    WITH account_type AS (
-        SELECT 
-            a.account_id,
-            pl.type AS account_type
-        FROM 
-            accounts a
-        JOIN 
-            primary_ledger pl ON a.head = pl.pl_id
-    ),
-    opening_balance AS (
-        SELECT 
-            at.account_id,
-            COALESCE(SUM(
-                CASE 
-                    WHEN at.account_type IN ('liability', 'equity', 'revenue') AND t.credit_account = at.account_id THEN t.amount 
-                    WHEN at.account_type IN ('liability', 'equity', 'revenue') AND t.debit_account = at.account_id THEN -t.amount
-                    WHEN at.account_type IN ('asset', 'expense') AND t.debit_account = at.account_id THEN t.amount
-                    WHEN at.account_type IN ('asset', 'expense') AND t.credit_account = at.account_id THEN -t.amount
-                    ELSE 0 
-                END
-            ), 0) AS balance
-        FROM 
-            transactions t
-        JOIN 
-            account_type at ON t.debit_account = at.account_id OR t.credit_account = at.account_id
-        WHERE 
-            t."transaction_date" < :startDate
-        GROUP BY at.account_id
-    ),
-    transaction_data AS (
-        SELECT
-            t.debit_account AS account_id,
-            DATE(t."transaction_date") AS Date,
-            t.description AS Description,
-            t.voucher_id AS VoucherID,
-            CASE 
-                WHEN t.debit_account = at.account_id THEN t.amount 
-                ELSE 0 
-            END AS Debit,
-            CASE 
-                WHEN t.credit_account = at.account_id THEN t.amount 
-                ELSE 0 
-            END AS Credit
-        FROM 
-            transactions t
-        JOIN 
-            account_type at ON t.debit_account = at.account_id OR t.credit_account = at.account_id
-        WHERE 
-            t."transaction_date" BETWEEN :startDate AND :endDate
-    ),
-    combined_data AS (
-        SELECT 
-            DATE(:startDate) - INTERVAL '1 day' AS Date,
-            'Opening Balance' AS Description,
-            NULL AS VoucherID,
-            0 AS Debit,
-            0 AS Credit,
-            (SELECT balance FROM opening_balance WHERE account_id = at.account_id) AS RunningBalance,
-            at.account_id
-        FROM 
-            account_type at
-        UNION ALL
-        SELECT 
-            Date,
-            Description,
-            VoucherID,
-            Debit,
-            Credit,
-            NULL AS RunningBalance,
-            account_id
-        FROM 
-            transaction_data
-    ),
-    final_data AS (
-        SELECT 
-            cd.Date,
-            cd.Description,
-            cd.VoucherID,
-            cd.Debit,
-            cd.Credit,
-            cd.account_id,
-            COALESCE(
-                SUM(
-                    CASE 
-                        WHEN cd.description = 'Opening Balance' THEN (SELECT balance FROM opening_balance WHERE account_id = cd.account_id)
-                        WHEN at.account_type IN ('liability', 'equity', 'revenue') THEN
-                            COALESCE(cd.Credit, 0) - COALESCE(cd.Debit, 0) + (SELECT balance FROM opening_balance WHERE account_id = cd.account_id)
-                        WHEN at.account_type = 'expense' THEN
-                            COALESCE(cd.Debit, 0) - COALESCE(cd.Credit, 0) + (SELECT balance FROM opening_balance WHERE account_id = cd.account_id)
-                        ELSE
-                            COALESCE(cd.Debit, 0) - COALESCE(cd.Credit, 0)
-                    END
-                ) OVER (PARTITION BY cd.account_id ORDER BY COALESCE(cd.Date, '1900-01-01'), cd.VoucherID), 0
-            ) AS RunningBalance
-        FROM 
-            combined_data cd
-        JOIN 
-            account_type at ON at.account_id = cd.account_id
-    ),
-    closing_balance AS (
-        SELECT 
-            at.account_id,
-            COALESCE(SUM(
-                CASE 
-                    WHEN t.debit_account = at.account_id THEN t.amount 
-                    ELSE 0 
-                END -
-                CASE 
-                    WHEN t.credit_account = at.account_id THEN t.amount 
-                    ELSE 0 
-                END
-            ), 0) AS balance
-        FROM 
-            transactions t
-        JOIN 
-            account_type at ON t.debit_account = at.account_id OR t.credit_account = at.account_id
-        WHERE 
-            t."transaction_date" >= :startDate
-        GROUP BY at.account_id
-    ),
-    total_closing_balance AS (
-        SELECT 
-            account_id,
-            COALESCE(SUM(balance), 0) AS total_balance
-        FROM (
-            SELECT account_id, balance FROM opening_balance
-            UNION ALL
-            SELECT account_id, balance FROM closing_balance
-        ) AS combined_balances
-        GROUP BY account_id
-    ),
-    all_data AS (
-        SELECT 
-            Date,
-            Description,
-            VoucherID,
-            Debit,
-            Credit,
-            RunningBalance,
-            account_id
-        FROM 
-            final_data
-        UNION ALL
-        SELECT 
-            DATE(:endDate) AS Date,
-            'Closing Balance' AS Description,
-            NULL AS VoucherID,
-            COALESCE((SELECT SUM(debit) FROM combined_data WHERE account_id = cd.account_id), 0) AS Debit,
-            COALESCE((SELECT SUM(credit) FROM combined_data WHERE account_id = cd.account_id), 0) AS Credit,
-            (SELECT total_balance FROM total_closing_balance WHERE account_id = cd.account_id) AS RunningBalance,
-            cd.account_id
-        FROM 
-            combined_data cd
-    ),
-FilteredData AS (
-    SELECT 
-        "date",
-description,
-        COALESCE(all_data.RunningBalance, 0) AS balance
-    FROM 
-        all_data
-    WHERE 
-        "description" IN ('Opening Balance', 'Closing Balance')
-),
-AggregateData AS (
-    SELECT 
-        "date",
-description,
-        SUM(balance) AS balance
-    FROM 
-        FilteredData
-    GROUP BY 
-        "date",description
-),
-RunningTotal AS (
-    SELECT 
-        "date",
-description,
-        SUM(balance) OVER (ORDER BY "date" ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_balance
-    FROM 
-        AggregateData
-)
-SELECT 
-    "date",
-description,
-NULL AS VoucherID,NULL AS Debit,NULL AS Credit, running_balance as RunningBalance,
-     NULL as account_id
-FROM 
-    RunningTotal
-
-UNION ALL select * from all_data where description NOT IN ('Closing Balance','Opening Balance')
-    `
-    const [dailybook] = await db.query(query, {
-        replacements: { startDate, endDate },
-        type: QueryTypes.RAW,
-      });
-        return dailybook;
+    const report = await Transaction.findAll({
+        where:whereCondition,
+          include: [
+            {
+              model: Accounts,
+              as: 'CreditAccount',
+              attributes:["name",]
+            },
+            {
+              model: Accounts,
+              as: 'DebitAccount',
+              attributes:["name",]
+            },
+          ],
+          attributes:["voucher_id","debit_account","credit_account","amount","description","transaction_date"],
+          order: [['createdAt', 'ASC']],
+        });
+    
+        return report;
     }
 
     async listDailybookVoucher(){
