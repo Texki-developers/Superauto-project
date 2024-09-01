@@ -6,6 +6,7 @@ import {
   import { db } from '../config/database';
 import { ISalesAttributes } from '../types/db.type';
 import Inventory from './inventory';
+import Accounts from './accounts';
   
   // Define the interface for model attributes
  
@@ -36,7 +37,11 @@ import Inventory from './inventory';
     },
     account_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references:{
+        model:Accounts,
+        key:'account_id'
+      }
     },
     sold_vehicle: {
       type: DataTypes.INTEGER,
@@ -90,5 +95,6 @@ import Inventory from './inventory';
 
 
   Sales.belongsTo(Inventory, {foreignKey: 'sold_vehicle'});
+  Sales.belongsTo(Accounts, {foreignKey: 'account_id'});
   export default Sales;
   

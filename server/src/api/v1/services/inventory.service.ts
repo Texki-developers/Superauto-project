@@ -817,7 +817,21 @@ class InventoryService {
       where: {
         sales_id: salesID,
       },
-    });
+      
+      include: [
+        {
+          model: Inventory,
+          attributes: ['sold_price'],  
+        },
+        {
+          model:Accounts,
+          attributes:['name','account_id']
+        }
+      ],
+      
+    },
+    
+    );
 
     if (!salesData) {
       throw new Error('Sales data not found');
@@ -828,9 +842,9 @@ class InventoryService {
       },
       attributes: ['name', 'account_id'],
     });
+
     return {
       ...salesData.toJSON(),
-      accounts: accountData ? accountData.toJSON() : null,
     };
   }
 
