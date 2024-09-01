@@ -127,13 +127,13 @@ export const sidebarData: ISidebarItem[] = [
         isSubMenu: false,
         element: <CashBook />,
       },
-      // {
-      //   name: 'Sales Report',
-      //   url: '/all-reports/sales-report',
-      //   id: uuidv4() + 4,
-      //   isSubMenu: false,
-      //   element: <SalesReport />,
-      // },
+      {
+        name: 'Sales Report',
+        url: '/all-reports/sales-report',
+        id: uuidv4() + 4,
+        isSubMenu: false,
+        element: <SalesReport />,
+      },
       {
         name: 'Trial Balance',
         url: '/all-reports/trial-balance',

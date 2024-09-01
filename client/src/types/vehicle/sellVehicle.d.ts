@@ -82,6 +82,7 @@ export interface IGetSalesLIST {
 export interface IGetSales {
   sold_rate: number;
   sales_id: number;
+  account_id: number;
   Inventory: Inventory;
 }
 

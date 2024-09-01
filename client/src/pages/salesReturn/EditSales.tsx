@@ -9,6 +9,8 @@ import Loading from '../../components/loading/Loading';
 import moment from 'moment';
 import { paymentObj } from '../../config/paymentTypes.data';
 import useQueryGetApi from '../../hooks/useQueryGetApi.hook';
+import useToast from '../../hooks/useToast.hook';
+import AuthApiService from '../../services/api-services';
 
 
 const defaultValues: IVehicleSellFormValues = {
@@ -37,12 +39,43 @@ const breadCrumbData = [
     { name: 'Sales', link: '/sales' },
     { name: 'Edit Sales' },
 ];
-const EditSales = ({ selectedItem, selectedVehicle, onCancel }: { selectedVehicle: number, selectedItem: number, onCancel: () => void }) => {
+const EditSales = ({ selectedItem, refetch, selectedVehicle, onCancel }: { selectedVehicle: number, selectedItem: number, refetch: () => void; onCancel: () => void }) => {
     const [showFinance, setShowFinance] = useState(false)
+    const { toastError, toastLoading, toastSuccess } = useToast()
     const [total, setTotal] = useState(0)
     const { register, control, reset, setValue, formState: { errors }, watch, handleSubmit } = useForm({ defaultValues });
-    const onSubmit = (data: IVehicleSellFormValues) => {
+    const onSubmit = async (data: IVehicleSellFormValues) => {
         console.log(data);
+        const id = toastLoading('Loading...');
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const apiBody: any = {
+            "accountId": data?.customer?.value,
+            "soldRate": parseInt(data?.saleRate),
+            "soldDate": data?.salesDate,
+            "paymentMode": data?.paymentType?.label,
+            "soldVehicleId": vehicleData?.data?.sold_vehicle,
+            "isFinance": showFinance,
+            "rate": null,
+            "amount": parseInt(data?.paymentAmount),
+            "due_date": data?.dueDate,
+            "salesId": vehicleData?.data?.sales_id
+        };
+
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const response = await AuthApiService.postApi<any, any>('inventory/edit-sales', apiBody);
+            if (response?.status === "error") {
+                toastError(id, response?.message);
+                return;
+            }
+            onCancel();
+            toastSuccess(id, 'Sales Edited successfully');
+            refetch()
+        } catch (error) {
+            onCancel();
+            toastError(id, 'Something went wrong');
+        }
     }
     const editApiurl = `inventory/list/edit-sales/${selectedItem}`
     const { callApi } = useGetApis();
@@ -58,7 +91,6 @@ const EditSales = ({ selectedItem, selectedVehicle, onCancel }: { selectedVehicl
                     label: vehicleData?.data?.accounts?.name,
                 },
                 saleRate: vehicleData?.data?.sold_rate as string,
-                mrp: null,
                 salesDate: moment(vehicleData?.data?.sold_date)?.format('YYYY-MM-DD'),
                 paymentType: {
                     value: paymentObj[vehicleData?.data?.payment_mode as string],
@@ -85,9 +117,11 @@ const EditSales = ({ selectedItem, selectedVehicle, onCancel }: { selectedVehicl
         const financeServiceCharge = watch('financeServiceCharge')
         setTotal(Number(salesRate ?? 0) + Number(financeAmount ?? 0) + Number(financeServiceCharge ?? 0))
     }, [watch('saleRate'), watch('financeAmount'), watch('financeServiceCharge')])
+
     const { data } = useQueryGetApi(`inventory/vehicle/mrp?vehicle_id=${selectedVehicle}`)
     useEffect(() => {
         if (data) {
+            console.log(data)
             setValue('mrp', data?.data?.mrp)
         }
     }, [data])

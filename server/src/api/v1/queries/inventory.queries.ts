@@ -152,7 +152,7 @@ class InventoryQueries {
           attributes: ['registration_number', 'inventory_id'],
         },
       ],
-      attributes: ['sold_rate', 'sales_id'],
+      attributes: ['sold_rate', 'sales_id', 'account_id'],
     });
   }
 

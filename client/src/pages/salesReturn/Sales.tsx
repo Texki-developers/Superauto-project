@@ -81,7 +81,7 @@ const SalesReturn = () => {
         selectedVehicleData &&
         <DeleteModal
           refetch={refetch}
-          apiUrl={`inventory/sales?id=${selectedVehicleData?.sales_id}&accountId=${selectedVehicleData?.Inventory?.inventory_id}`}
+          apiUrl={`inventory/sales?id=${selectedVehicleData?.sales_id}&accountId=${selectedVehicleData?.account_id}&vehicleId=${selectedVehicleData?.Inventory?.inventory_id}?`}
           category='Vehicle'
           onClose={() => setShowDeletePage(false)}
           verifyText={selectedVehicleData?.Inventory?.registration_number}
@@ -91,8 +91,9 @@ const SalesReturn = () => {
       <main className='table-wrapper'>
         {showAddPage && selectedVehicleData?.sales_id ? (
           <>
-            <EditSellPage onCancel={() => {
+            <EditSellPage refetch={refetch} onCancel={() => {
               setShowAddPage(false)
+              
             }} selectedItem={selectedVehicleData?.sales_id} selectedVehicle={selectedVehicleData?.Inventory?.inventory_id} />
           </>
         ) :
