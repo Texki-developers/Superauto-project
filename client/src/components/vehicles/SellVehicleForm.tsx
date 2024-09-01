@@ -39,6 +39,7 @@ interface IProps {
 const SellVehicleForm = ({ hideBalance, setShowExchangeForm, onCancelClick, hideExchange, watch, register, reset, control, errors, total, setValue, showFinance, setShowFinance }: IProps) => {
   const [newCustomer, setNewCustomer] = useState(false)
   const { formatedData: customers, isPending: customerPending } = useGetDropdownData(ICategory.CUSTOMER)
+  console.log(customers)
   return (
     <>
       {
@@ -88,7 +89,6 @@ const SellVehicleForm = ({ hideBalance, setShowExchangeForm, onCancelClick, hide
                   register={register}
                   isDisabled
                   error={errors}
-                  required
                 />
                 <InputBox
                   name='salesDate'

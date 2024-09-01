@@ -39,11 +39,15 @@ export interface ISalesData {
   createdAt: string;
   updatedAt: string;
   amount: string | undefined;
-  accounts: Accounts;
+  Account: Accounts;
+  Inventory: {
+    sold_price: number;
+  };
 }
 
 interface Accounts {
   name: string;
+  contact_info: string;
   account_id: number;
 }
 

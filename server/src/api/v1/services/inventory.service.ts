@@ -817,21 +817,18 @@ class InventoryService {
       where: {
         sales_id: salesID,
       },
-      
+
       include: [
         {
           model: Inventory,
-          attributes: ['sold_price'],  
+          attributes: ['sold_price'],
         },
         {
-          model:Accounts,
-          attributes:['name','account_id']
-        }
+          model: Accounts,
+          attributes: ['name', 'account_id', 'contact_info'],
+        },
       ],
-      
-    },
-    
-    );
+    });
 
     if (!salesData) {
       throw new Error('Sales data not found');

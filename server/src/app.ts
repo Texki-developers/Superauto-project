@@ -46,7 +46,7 @@ app.use(passport.session());
 
 ///THE ROUTES
 app.use('/api/v1/accounts', isAuthenticated, accountRoutes);
-app.use('/api/v1/inventory', inventoryRoutes);
+app.use('/api/v1/inventory', isAuthenticated, inventoryRoutes);
 app.use('/api/v1/reports', isAuthenticated, reportRoutes);
 app.use('/api/v1/auth', authRouter);
 ///THE ROUTES

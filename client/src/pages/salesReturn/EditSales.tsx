@@ -88,7 +88,7 @@ const EditSales = ({ selectedItem, refetch, selectedVehicle, onCancel }: { selec
                 ...defaultValues,
                 customer: {
                     value: vehicleData?.data?.account_id,
-                    label: vehicleData?.data?.accounts?.name,
+                    label: `${vehicleData?.data?.Account?.name}-${vehicleData?.data?.Account?.contact_info}`,
                 },
                 saleRate: vehicleData?.data?.sold_rate as string,
                 salesDate: moment(vehicleData?.data?.sold_date)?.format('YYYY-MM-DD'),
@@ -101,7 +101,7 @@ const EditSales = ({ selectedItem, refetch, selectedVehicle, onCancel }: { selec
                 financeServiceCharge: vehicleData?.data?.finance_service_charge,
                 registrationNumber: '',
                 rate: null,
-                paymentAmount: vehicleData?.data?.amount ?? null,
+                paymentAmount: vehicleData?.data?.Inventory?.sold_price ?? null,
                 dueDate: moment(vehicleData?.data?.due_date)?.format('YYYY-MM-DD'),
                 balance: ''
 
@@ -118,13 +118,16 @@ const EditSales = ({ selectedItem, refetch, selectedVehicle, onCancel }: { selec
         setTotal(Number(salesRate ?? 0) + Number(financeAmount ?? 0) + Number(financeServiceCharge ?? 0))
     }, [watch('saleRate'), watch('financeAmount'), watch('financeServiceCharge')])
 
-    const { data } = useQueryGetApi(`inventory/vehicle/mrp?vehicle_id=${selectedVehicle}`)
+    const { data, refetch: mrpRefetch } = useQueryGetApi(`inventory/vehicle/mrp?vehicle_id=${selectedVehicle}`)
     useEffect(() => {
         if (data) {
-            console.log(data)
             setValue('mrp', data?.data?.mrp)
         }
     }, [data])
+
+    useEffect(() => {
+        mrpRefetch()
+    }, [selectedVehicle])
     return (
         <>
             {
