@@ -56,6 +56,8 @@ const EditSales = ({ selectedItem, refetch, selectedVehicle, onCancel }: { selec
             "paymentMode": data?.paymentType?.label,
             "soldVehicleId": vehicleData?.data?.sold_vehicle,
             "isFinance": showFinance,
+            "financeAmount":data.financeAmount,
+            "financeCharge":data.financeServiceCharge,
             "rate": null,
             "amount": parseInt(data?.paymentAmount),
             "due_date": data?.dueDate,
