@@ -432,7 +432,7 @@ class InventoryService {
         const financeResult = await inventoryQueries.addToFinancerTable(financeTransaction, {
           transaction: dbTransaction,
         });
-        await inventoryQueries.changeStatusOfVehicle(data.sold_vehicle_id, data.sales_rate, {
+        await inventoryQueries.changeStatusOfVehicle(data.sold_vehicle_id, data.amount, {
           transaction: dbTransaction,
         });
 
@@ -1440,7 +1440,7 @@ class InventoryService {
           ];
         }
         await accountsQueries.generateTransaction(transactions, { transaction: dbTransaction });
-        await inventoryQueries.changeStatusOfVehicle(data.sold_vehicle_id, data.sales_rate, {
+        await inventoryQueries.changeStatusOfVehicle(data.sold_vehicle_id, data.amount, {
           transaction: dbTransaction,
         });
         const salesData = {
