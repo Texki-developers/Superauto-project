@@ -72,13 +72,33 @@ class InventoryQueries {
     }
   }
 
-  async addToFinancerTable(data: FinancerTransaction[], options?: any) {
+  async findFinancialTransaction (vehicle_id:number) {
     try {
-      const deliveryService = await FinancerTransaction.bulkCreate(data, {
+      return await FinancerTransaction.findOne({
+        where:{
+          vehicle_id:vehicle_id
+        }
+      })
+    } catch (error) {
+      throw new Error('Failed To retriev Transaction');
+    }
+  }
+
+  async deleteFinancialTransaction (vehicle_id:number) {
+    try {
+      return await FinancerTransaction.destroy
+    } catch (error) {
+      throw new Error('Failed To retriev Transaction');
+    }
+  }
+
+  async addToFinancerTable(data: IFinancerTransactionAttributes[], options?: any) {
+    try {
+      const financeTransaction = await FinancerTransaction.bulkCreate(data, {
         ...options,
-        updateOnDuplicate: ['financer_id', 'vehicle_id'],
+        updateOnDuplicate: ['vehicle_id'],
       });
-      return deliveryService;
+      return financeTransaction;
     } catch (error) {
       throw new Error('Failed To Generate Transaction');
     }
