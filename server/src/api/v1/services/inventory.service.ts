@@ -1436,58 +1436,13 @@ class InventoryService {
   editSales(data: IsellVehicleBody) {
     return new Promise(async (resolve, reject) => {
       try {
-        const financeTransaction: any[] = [];
-        const financeTransactionTableData = await inventoryQueries.findFinancialTransaction(data.sold_vehicle_id);
-        const financerTransaction: any[] = [];
-        const connectorTransaction: any[] = [];
         const entities = await inventoryQueries.getTransactionConnectors({
           entity_id: data.account_id,
           entity_type: 'sales',
         });
-        const financer_entities = await inventoryQueries.getTransactionConnectors({
-          entity_id: data.financer_id,
-          entity_type: 'saleTransaction',
-        });
 
         const dbTransaction = await db.transaction();
-        if (data.is_finance && financer_entities.length === 0) {
-          const payment_mode = await accountsQueries.findAccount(data.payment_mode);
-          if (data.financer_id && payment_mode && data.finance_amount) {
-            await this.financeTransactionBuilder(
-              data?.financer_id,
-              data.account_id,
-              payment_mode,
-              financeTransaction,
-              data.finance_amount,
-              data.sales_date
-            );
-            await inventoryQueries.addToFinancerTable(
-              [
-                {
-                  financer_id: data.financer_id,
-                  vehicle_id: data.sold_vehicle_id,
-                },
-              ],
-              {
-                transaction: dbTransaction,
-              }
-            );
-          } else {
-            reject({ message: 'Failed To get required inputs for generating financial transaction' });
-          }
-        }
-        const financeResult = await accountsQueries.generateTransaction(financeTransaction, {
-          transaction: dbTransaction,
-        });
 
-        financeResult &&
-          financeResult?.forEach(async (items) => {
-            connectorTransaction.push({
-              transaction_id: items.dataValues.transaction_id,
-              entity_id: data.financer_id,
-              entity_type: 'saleTransaction',
-            });
-          });
         const salesId = await accountsQueries.findAccount(E_LEDGERS_BASIC.SALE);
         const payment_mode = await accountsQueries.findAccount(data.payment_mode);
 
@@ -1525,45 +1480,11 @@ class InventoryService {
             },
           ];
         }
-
-        if (financer_entities) {
-          financerTransaction.push(
-            {
-              amount: data?.finance_amount,
-              credit_account: data.account_id,
-              transaction_id: financer_entities[0].transaction_id,
-              voucher_id: await getVoucher(E_VOUCHERS.Sale),
-              transaction_date: data.sales_date,
-            },
-            {
-              amount: data.finance_amount,
-              credit_account: data.financer_id,
-              transaction_id: financer_entities[1].transaction_id,
-              voucher_id: await getVoucher(E_VOUCHERS.Sale),
-              transaction_date: data.sales_date,
-            }
-          );
-        }
-
-        if (data.is_finance && data.financer_id) {
-          await inventoryQueries.addToFinancerTable(
-            [
-              {
-                financer_id: data.financer_id,
-                vehicle_id: data.sold_vehicle_id,
-              },
-            ],
-            {
-              transaction: dbTransaction,
-            }
-          );
-        }
-
         await accountsQueries.generateTransaction(transactions, { transaction: dbTransaction });
-        await accountsQueries.generateTransaction(financerTransaction, { transaction: dbTransaction });
         await inventoryQueries.changeStatusOfVehicle(data.sold_vehicle_id, data.amount, {
           transaction: dbTransaction,
         });
+
         const salesData = {
           account_id: data.account_id,
           sold_date: data.sales_date,
@@ -1576,26 +1497,10 @@ class InventoryService {
           finance_amount: data.finance_amount,
           finance_service_charge: data.finance_charge,
           is_exchange: data.is_exchange,
-          financer_id: data.financer_id,
         };
         if (!data.is_finance) {
           delete salesData.finance_amount;
           delete salesData.finance_service_charge;
-          if (financeTransactionTableData) {
-            await accountsQueries.deleteItem(FinancerTransaction, {
-              where: {
-                vehicle_id: data.sold_vehicle_id,
-              },
-            });
-          }
-          const entitiesId = financer_entities.map((items) => items.transaction_id);
-          await accountsQueries.deleteItem(Transaction, {
-            where: {
-              vehicle_id: {
-                [Op.in]: entitiesId,
-              },
-            },
-          });
         }
         if (!data.is_exchange) {
           delete salesData.exchange_vehicle_id;
