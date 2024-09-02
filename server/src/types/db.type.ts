@@ -54,7 +54,7 @@ interface IFinancerTransactionAttributes {
   financer_id: number;
   vehicle_id: number;
   createdAt?: Date;
-  transaction_id: number;
+  transaction_id?: number;
   updatedAt?: Date;
 }
 
@@ -89,6 +89,7 @@ interface ISalesAttributes {
   is_exchange: boolean;
   exchange_vehicle_id?: number;
   due_date: Date;
+ 
 }
 
 interface ISaleReturnAttributes {
